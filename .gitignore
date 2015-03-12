@@ -1,0 +1,6 @@
+/exampledata
+InstallNotes
+/server/node_modules
+/server/temp
+/server/logs
+*~

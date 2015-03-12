@@ -1,0 +1,93 @@
+{ "races": [
+	{
+		"series": "WIOL",
+		"name": "Elementary Girls",
+		"code": "W1F",
+		"course": 1
+	},
+	{
+		"series": "WIOL",
+		"name": "Elementary Boys",
+		"code": "W1M",
+		"course": 1
+	},
+	{
+		"series": "WIOL",
+		"name": "Middle School Girls",
+		"code": "W2F",
+		"course": 2
+	},
+	{
+		"series": "WIOL",
+		"name": "Middle School Boys",
+		"code": "W2M",
+		"course": 2
+	},
+	{
+		"series": "WIOL",
+		"name": "Jr. Varsity Girls",
+		"code": "W3F",
+		"course": 3
+	},
+	{
+		"series": "WIOL",
+		"name": "Jr. Varsity Boys North",
+		"code": "W4M",
+		"course": 4
+	},
+	{
+		"series": "WIOL",
+		"name": "Jr. Varsity Boys South",
+		"code": "W5M",
+		"course": 5
+	},
+	{
+		"series": "WIOL",
+		"name": "Varsity Girls",
+		"code": "W6F",
+		"course": 6
+	},
+	{
+		"series": "WIOL",
+		"name": "Varsity Boys",
+		"code": "W6M",
+		"course": 6
+	},
+	{
+		"series": "WIOL",
+		"name": "Beginner",
+		"code": "1",
+		"course": 1
+	},
+	{
+		"series": "WIOL",
+		"name": "Intermediate",
+		"code": "3",
+		"course": 3
+	},
+	{
+		"series": "WIOL",
+		"name": "Short Advanced",
+		"code": "7",
+		"course": 7
+	},
+	{
+		"series": "WIOL",
+		"name": "Long Advanced Men",
+		"code": "8M",
+		"course": 8
+	},
+	{
+		"series": "WIOL",
+		"name": "Long Advanced Women",
+		"code": "8F",
+		"course": 8
+	},
+	{
+		"series": "WIOL",
+		"name": "Long Advanced Groups",
+		"code": "8G",
+		"course": 8
+	}
+  ]
+}

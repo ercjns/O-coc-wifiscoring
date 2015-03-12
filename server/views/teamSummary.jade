@@ -1,0 +1,38 @@
+extends layout
+
+
+block content
+  h1= title
+
+  p.note All results are preliminary. Server was last updated #{dataDateTime}.
+
+  p
+    a(href='/') Race index
+
+  hr
+
+  table
+    thead
+      th Name
+      th Race
+      th Club
+      th Time
+      th Place
+      th Points
+
+
+
+    tbody.results
+      each item in runners
+        tr
+          td #{item.runner.name}
+          td #{item.race.name}
+          td #{item.runner.org.abbr}
+          td #{item.timestr}
+          td #{item.place}
+          td.alignR #{item.points}
+
+      tr
+        td(colspan="7") &nbsp
+
+  p

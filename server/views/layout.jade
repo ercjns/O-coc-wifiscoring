@@ -1,0 +1,22 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    div.header
+      span.logo
+        img(src='/Coclogo.jpg' height=50 width=50)
+      a(href='/') &nbsp&nbsp&nbsp&nbspwifi.CascadeOC.org
+
+    block content
+
+  div.footer
+    a(href='/') wifi.cascadeoc.org home
+
+    if showDates
+      p Page loaded #{dateTime}
+      p Latest data from #{dataDateTime}
+
+    p Brought to you by the Cascade OC Tech Team: Mike Schuh, Carl Walsh, Gordon Walsh, Eric Jones
+    p all results information preliminary
