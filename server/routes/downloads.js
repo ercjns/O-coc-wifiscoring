@@ -58,11 +58,57 @@ exports.postDownload = function(req, res, next) {
   var parser = new xml2js.Parser({explicitArray: false});
   fs.readFile(fn, function(err, fdata) {
     parser.parseString(fdata, function(err, xmldata) {
-
       //determine what type of upload and handle as appropriate
-      if (xmldata.ResultList.$.status === 'snapshot' &&
-          xmldata.ResultList.IOFVersion.$.version === '2.0.3') {
+      if (xmldata.ResultList.$.iofVersion === '3.0') {
+        // Sport Software IOFv3 results export
+        console.log('Processing Sport Software IOFv3 Results')
+        opts = {'IOFv': 3};
 
+        // TODO: Don't do this!!!!
+        // need to not delete so that we can preserve registration data
+        // in order to sync IDs from start box telemetry with names/clubs
+
+        // Delete Everything :(
+        emptyCollections(req.db)
+
+        // Process each ClassResult
+
+        // Expecting list of objects. fails if only one class?
+        compclasses = xmldata.ResultList.ClassResult
+        compclasses.forEach(function(compclass) {
+          // Process each PersonResult
+          for (i=0; i<compclass.PersonResult.length; i++) {
+            (function(i) {
+              p = compclass.PersonResult[i].Person;
+              o = compclass.PersonResult[i].Organisation;
+              r = compclass.PersonResult[i].Result;
+              c = compclass.Class.ShortName;
+
+              (function(o,p,r,c) {
+                var runnerName = flattenName(opts,p)
+
+                getOrgPromise(req.db, o.ShortName)
+                .then(function(org) {
+                  return saveRunnerPromise(req.db, runnerName, org)
+                  .then(function(runner) {
+                    return getRacePromise(req.db, c)
+                    .then(function(race) {
+                      return saveResultPromise(opts, req.db, runner, race, r)
+                    }, function(errRace) {console.log(errRace,c)} )
+                  }, function(errRunner) {console.log(errRunner)} )
+                }, function(errOrg) {console.log(errOrg, o.ShortName)} )
+                .done()
+              })(o,p,r,c) // immediately execute
+            })(i) // each PersonResult
+          }
+        }) // each CompClass
+        console.log('Done refreshing db')
+      } // end IF IOFv:3
+
+
+      else if (xmldata.ResultList.$.status === 'snapshot' &&
+          xmldata.ResultList.IOFVersion.$.version === '2.0.3') {
+        // OORG IOFv2 results export
         console.log('Processing an OORG snapshot')
 
         opts = {'IOFv': 2};
@@ -86,7 +132,7 @@ exports.postDownload = function(req, res, next) {
               c = compclass.ClassShortName;
               (function(p,r,c) {
 
-                var runnerName = flattenName(p)
+                var runnerName = flattenName(opts, p)
 
                 getOrgPromise(req.db, p.CountryId)
                 .then(function (org) {
@@ -108,7 +154,7 @@ exports.postDownload = function(req, res, next) {
           } // for personresult.length
         }) // for each compclass
         console.log("Done refreshing database")
-      } // if status:snapshot
+      } // if status:snapshot && IOFv:2
 
 
 
@@ -210,13 +256,20 @@ function SectoMMSS(inttime) {
   return m + ":" + s
 }
 
-function flattenName(p) {
+function flattenName(opts, p) {
   //TODO: make this more clever? Also replace '_' with ' '.
   var n = '';
-  if (p.PersonName.Given != null) { n += p.PersonName.Given }
-  if (n.length > 0) { n += ' ' }
-  if (p.PersonName.Family != null) { n += p.PersonName.Family }
-  return n
+  if (opts.IOFv == 2) {
+    if (p.PersonName.Given != null) { n += p.PersonName.Given }
+    if (n.length > 0) { n += ' ' }
+    if (p.PersonName.Family != null) { n += p.PersonName.Family }
+    return n
+  } else if (opts.IOFv == 3) {
+    if (p.Name.Given != null) { n += p.Name.Given }
+    if (n.length > 0) { n += ' ' }
+    if (p.Name.Family != null) { n += p.Name.Family }
+    return n
+  }
 }
 
 function emptyCollections(db) {

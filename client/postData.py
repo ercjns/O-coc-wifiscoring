@@ -97,11 +97,18 @@ if __name__ == '__main__':
         r = requests.post(url, files=f)
         print r.text
 
+    elif method == 'iof3':
+    #post sport software OE2012 I0F3 results file
+        url = host + '/api/downloads'
+        f = {'file': open(arg, 'r')}
+        #What should be in this header???
+        #header = {'content-type': 'text/plain'}
+        r = requests.post(url, files=f)
+        print r.text
 
 
 
-
-###### OLD below this line, don't use ######    
+###### OLD below this line, don't use ######
 
     elif method == 'one':
         url = 'http://localhost:3000/api/setFinisher'
