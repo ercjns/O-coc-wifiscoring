@@ -45,7 +45,7 @@ cd ../..
 ```
 7. Start the mongo service
 ```bash
-sudo mongod --datapath ./data/db
+sudo mongod --dbpath ./data/db
 ```
 8. Run the Node.js server
 ```bash
