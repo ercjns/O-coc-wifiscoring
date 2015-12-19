@@ -9,6 +9,35 @@ import sys
 import requests
 import json
 
+def post_iof3_resultList(host, file):
+    # post sport software IOFv3 results file
+    url = host + '/api/results/'
+    f = {'file': open(file, 'r')}
+    #What should be in this header???
+    #header = {'content-type': 'text/plain'}
+    r = requests.post(url, files=f)
+    return r.text
+
+
+def poll_for_results(dir):
+    lastUpdate = None
+    while True:
+        dircontents = os.listdir(dir)
+        if len(dircontents) == 1:
+            # TODO actually get the right file rather than picking the only one!
+            fn = os.path.join(dir, dircontents[0])
+            t = os.path.getmtime(fn)
+            if t > lastUpdate:
+                print "found new file, posting"
+                postToMeetWeb(fn)
+                lastUpdate = t
+            else:
+                print "no new file"
+        print "sleeping, brb"
+        for i in range(60):
+            time.sleep(1)
+
+
 if __name__ == '__main__':
     host = sys.argv[1]
     method = sys.argv[2]
@@ -41,29 +70,3 @@ if __name__ == '__main__':
         r = requests.post(url, headers=header, data=json.dumps(d))
         print r.text
 
-def post_iof3_resultList(host, file):
-    # post sport software IOFv3 results file
-    url = host + '/api/results/'
-    f = {'file': open(file, 'r')}
-    #What should be in this header???
-    #header = {'content-type': 'text/plain'}
-    r = requests.post(url, files=f)
-    return r.text
-            
-def poll_for_results(dir):
-    lastUpdate = None
-    while True:
-        dircontents = os.listdir(dir)
-        if len(dircontents) == 1:
-            # TODO actually get the right file rather than picking the only one!
-            fn = os.path.join(dir, dircontents[0])
-            t = os.path.getmtime(fn)
-            if t > lastUpdate:
-                print "found new file, posting"
-                postToMeetWeb(fn)
-                lastUpdate = t
-            else:
-                print "no new file"
-        print "sleeping, brb"
-        for i in range(60):
-            time.sleep(1)
