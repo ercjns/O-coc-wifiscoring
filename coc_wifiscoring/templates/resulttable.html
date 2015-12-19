@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Results for {{ cclass }}{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<h2>Results for {{ cclass }}:</h2>
+		<p>All results are preliminary. For changes or corrections, talk with meet staff.</p>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-md-8">
+		<table class="table table-condensed table-striped">
+		<th>#</th>
+		<th>Name</th>
+		<th>Club</th>
+		<th>Result</th>
+		{% for r in items %}
+		<tr>
+		{% if r.status == 'OK' %}
+			<td>{{ r.position }}</td>
+		{% else %}
+			<td></td>
+		{% endif %}
+		<td>{{ r.name }}</td>
+		<td>{{ r.clubshort }}</td>
+		{% if r.status == 'OK' %}
+			<td>{{ r.timetommmss() }}</td>
+		{% else %}
+			<td>{{ r.status }}</td>
+		{% endif %}
+		</tr>
+		{% endfor %}
+		</table>
+	</div>
+	<div class="col-xs-12 col-md-4">
+		<h4>Read your split ticket:</h4>
+		<p>The <strong>left column shows the order</strong> you punched the controls for your course. It shows both the order (1, 2, 3) and the control code (108, 111, 132).</p>
+		<p>The <strong>middle column shows your split time</strong>, the time you took to navigate from the previous control to this one.</p>
+		<p>The <strong>right column shows your total time</strong>, since you punched the start box.<p>
+		<p>If you see ----- or blank space, you may have missed a punch. Remember to go in order, and be sure the control unit beeps and flashes! If you realize you've skipped a control while you're on the course, you can go back to it, but you must "start over" from that point on the course (can't skip forward).</p>
+		<p>If you see a lot of mistakes, it's possible the finish computer thought you were on a different course. Return to the finish tent to resolve the issue.</p>		
+	</div>
+</div>
+
+{% endblock %}

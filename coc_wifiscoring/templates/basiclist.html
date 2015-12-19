@@ -3,12 +3,20 @@
 {% block title %}List of Items{% endblock %}
 
 {% block content %}
-    <div>
-	That request matches {{ items|length }} items:
-	<ol type="1">
-	{% for item in items %}
-	<li>{{ item }}</li>
-	{% endfor %}
-	</ol>
+<div class="row">
+	<div class="col-xs-12">
+		That request matches {{ items|length }} items:
 	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-8">
+		<ol type="1">
+		{% for item in items %}
+		<li>{{ item }}</li>
+		{% endfor %}
+		</ol>
+	</div>
+</div>
+
 {% endblock %}
