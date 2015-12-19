@@ -5,7 +5,9 @@
 #close and reopen command prompt
 #cmd run pip install requests
 
+import os
 import sys
+import time
 import requests
 import json
 
@@ -19,7 +21,7 @@ def post_iof3_resultList(host, file):
     return r.text
 
 
-def poll_for_results(dir):
+def poll_for_results(host, dir):
     lastUpdate = None
     while True:
         dircontents = os.listdir(dir)
@@ -29,7 +31,7 @@ def poll_for_results(dir):
             t = os.path.getmtime(fn)
             if t > lastUpdate:
                 print "found new file, posting"
-                postToMeetWeb(fn)
+                post_iof3_resultList(host, fn)
                 lastUpdate = t
             else:
                 print "no new file"
@@ -54,7 +56,7 @@ if __name__ == '__main__':
         monitor a folder for new results and post them
         usage: python ToolboxClient.py http://localhost monitor ./results_go_here 
         '''
-        poll_for_results(sys.argv[3])
+        poll_for_results(host, sys.argv[3])
         
     elif method == 'telemetry':
         ''' 
