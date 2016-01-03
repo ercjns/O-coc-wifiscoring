@@ -9,7 +9,7 @@ telemetry = Blueprint("telemetry", __name__)
 def get_punches(control):
     try:
         q = RemotePunch.query.filter_by(station=control).all()
-        return render_template('basiclist.html', items=q)
+        return render_template('telemetry.html', box=control, items=q)
     except:
         abort(404)
 
@@ -26,7 +26,7 @@ def record_punch(control):
     except:
         abort(500)
 
-        
+
 @telemetry.route('/outcount/<int:startcode>')
 def out_count(startcode):
     starters = RemotePunch.query.filter_by(station=startcode).all()
