@@ -9,7 +9,7 @@
         socket.emit('my event', {data: 'I\'m connected!'});
     });
     socket.on('new punch', function(data) {
-        $('#punches tr:last').after('<tr><td></td><td>' + data.time + '</td><td>' + data.sicard + '</td></tr>');
+        $('#punchesTable tr:last').after('<tr><td> + 'new' + </td><td>' + data.time + '</td><td>' + data.sicard + '</td></tr>');
         console.log('new punch:', data)
     });
 </script>
@@ -26,7 +26,7 @@
 
 <div class="row">
 	<div class="col-xs-12 col-md-8">
-		<table class="table table-condensed table-striped" id="punches">
+		<table class="table table-condensed table-striped" id="punchesTable">
 		<th>#</th>
 		<th>Time</th>
 		<th>SI card</th>
