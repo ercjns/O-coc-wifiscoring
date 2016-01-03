@@ -7,8 +7,16 @@ frontend = Blueprint("frontend", __name__)
 @frontend.route('/')
 def home():
     return render_template('COCwifihome.html')
-    
+
 @frontend.route('/results/<cclass>')
 def cclass_results(cclass):
-    q = Result.query.filter_by(cclassshort=cclass).all()
-    return render_template('resulttable.html', cclass=cclass, items=q)
+    if cclass in ['1', '3', '7', '8M', '8F', '8G'] or cclass in ['W1F', 'W1M', 'W2F', 'W2M', 'W3F', 'W4M', 'W5M', 'W6F', 'W6M']:
+        q = Result.query.filter_by(cclassshort=cclass).all()
+        return render_template('resulttable.html', cclass=cclass, items=q)
+    else:
+        return 'unknown class', 404
+
+@frontend.route('/results/')
+def all_results():
+    q = Result.query.all()
+    return render_template('allresults.html', items=q)
