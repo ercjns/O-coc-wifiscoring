@@ -1,5 +1,20 @@
 {% extends "base.html" %}
 
+{% block addhead %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+    });
+    socket.on('new punch', function(data) {
+        $('#punches tr:last').after('<tr><td></td><td>' + data.time + '</td><td>' + data.sicard + '</td></tr>');
+        console.log('new punch:', data)
+    });
+</script>
+{% endblock %}
+
 {% block title %}Start box punches{% endblock %}
 
 {% block content %}
@@ -11,7 +26,7 @@
 
 <div class="row">
 	<div class="col-xs-12 col-md-8">
-		<table class="table table-condensed table-striped">
+		<table class="table table-condensed table-striped" id="punches">
 		<th>#</th>
 		<th>Time</th>
 		<th>SI card</th>

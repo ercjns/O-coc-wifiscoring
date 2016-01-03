@@ -3,6 +3,8 @@ from datetime import time
 
 from .models import db, RemotePunch, Result
 
+from coc_wifiscoring import socketio
+
 telemetry = Blueprint("telemetry", __name__)
 
 @telemetry.route('/<int:control>')
@@ -22,6 +24,8 @@ def record_punch(control):
         punch = RemotePunch(body['station'], body['sicard'], time(int(h),int(m),int(s)))
         db.session.add(punch)
         db.session.commit()
+        punchstrtime = str(int(h)) + ":" + str(int(m)) + ":" + str(int(s))
+        socketio.emit('new punch', {'station': body['station'], 'sicard':body['sicard'], 'time':punchstrtime})
         return str(punch), 200
     except:
         abort(500)
