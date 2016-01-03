@@ -12,7 +12,7 @@
 
 <div class="row">
 	<div class="col-xs-12 col-md-8">
-		<table class="table table-condensed table-striped">
+		<table class="table table-condensed table-striped" id="resultTable">
 		<th>#</th>
 		<th>Name</th>
 		<th>Club</th>
@@ -44,5 +44,7 @@
 		<p>If you see a lot of mistakes, it's possible the finish computer thought you were on a different course. Return to the finish tent to resolve the issue.</p>		
 	</div>
 </div>
+
+<script src="{{ url_for('static', filename='filter.js') }}"></script>
 
 {% endblock %}
