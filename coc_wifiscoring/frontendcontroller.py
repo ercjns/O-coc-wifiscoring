@@ -14,7 +14,7 @@ def cclass_results(cclass):
         q = Result.query.filter_by(cclassshort=cclass).all()
         return render_template('resulttable.html', cclass=cclass, items=q)
     else:
-        return 'unknown class', 404
+        return '404: Not found. Unknown class specified in the url', 404
 
 @frontend.route('/results/')
 def all_results():

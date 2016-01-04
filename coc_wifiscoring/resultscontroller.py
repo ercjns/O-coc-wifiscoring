@@ -5,7 +5,7 @@ from OutilsParse import getRunners
 
 
 resultsAPI = Blueprint("resultsAPI", __name__)
-        
+
 @resultsAPI.route('/', methods=['GET', 'POST'])
 def results():
     if request.method == 'GET':
@@ -14,26 +14,26 @@ def results():
         return render_template('basiclist.html', items=q)
         #except:
         #abort(404)
-            
+
     elif request.method == 'POST':
         #get the file from the request body
         try:
             request.files[request.files.keys()[0]].save('latestResultsXML.xml')
         except:
             return 'Please upload an IOF XML ResultsList', 400
-        
+
         #pass the file to getRunners
         try:
             results = getRunners('latestResultsXML.xml')
         except:
             return 'GetRunners failed. :(', 500
-        
+
         #wipe the database
         try:
             Result.query.delete()
         except:
             return 'couldn\'t delete things', 500
-        
+
         #take the list of runners and create new db entries
         # try:
         for r in results:
@@ -50,15 +50,15 @@ def results():
             db.session.commit()
         # except:
             # return 'Problem adding rows to the db', 500
-        
+
         #re-calculate everything (?) - no this happens at query time? nope, need some to happen now
         try:
             _assignPositions()
         except:
             return 'Problem assigning positions', 500
-            
+
         return 'Refreshed', 200
-        
+
 def _assignPositions():
     cclasses = db.session.query(Result.cclassshort.distinct()).all()
     for c in cclasses:
@@ -71,8 +71,13 @@ def _assignPositions():
                 classresults[i].position = classresults[i-1].position
             else:
                 classresults[i].position = nextposition
-                
+
             nextposition += 1
         db.session.add_all(classresults)
         db.session.commit()
     return
+
+@resultsAPI.route('/clubs', methods=['GET', 'POST'])
+def clubs():
+    """do stuff here to upload club code to club name reference, and provide some reasbable view"""
+    pass
