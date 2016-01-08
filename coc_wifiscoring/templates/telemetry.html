@@ -9,7 +9,7 @@
         socket.emit('my event', {data: 'I\'m connected!'});
     });
     socket.on('new punch', function(data) {
-        $('#punchesTable tr:last').after('<tr><td> + 'new' + </td><td>' + data.time + '</td><td>' + data.sicard + '</td></tr>');
+        $('#punchesTable tr:last').after('<tr><td>' + 'new' + '</td><td>' + data.time + '</td><td>' + data.sicard + '</td><td> --- </td></tr>');
         console.log('new punch:', data)
     });
 </script>
@@ -41,6 +41,11 @@
 		{% endfor %}
 		</table>
 	</div>
+
+	<div class="col-xs-12 col-md-4">
+	<p>This page displays real-time punches for a specific control box. While punches show up in real time, name, status, and count are only reconciled when you refresh the page in your browser.</p>
+	</div>
+
 </div>
 
 {% endblock %}
