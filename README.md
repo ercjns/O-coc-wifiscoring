@@ -34,6 +34,9 @@ By including telemetry on the start box, organizers can know how many individual
 
 ## License
 This work is licensed under the [Creative Commons BY-NC-SA 4.0](http://creativecommons.org/licenses/by-nc-sa/4.0/) license. 
+jQuery licensed by jQuery Foundation under the [MIT license here](https://jquery.org/license/)
+socketio licensed by Guillermo Rauch under the [MIT license here](https://github.com/socketio/socket.io-client/blob/master/LICENSE)
+
 
 ## Thanks!
 Thanks to Mike Schuh, Gordon Walsh, Carl Walsh, Ing Uhlin, Bob Forgrave, and Gina Nuss for their ideas, expertise, and support.
