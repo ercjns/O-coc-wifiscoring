@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Meet Stats{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<h2>Meet Statistics</h2>
+		<p>This page is experimental and all data reflected here is subject to change.</p>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-md-4">
+		<h3>Check</h3>
+		<p><strong>{{ checked }}</strong> have hit the check box.</p>
+	</div>
+	<div class="col-xs-12 col-md-4">
+		<h3>Download</h3>
+		<p><strong>{{ downloaded }}</strong> have downloaded.</p>
+	</div>
+	<div class="col-xs-12 col-md-4">
+		<h3>On Course</h3>
+		<p><strong>{{ out }}</strong> have hit the check box and <em>not yet downloaded</em></p>
+	</div>
+</div>
+<div class="row">
+	<div class="col-xs-12">
+		<h3>On Course Details:</h3>
+		<table class="table table-condensed table-striped">
+		<th>SIcard</th>
+		<th>Check Time</th>
+		{% for r in items %}
+		<tr>
+			<td>{{ r.sicard }}</td>
+			<td>{{ r.time }}</td>
+		</tr>
+		{% endfor %}
+		</table>
+	</div>
+</div>
+
+<script src="{{ url_for('static', filename='filter.js') }}"></script>
+{% endblock %}
