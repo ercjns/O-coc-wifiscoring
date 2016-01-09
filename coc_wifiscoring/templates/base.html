@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='COCwifi.css') }}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}{% endblock %}</title>
+{% block addhead %}{% endblock %}
 </head>
 <body>
 <div class="container-fluid">
@@ -20,7 +21,7 @@
 			<ul>
 		</div>
 	</header>
-	
+
 	{% block content %}{% endblock %}
 
 	<footer class="row foot">
