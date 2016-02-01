@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"> -->
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='COCwifi.css') }}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{% endblock %}</title>
+{% block addhead %}{% endblock %}
+</head>
+<body>
+<div class="container-fluid">
+	<header class="row">
+		<div class="col-xs-12 col-sm-6 col-md-4">
+		<img id="headlogo" src="{{ url_for('static', filename='COC-logo-diamond-red-large.png') }}">
+		</div>
+		<div class="col-xs-12 col-sm-6 col-md-8">
+			<ul class="list-unstyled">
+				<li><a href="{{ url_for('frontend.home') }}" class="btn btn-default" role="button">Today's Results</a></li>
+				<!-- <li><a href="{{ url_for('frontend.home') }}" class="btn btn-default" role="button">Other Info</a></li> -->
+			<ul>
+		</div>
+	</header>
+
+	{% block content %}{% endblock %}
+
+	<footer class="row foot">
+		<div class="col-xs-12 col-sm-6">
+		<p class="center">Brought to you by the COC Tech Team: <br /> Eric Jones, Mike Schuh, Gordon Walsh, and expertise from many others</p>
+		</div>
+		<div class="col-xs-12 col-sm-6">
+		<p class="center"><img id="footlogo" src="{{ url_for('static', filename='COC-logo-diamond-white-large.png') }}"></p>
+		</div>
+
+	</footer>
+</div>
+</body>
+</html>
