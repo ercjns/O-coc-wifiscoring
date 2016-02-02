@@ -15,5 +15,5 @@ db.init_app(app)
 
 app.register_blueprint(telemetry, url_prefix='/telemetry')
 app.register_blueprint(admin, url_prefix='/admin')
-app.register_blueprint(resultsAPI, url_prefix='/api/results')
+app.register_blueprint(resultsAPI, url_prefix='/api')
 app.register_blueprint(frontend)

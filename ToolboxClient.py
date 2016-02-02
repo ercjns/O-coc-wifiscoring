@@ -20,14 +20,25 @@ def post_iof3_resultList(file):
         print("sending results to " + host)
 
         # post sport software IOFv3 results file
-        url = host + '/api/results/'
+        url = host + '/api/results'
         f = {'file': open(file, 'r')}
         #What should be in this header???
         #header = {'content-type': 'text/plain'}
         r = requests.post(url, files=f)
     hosts.close()
 
-
+def put_clubcodetable(file):
+    hosts = open("confighosts.txt")
+    while True:
+        host = hosts.readline().rstrip()
+        if not host: break
+        print("sending clubs to " + host)
+        
+        url = host + '/api/clubs'
+        f = {'file': open(file, 'r')}
+        r = requests.put(url, files=f)
+    hosts.close()
+    
 def poll_for_results(dir):
     lastUpdate = None
     while True:
@@ -107,6 +118,13 @@ if __name__ == '__main__':
         header = {'content-type': 'text/json'}
         r = requests.post(url, headers=header, data=json.dumps(d))
         print r.text
+    
+    elif method == 'clubs':
+        '''
+        post a json file containing the mapping of club code to full name
+        python ToolboxClient.py clubs clubcodes.json
+        '''
+        put_clubcodetable(sys.argv[2])
         
     elif method == 'tcp':
         '''

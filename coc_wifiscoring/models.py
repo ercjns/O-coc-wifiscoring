@@ -48,6 +48,16 @@ class Club(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     clubshort = db.Column(db.String)
     clubfull = db.Column(db.String)
+    
+    def __init__(self, short, long):
+        self.clubshort = short
+        self.clubfull = long
+
+    def __repr__(self):
+        return '<Club {:s} - {:s}>'.format(self.clubshort, self.clubfull)
+
+    def __str__(self):
+        return '{:s} ({:s})'.format(self.clubfull, self.clubshort)
 
 
 class Result(db.Model):

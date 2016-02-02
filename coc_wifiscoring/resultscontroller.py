@@ -1,12 +1,13 @@
 from flask import Blueprint, request, abort, render_template
 
-from .models import db, Result
+from .models import db, Result, Club
 from OutilsParse import getRunners
+import ETL as ETL
 
 
 resultsAPI = Blueprint("resultsAPI", __name__)
 
-@resultsAPI.route('/', methods=['GET', 'POST'])
+@resultsAPI.route('/results', methods=['GET', 'POST'])
 def results():
     if request.method == 'GET':
         #try:
@@ -29,6 +30,7 @@ def results():
             return 'GetRunners failed. :(', 500
 
         #wipe the database
+        #TODO: implement a primary/secondary db swap scheme
         try:
             Result.query.delete()
         except:
@@ -51,11 +53,13 @@ def results():
         # except:
             # return 'Problem adding rows to the db', 500
 
-        #re-calculate everything (?) - no this happens at query time? nope, need some to happen now
+        #calculate places
         try:
             _assignPositions()
         except:
             return 'Problem assigning positions', 500
+            
+        #TODO: calculate points and team scores
 
         return 'Refreshed', 200
 
@@ -77,7 +81,43 @@ def _assignPositions():
         db.session.commit()
     return
 
-@resultsAPI.route('/clubs', methods=['GET', 'POST'])
+@resultsAPI.route('/clubs', methods=['GET', 'PUT', 'DELETE'])
 def clubs():
-    """do stuff here to upload club code to club name reference, and provide some reasbable view"""
-    pass
+    """ Mapping of Club/Team code to full name
+    
+    GET returns a view of all clubs
+    PUT accepts a list of clubs and will update data
+    DELETE will clear the entire collection
+    """
+    
+    if request.method == 'GET':
+        q = Club.query.all()
+        return render_template('basiclist.html', items=q)
+
+    elif request.method == 'PUT':
+        f = request.files[request.files.keys()[0]]
+        clubs = ETL.clubcodejson(f)
+        for club in clubs:
+            abbr = club['abbr']
+            full = club['name']
+            q = Club.query.filter_by(clubshort=abbr).all()
+            
+            if len(q) > 2:
+                return 'Internal Error: Multiple clubs found for ' + abbr, 500
+                
+            if not q:
+                new_club = Club(abbr, full)
+                db.session.add(new_club)
+                
+            elif q:
+                existing_club = q[0]
+                if existing_club.clubfull != full:
+                    existing_club.clubfull = full
+                    db.session.add(existing_club)
+                    
+        db.session.commit()
+        return 'Clubs table updated', 200
+
+    elif request.method == 'DELETE':
+        pass
+        
