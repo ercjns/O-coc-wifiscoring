@@ -1,6 +1,6 @@
 from flask import Blueprint, request, abort, render_template
 
-from .models import db, Result, RemotePunch, Club
+from .models import db, Result, RemotePunch, Club, Cclass
 
 frontend = Blueprint("frontend", __name__)
 
@@ -16,7 +16,8 @@ def cclass_results(cclass):
         cd = {}
         for club in c:
             cd[club.clubshort] = club.clubfull
-        return render_template('resulttable.html', cclass=cclass, items=q, clubs=cd)
+        cclassi = Cclass.query.filter_by(cclassshort=cclass).one()
+        return render_template('resulttable.html', cclass=cclassi.cclassfull, items=q, clubs=cd)
     else:
         return '404: Not found. Unknown class specified in the url', 404
 

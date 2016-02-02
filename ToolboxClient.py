@@ -39,6 +39,18 @@ def put_clubcodetable(file):
         r = requests.put(url, files=f)
     hosts.close()
     
+def put_cclasstable(file):
+    hosts = open("confighosts.txt")
+    while True:
+        host = hosts.readline().rstrip()
+        if not host: break
+        print("sending classes to " + host)
+        
+        url = host + '/api/classes'
+        f = {'file': open(file, 'r')}
+        r = requests.put(url, files=f)
+    hosts.close()
+    
 def poll_for_results(dir):
     lastUpdate = None
     while True:
@@ -125,6 +137,13 @@ if __name__ == '__main__':
         python ToolboxClient.py clubs clubcodes.json
         '''
         put_clubcodetable(sys.argv[2])
+        
+    elif method == 'cclass':
+        '''
+        post a json file containing the mapping of class code to full name
+        python ToolboxClient.py cclass cclasses.json
+        '''
+        put_cclasstable(sys.argv[2])
         
     elif method == 'tcp':
         '''

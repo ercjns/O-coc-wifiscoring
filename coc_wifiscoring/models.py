@@ -40,6 +40,18 @@ class Cclass(db.Model):
     cclassfull = db.Column(db.String)
     isPublic = db.Column(db.Boolean)
     isScored = db.Column(db.Boolean)
+    
+    def __init__(self, short, long, public, scored):
+        self.cclassshort = short
+        self.cclassfull = long
+        self.isPublic = public
+        self.isScored = scored
+
+    def __repr__(self):
+        return '<Course {:s} - {:s}>'.format(self.cclassshort, self.cclassfull)
+
+    def __str__(self):
+        return '{:s}'.format(self.cclassfull)
 
 
 class Club(db.Model):

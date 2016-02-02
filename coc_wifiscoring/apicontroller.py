@@ -1,13 +1,13 @@
 from flask import Blueprint, request, abort, render_template
 
-from .models import db, Result, Club
+from .models import db, Result, Club, Cclass
 from OutilsParse import getRunners
 import ETL as ETL
 
 
-resultsAPI = Blueprint("resultsAPI", __name__)
+API = Blueprint("resultsAPI", __name__)
 
-@resultsAPI.route('/results', methods=['GET', 'POST'])
+@API.route('/results', methods=['GET', 'POST'])
 def results():
     if request.method == 'GET':
         #try:
@@ -81,7 +81,7 @@ def _assignPositions():
         db.session.commit()
     return
 
-@resultsAPI.route('/clubs', methods=['GET', 'PUT', 'DELETE'])
+@API.route('/clubs', methods=['GET', 'PUT', 'DELETE'])
 def clubs():
     """ Mapping of Club/Team code to full name
     
@@ -121,3 +121,57 @@ def clubs():
     elif request.method == 'DELETE':
         pass
         
+
+@API.route('/classes', methods=['GET', 'PUT', 'DELETE'])
+def cclasses():
+    """ Mapping of class code to full name
+    
+    GET returns a view of all classes
+    PUT accepts a list of classes and will update data
+    DELETE will clear the entire collection
+    """
+    
+    if request.method == 'GET':
+        q = Cclass.query.all()
+        return render_template('basiclist.html', items=q)
+
+        
+    elif request.method == 'PUT':
+        f = request.files[request.files.keys()[0]]
+        cclasses = ETL.cclassjson(f)
+        
+        for cclass in cclasses:
+            abbr = cclass['abbr']
+            full = cclass['name']
+            public = bool(cclass['public'])
+            scored = bool(cclass['scored'])
+            
+            q = Cclass.query.filter_by(cclassshort=abbr).all()
+            
+            if len(q) > 2:
+                return 'Internal Error: Multiple clubs found for ' + abbr, 500
+                
+            if not q:
+                new_cclass = Cclass(abbr, full, public, scored)
+                db.session.add(new_cclass)
+                
+            elif q:
+                existing_cclass = q[0]
+                edit = False
+                if existing_cclass.cclassfull != full:
+                    existing_cclass.cclassfull = full
+                    edit = True
+                if existing_cclass.isPublic != public:
+                    existing_cclass.isPublic = public
+                    edit = True
+                if existing_cclass.isScored != scored:
+                    existing_cclass.isScored = scored
+                    edit = True
+                if edit:
+                    db.session.add(existing_cclass)
+                    
+        db.session.commit()
+        return 'Competition Class table updated', 200
+
+    elif request.method == 'DELETE':
+        pass
