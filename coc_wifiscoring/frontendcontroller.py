@@ -16,8 +16,8 @@ def cclass_results(cclass):
         cd = {}
         for club in c:
             cd[club.clubshort] = club.clubfull
-        cclassi = Cclass.query.filter_by(cclassshort=cclass).one()
-        return render_template('resulttable.html', cclass=cclassi.cclassfull, items=q, clubs=cd)
+        classinfo = Cclass.query.filter_by(cclassshort=cclass).one()
+        return render_template('resulttable.html', cclass=classinfo, items=q, clubs=cd)
     else:
         return '404: Not found. Unknown class specified in the url', 404
 

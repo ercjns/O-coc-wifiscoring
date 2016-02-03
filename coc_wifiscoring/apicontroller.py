@@ -60,6 +60,7 @@ def results():
             return 'Problem assigning positions', 500
             
         #TODO: calculate points and team scores
+        _assignScores('COC')
 
         return 'Refreshed', 200
 
@@ -75,11 +76,52 @@ def _assignPositions():
                 classresults[i].position = classresults[i-1].position
             else:
                 classresults[i].position = nextposition
-
             nextposition += 1
+            
         db.session.add_all(classresults)
         db.session.commit()
     return
+    
+def _assignScores(algo):
+    cclasses = db.session.query(Result.cclassshort.distinct()).all()
+    for c in cclasses:
+        if not Cclass.query.filter_by(cclassshort=c[0]).all()[0].isScored:
+            continue
+        
+        classresults = Result.query.filter_by(cclassshort=c[0]).order_by(Result.position).all()
+        
+        if algo is 'COC':
+            for r in classresults:
+                if r.position is -1:
+                    if r.status in ['DidNotFinish', 'MissingPunch', 'Disqualified']:
+                        r.score = 0
+                    else:
+                        r.score = None
+                elif r.position == 1:
+                    r.score = 100
+                elif r.position == 2:
+                    r.score = 95
+                elif r.position == 3:
+                    r.score = 92
+                else:
+                    r.score = 100 - 6 - int(r.position)
+
+        
+        elif algo is 'ISOC':
+            awt = sum([r.time for r in classresults if r.position <=3]) / 3.0
+            for r in classresults:
+                if r.status is 'OK':
+                    r.score = 60*r.time / awt
+                elif r.status in ['DidNotFinish', 'MissingPunch', 'Disqualified', 'Overtime']:
+                    #TODO: need faster awt of male and female classes here.
+                    r.score = 10 + 60*(3*60*60) / awt
+                else:
+                    r.score = None
+        
+        db.session.add_all(classresults)
+        db.session.commit()
+        
+        
 
 @API.route('/clubs', methods=['GET', 'PUT', 'DELETE'])
 def clubs():
