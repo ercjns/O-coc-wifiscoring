@@ -119,17 +119,16 @@ class TeamResult(db.Model):
     position = db.Column(db.Integer)
     score = db.Column(db.Integer)
     
-    def __init__(self, club, cclass, position, score):
-        self.clubshort = club
+    def __init__(self, cclass, club, score):
         self.cclassshort = cclass
-        self.position = position
+        self.clubshort = club
         self.score = score
     
     def __repr__(self):
         return '<TeamResult for {:s} in {:s}>'.format(self.clubshort, self.cclassshort)
         
     def __str__(self):
-        return 'Team {:s} in position {:i} with a score of {}'.format(self.clubshort, self.cclassshort, self.score)
+        return 'Team {} in position {} on {} with a score of {}'.format(self.clubshort, self.position, self.cclassshort, self.score)
     
 TeamMembers = db.Table('wifiscoring_teammembers', 
     db.Column('result_id', db.Integer, db.ForeignKey('wifiscoring_result.id')), 
