@@ -10,16 +10,17 @@ def home():
 
 @frontend.route('/results/<cclass>')
 def cclass_results(cclass):
-    if cclass in ['1', '3', '7', '8M', '8F', '8G'] or cclass in ['W1F', 'W1M', 'W2F', 'W2M', 'W3F', 'W4M', 'W5M', 'W6F', 'W6M']:
-        q = Result.query.filter_by(cclassshort=cclass).all()
-        c = Club.query.all()
-        cd = {}
-        for club in c:
-            cd[club.clubshort] = club.clubfull
-        classinfo = Cclass.query.filter_by(cclassshort=cclass).one()
-        return render_template('resulttable.html', cclass=classinfo, items=q, clubs=cd)
-    else:
-        return '404: Not found. Unknown class specified in the url', 404
+    knownclass = Cclass.query.all()
+    if cclass not in [c.cclassshort for c in knownclass]:
+        return '404: Not found. Unknown competition class: {}'.format(cclass), 404
+    q = Result.query.filter_by(cclassshort=cclass).all()
+    c = Club.query.all()
+    cd = {}
+    for club in c:
+        cd[club.clubshort] = club.clubfull
+    classinfo = Cclass.query.filter_by(cclassshort=cclass).one()
+    return render_template('resulttable.html', cclass=classinfo, items=q, clubs=cd)
+
 
 @frontend.route('/results/')
 def all_results():
