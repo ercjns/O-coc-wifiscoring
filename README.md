@@ -36,6 +36,7 @@ By including telemetry on the start box, organizers can know how many individual
 This work is licensed under the [Creative Commons BY-NC-SA 4.0](http://creativecommons.org/licenses/by-nc-sa/4.0/) license. 
 jQuery licensed by jQuery Foundation under the [MIT license here](https://jquery.org/license/)
 socketio licensed by Guillermo Rauch under the [MIT license here](https://github.com/socketio/socket.io-client/blob/master/LICENSE)
+sireader.py licensed by Gaudenz Steinlin and Simon Harston under the [GNU GPLv3 license here](http://www.gnu.org/licenses/gpl.html)
 
 
 ## Thanks!

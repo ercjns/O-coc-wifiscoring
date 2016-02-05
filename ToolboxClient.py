@@ -11,6 +11,7 @@ import time
 import requests
 import json
 import socket
+from sireader import SIReaderControl
 
 def post_iof3_resultList(file):
     hosts = open("confighosts.txt")
@@ -68,6 +69,27 @@ def poll_for_results(dir):
         print "sleeping, brb"
         for i in range(60):
             time.sleep(1)
+    return
+
+def relay_wibox():
+    WiBox1 = 'socket://192.168.103.201:10001'
+    reader = SIReaderControl(port=WiBox1)
+    with open('confighosts.txt', 'r') as f:
+        hosts = []
+        for line in f:
+            hosts += line.rstrip()
+
+    while True:
+        punches = reader.poll_punch()
+        if len(punches) > 0:
+            for p in punches:
+                punch = {'station': p[0], 'sicard': p[1], 'time': p[2]}
+                header = {'content-type': 'text/json'}
+                for h in hosts:
+                    url = host + '/telemetry/' + punch['station']
+                    r.requests.post(url, headers=header, data=json.dumps(d))
+                    print 'Sent {} to {}'.format(punch, host)
+    return
             
 def watch_TCP(targetsocket):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -115,6 +137,13 @@ if __name__ == '__main__':
         usage: python ToolboxClient.py monitor ./results_go_here 
         '''
         poll_for_results(sys.argv[2])
+        
+    elif method == 'wibox-relay':
+        '''
+        relay data incoming from a given wi-box on TCP to the host via a POST request
+        usage: python ToolboxClient.py wibox-relay
+        '''
+        relay_wibox()
         
     elif method == 'telemetry':
         ''' 
