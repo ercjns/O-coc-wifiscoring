@@ -83,7 +83,7 @@ class Result(db.Model):
     time = db.Column(db.Integer)
     status = db.Column(db.String)
     position = db.Column(db.Integer)
-    score = db.Column(db.Integer)
+    score = db.Column(db.Float)
     isTeamScorer = db.Column(db.Boolean)
 
     def __init__(self, result_dict):
@@ -117,7 +117,7 @@ class TeamResult(db.Model):
     clubshort = db.Column(db.String)
     cclassshort = db.Column(db.String)
     position = db.Column(db.Integer)
-    score = db.Column(db.Integer)
+    score = db.Column(db.Float)
     
     def __init__(self, cclass, club, score):
         self.cclassshort = cclass

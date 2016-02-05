@@ -52,13 +52,13 @@ def results():
 
         try:
             _assignPositions()
-            _assignScores('COC')
+            _assignScores('ISOC')
             
         except:
             return 'Problem assigning positions or scores', 500
         
-        _assignTeamScores('WIOL')
-        _assignTeamPositions('WIOL')
+        _assignTeamScores('ISOC')
+        _assignTeamPositions('ISOC')
         #TODO: calculate team scores
         return 'Refreshed', 200
 
@@ -107,7 +107,7 @@ def _assignScores(algo):
         elif algo is 'ISOC':
             awt = sum([r.time for r in classresults if r.position <=3]) / 3.0
             for r in classresults:
-                if r.status is 'OK':
+                if r.status in ['OK']:
                     r.score = 60*r.time / awt
                 elif r.status in ['DidNotFinish', 'MissingPunch', 'Disqualified', 'Overtime']:
                     #TODO: need faster awt of male and female classes here.
@@ -153,6 +153,42 @@ def _assignTeamScores(algo):
                 team = TeamResult(c, club, score)
                 db.session.add(team)
                 db.session.commit()
+                
+    elif algo is 'ISOC':
+        #IS_classes = ['ISVM', 'ISVF', 'ISJVM', 'ISJVF', 'ISIM', 'ISIF', 'ISPM', 'ISPF']
+        #IS_team_classes = ['ISV', 'ISJV', 'ISI']
+        # TODO: determine how meet classes will be set up. Faking with WIOL for now.
+        IS_team_classes = {'ISV':['W6M', 'W6F'], 'JV':['W3F','W4M', 'W5M'], 'ISI':['W2F','W2M']}
+        for IS_team_class, IS_ind_classes in IS_team_classes.items():
+            classresults = []
+            for c in IS_ind_classes:
+                classresults += Result.query.filter_by(cclassshort=c).all()
+            classteams = set([r.clubshort for r in classresults])
+            
+            for team in classteams:
+                team_members = [r for r in classresults if (r.clubshort == team)]
+                team_members.sort(key=lambda x: x.score)
+                score = 0
+                for i in range(len(team_members)):
+                    if i < 3:
+                        try:
+                            score += team_members[i].score
+                            team_members[i].isTeamScorer = True
+                        except TypeError:
+                            score += 1000 # for a "none" score - flag something wrong
+                            team_members[i].isTeamScorer = False
+                    else:
+                        team_members[i].isTeamScorer = False
+                        
+                if len(team_members) < 3:
+                    score += 5000 # for a team smaller than 3 - flag something wrong
+                        
+                team_result = TeamResult(IS_team_class, team, score)
+                
+                db.session.add_all(team_members)
+                db.session.add(team_result)
+                db.session.commit()
+
     return
 
 def _assignTeamPositions(algo):
@@ -181,7 +217,6 @@ def _assignTeamPositions(algo):
                                                        isTeamScorer=True) \
                                                        .order_by(Result.score.desc()) \
                                                        .all()
-
                     for j in range(3):
                         try:
                             tiebreakerA = a_scorers[j].score
@@ -202,11 +237,29 @@ def _assignTeamPositions(algo):
                             continue
                     if b.position == None: 
                         b.position = a.position
-
                 nextposition += 1
 
             db.session.add_all(classteams)
             db.session.commit()
+            
+    elif algo is 'ISOC':
+        TeamResults = TeamResult.query.all()
+        for c in set([team.cclassshort for team in TeamResults]):
+            category_teams = [t for t in TeamResults if t.cclassshort == c]
+            category_teams.sort(key=lambda x: x.score)
+            nextposition = 1
+            for i in range(len(category_teams)):
+                if i == 0:
+                    category_teams[i].position = nextposition
+                elif category_teams[i].score == category_teams[i-1].score:
+                    category_teams[i].position = category_teams[i-1].position
+                else:
+                    category_teams[i].position = nextposition
+                nextposition += 1
+            
+            db.session.add_all(category_teams)
+            db.session.commit()
+
     return
 
 @API.route('/teams', methods=['GET'])
