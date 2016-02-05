@@ -1,0 +1,20 @@
+{"classes": [
+
+{"abbr": "1", "name": "Beginner", "course": 1, "public": true, "scored": false},
+{"abbr": "3", "name": "Intermediate", "course": 3, "public": true, "scored": false},
+{"abbr": "7", "name": "Short Advanced", "course": 7, "public": true, "scored": false},
+{"abbr": "8M", "name": "Long Advanced Men", "course": 8, "public": true, "scored": true},
+{"abbr": "8F", "name": "Long Advanced Women", "course": 8, "public": true, "scored": true},
+{"abbr": "8G", "name": "Long Advanced Groups", "course": 8, "public": true, "scored": false},
+
+{"abbr": "W1M", "name": "Elementary School Boys", "course": 1, "public": false, "scored": false},
+{"abbr": "W1F", "name": "Elementary School Girls", "course": 1, "public": false, "scored": false},
+{"abbr": "W2M", "name": "Middle School Boys", "course": 2, "public": false, "scored": true},
+{"abbr": "W2F", "name": "Middle School Girls", "course": 2, "public": false, "scored": true},
+{"abbr": "W3F", "name": "Junior Varsity Girls", "course": 3, "public": false, "scored": true},
+{"abbr": "W4M", "name": "Junior Varsity Boys North", "course": 4, "public": false, "scored": true},
+{"abbr": "W5M", "name": "Junior Varsity Boys South", "course": 5, "public": false, "scored": true},
+{"abbr": "W6F", "name": "Varsity Girls", "course": 6, "public": false, "scored": true},
+{"abbr": "W6M", "name": "Varsity Boys", "course": 6, "public": false, "scored": true}
+
+]}

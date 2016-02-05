@@ -174,6 +174,14 @@ if __name__ == '__main__':
         '''
         put_cclasstable(sys.argv[2])
         
+    elif method == 'prep-db':
+        '''
+        prep the database with classes, teams, and anything else...
+        python ToolboxClient.py prep-db
+        '''
+        put_clubcodetable('clubcodes.json')
+        put_cclasstable('classcodes.json')
+        
     elif method == 'tcp':
         '''
         watch a port for incoming data
