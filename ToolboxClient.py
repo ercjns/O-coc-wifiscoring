@@ -77,18 +77,20 @@ def relay_wibox():
     with open('confighosts.txt', 'r') as f:
         hosts = []
         for line in f:
-            hosts += line.rstrip()
+            hosts.append(line.rstrip())
 
     while True:
         punches = reader.poll_punch()
         if len(punches) > 0:
             for p in punches:
-                punch = {'station': p[0], 'sicard': p[1], 'time': p[2]}
+                punch = {'station': p[0], 'sicard': p[1], 'time': p[2].strftime('%H:%M:%S')}
+                print punch
                 header = {'content-type': 'text/json'}
                 for h in hosts:
-                    url = host + '/telemetry/' + punch['station']
-                    r.requests.post(url, headers=header, data=json.dumps(d))
-                    print 'Sent {} to {}'.format(punch, host)
+                    print 'Sending to ', h
+                    url = h + '/telemetry/' + str(punch['station'])
+                    r = requests.post(url, headers=header, data=json.dumps(punch))
+                    print 'Sent {} to {}'.format(punch, h)
     return
             
 def watch_TCP(targetsocket):
