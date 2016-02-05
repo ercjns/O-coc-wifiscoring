@@ -24,8 +24,7 @@ def record_punch(control):
         punch = RemotePunch(body['station'], body['sicard'], time(int(h),int(m),int(s)))
         db.session.add(punch)
         db.session.commit()
-        punchstrtime = str(int(h)) + ":" + str(int(m)) + ":" + str(int(s))
-        socketio.emit('new punch', {'station': body['station'], 'sicard':body['sicard'], 'time':punchstrtime})
+        socketio.emit('new punch', {'station': body['station'], 'sicard':body['sicard'], 'time':body['time']})
         return str(punch), 200
     except:
         abort(500)
