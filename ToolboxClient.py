@@ -138,10 +138,10 @@ if __name__ == '__main__':
         '''
         put_clubcodetable(sys.argv[2])
         
-    elif method == 'cclass':
+    elif method == 'classes':
         '''
         post a json file containing the mapping of class code to full name
-        python ToolboxClient.py cclass cclasses.json
+        python ToolboxClient.py classes classcodes.json
         '''
         put_cclasstable(sys.argv[2])
         

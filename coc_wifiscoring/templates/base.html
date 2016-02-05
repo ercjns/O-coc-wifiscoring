@@ -12,13 +12,16 @@
 <div class="container-fluid">
 	<header class="row">
 		<div class="col-xs-12 col-sm-6 col-md-4">
-		<img id="headlogo" src="{{ url_for('static', filename='COC-logo-diamond-red-large.png') }}">
+		<a href="{{ url_for('frontend.home') }}">
+			<img id="headlogo" src="{{ url_for('static', filename='COC-logo-diamond-red-large.png') }}">
+		</a>
 		</div>
 		<div class="col-xs-12 col-sm-6 col-md-8">
-			<ul class="list-unstyled">
-				<li><a href="{{ url_for('frontend.home') }}" class="btn btn-default" role="button">Today's Results</a></li>
-				<!-- <li><a href="{{ url_for('frontend.home') }}" class="btn btn-default" role="button">Other Info</a></li> -->
-			<ul>
+			 <ul class="list-unstyled">
+				<li><a href="{{ url_for('frontend.home') }}" class="btn btn-default" role="button">Individual Results</a></li>
+				<li><a href="{{ url_for('frontend.team_class_select') }}" class="btn btn-default" role="button">Team Results</a></li> 
+			<ul> 
+			
 		</div>
 	</header>
 

@@ -83,7 +83,7 @@ class Result(db.Model):
     time = db.Column(db.Integer)
     status = db.Column(db.String)
     position = db.Column(db.Integer)
-    score = db.Column(db.Integer)
+    score = db.Column(db.Float)
     isTeamScorer = db.Column(db.Boolean)
 
     def __init__(self, result_dict):
@@ -109,4 +109,28 @@ class Result(db.Model):
         if len(s) < 2:
             s = "0" + s
         return m + ":" + s
+        
+class TeamResult(db.Model):
+    __tablename__ = 'wifiscoring_teamresult'
     
+    id = db.Column(db.Integer, primary_key=True)
+    clubshort = db.Column(db.String)
+    cclassshort = db.Column(db.String)
+    position = db.Column(db.Integer)
+    score = db.Column(db.Float)
+    
+    def __init__(self, cclass, club, score):
+        self.cclassshort = cclass
+        self.clubshort = club
+        self.score = score
+    
+    def __repr__(self):
+        return '<TeamResult for {:s} in {:s}>'.format(self.clubshort, self.cclassshort)
+        
+    def __str__(self):
+        return 'Team {} in position {} on {} with a score of {}'.format(self.clubshort, self.position, self.cclassshort, self.score)
+    
+TeamMembers = db.Table('wifiscoring_teammembers', 
+    db.Column('result_id', db.Integer, db.ForeignKey('wifiscoring_result.id')), 
+    db.Column('team_id', db.Integer, db.ForeignKey('wifiscoring_teamresult.id'))
+)
