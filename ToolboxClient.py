@@ -92,35 +92,6 @@ def relay_wibox():
                     r = requests.post(url, headers=header, data=json.dumps(punch))
                     print 'Sent {} to {}'.format(punch, h)
     return
-            
-def watch_TCP(targetsocket):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    
-    sock.bind(('', targetsocket))
-    sock.listen(1)
-    
-    try:
-        while True:
-            sys.stderr.write("Waiting for connection on {}...\n".format(targetsocket))
-            client_socket, addr = sock.accept()
-            sys.stderr.write('Connected by {}\n'.format(addr))
-            try:
-                while True:
-                    data = client_socket.recv(1024)
-                    if not data:
-                        sys.stderr.write('no data')
-                        break
-                    sys.stderr.write('received "%s"'.format(data))
-                    #DO SOMETHING WITH THE DATA HERE!
-            finally:
-                sys.stderr.write('Disconnected')
-                client_socket.close()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        print('exiting now')
-    return
     
 
 if __name__ == '__main__':
@@ -183,11 +154,4 @@ if __name__ == '__main__':
         '''
         put_clubcodetable('clubcodes.json')
         put_cclasstable('classcodes.json')
-        
-    elif method == 'tcp':
-        '''
-        watch a port for incoming data
-        python ToolboxClient.py tcp 15001
-        '''
-        watch_TCP(int(sys.argv[2]))
 
