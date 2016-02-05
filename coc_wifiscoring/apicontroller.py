@@ -52,13 +52,13 @@ def results():
 
         try:
             _assignPositions()
-            _assignScores('ISOC')
+            _assignScores('COC')
             
         except:
             return 'Problem assigning positions or scores', 500
         
-        _assignTeamScores('ISOC')
-        _assignTeamPositions('ISOC')
+        _assignTeamScores('WIOL')
+        _assignTeamPositions('WIOL')
         #TODO: calculate team scores
         return 'Refreshed', 200
 

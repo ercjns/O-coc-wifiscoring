@@ -1,12 +1,25 @@
 from flask import Blueprint, request, abort, render_template
 
-from .models import db, Result, RemotePunch, Club, Cclass
+from .models import db, Result, RemotePunch, Club, Cclass, TeamResult
 
 frontend = Blueprint("frontend", __name__)
 
 @frontend.route('/')
 def home():
     return render_template('COCwifihome.html')
+    
+@frontend.route('/results/teams')
+def team_class_select():
+    return render_template('TeamResultClassSelection.html')
+    
+@frontend.route('/results/teams/<cclass>')
+def cclass_team_results(cclass):
+    teamdata = TeamResult.query.filter_by(cclassshort=cclass).order_by(TeamResult.position)
+    teamnames = {}
+    c = Club.query.all()
+    for club in c:
+        teamnames[club.clubshort] = club.clubfull
+    return render_template('TeamResultTable.html', cclass=cclass, teams=teamdata, clubs=teamnames)
 
 @frontend.route('/results/<cclass>')
 def cclass_results(cclass):
