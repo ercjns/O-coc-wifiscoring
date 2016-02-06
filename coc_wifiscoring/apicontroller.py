@@ -1,6 +1,6 @@
 from flask import Blueprint, request, abort, render_template
 
-from .models import db, Result, Club, Cclass, TeamResult
+from .models import db, Result, Club, Cclass, TeamResult, Entry
 from OutilsParse import getRunners
 import ETL as ETL
 
@@ -362,3 +362,24 @@ def cclasses():
 
     elif request.method == 'DELETE':
         pass
+        
+@API.route('/entries', methods=['GET','PUT'])
+def entries():
+    """ Name to class and SIcard mapping
+    
+    GET returns evertyhing
+    PUT accepts an iof3 XML entries list and updates data
+    DELETE clears the collection
+    """
+    if request.method == 'GET':
+        q = Entry.query.all()
+        return render_template('basiclist.html', items=q)
+        
+    if request.method == 'PUT':
+        request.files[request.files.keys()[0]].save('entries.xml')
+        entries = ETL.entriesXML3('entries.xml')
+        for e in entries:
+            new_entry = Entry(e['name'], e['cclass'], e['club'], e['sicard'])
+            db.session.add(new_entry)
+        db.session.commit()
+        return 'Updated Entries', 200

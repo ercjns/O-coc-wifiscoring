@@ -11,6 +11,7 @@ import time
 import requests
 import json
 import socket
+from sireader import SIReaderControl
 
 def post_iof3_resultList(file):
     hosts = open("confighosts.txt")
@@ -51,6 +52,17 @@ def put_cclasstable(file):
         r = requests.put(url, files=f)
     hosts.close()
     
+def put_entrylist(file):
+    with open("confighosts.txt", "r") as hosts:
+        while True:
+            host = hosts.readline().rstrip()
+            if not host: break
+            print("sending classes to " + host)
+            
+            url = host + '/api/entries'
+            f = {'file': open(file, 'r')}
+            r = requests.put(url, files=f)
+    
 def poll_for_results(dir):
     lastUpdate = None
     while True:
@@ -68,34 +80,28 @@ def poll_for_results(dir):
         print "sleeping, brb"
         for i in range(60):
             time.sleep(1)
-            
-def watch_TCP(targetsocket):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    
-    sock.bind(('', targetsocket))
-    sock.listen(1)
-    
-    try:
-        while True:
-            sys.stderr.write("Waiting for connection on {}...\n".format(targetsocket))
-            client_socket, addr = sock.accept()
-            sys.stderr.write('Connected by {}\n'.format(addr))
-            try:
-                while True:
-                    data = client_socket.recv(1024)
-                    if not data:
-                        sys.stderr.write('no data')
-                        break
-                    sys.stderr.write('received "%s"'.format(data))
-                    #DO SOMETHING WITH THE DATA HERE!
-            finally:
-                sys.stderr.write('Disconnected')
-                client_socket.close()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        print('exiting now')
+    return
+
+def relay_wibox():
+    WiBox1 = 'socket://192.168.103.201:10001'
+    reader = SIReaderControl(port=WiBox1)
+    with open('confighosts.txt', 'r') as f:
+        hosts = []
+        for line in f:
+            hosts.append(line.rstrip())
+
+    while True:
+        punches = reader.poll_punch()
+        if len(punches) > 0:
+            for p in punches:
+                punch = {'station': p[0], 'sicard': p[1], 'time': p[2].strftime('%H:%M:%S')}
+                print punch
+                header = {'content-type': 'text/json'}
+                for h in hosts:
+                    print 'Sending to ', h
+                    url = h + '/telemetry/' + str(punch['station'])
+                    r = requests.post(url, headers=header, data=json.dumps(punch))
+                    print 'Sent {} to {}'.format(punch, h)
     return
     
 
@@ -115,6 +121,13 @@ if __name__ == '__main__':
         usage: python ToolboxClient.py monitor ./results_go_here 
         '''
         poll_for_results(sys.argv[2])
+        
+    elif method == 'wibox-relay':
+        '''
+        relay data incoming from a given wi-box on TCP to the host via a POST request
+        usage: python ToolboxClient.py wibox-relay
+        '''
+        relay_wibox()
         
     elif method == 'telemetry':
         ''' 
@@ -145,10 +158,18 @@ if __name__ == '__main__':
         '''
         put_cclasstable(sys.argv[2])
         
-    elif method == 'tcp':
+    elif method == 'entries':
         '''
-        watch a port for incoming data
-        python ToolboxClient.py tcp 15001
+        post a xml file containing the entries for the meet
+        python ToolboxClient.py entries meetentries.xml
         '''
-        watch_TCP(int(sys.argv[2]))
+        put_entrylist(sys.argv[2])
+        
+    elif method == 'prep-db':
+        '''
+        prep the database with classes, teams, and anything else...
+        python ToolboxClient.py prep-db
+        '''
+        put_clubcodetable('clubcodes.json')
+        put_cclasstable('classcodes.json')
 

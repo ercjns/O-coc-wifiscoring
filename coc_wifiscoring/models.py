@@ -30,6 +30,18 @@ class Entry(db.Model):
     name = db.Column(db.String)
     cclassshort = db.Column(db.String)
     clubshort = db.Column(db.String)
+    
+    def __init__(self, name, cclassshort, club=None, sicard=None):
+        self.name = name
+        self.cclassshort = cclassshort
+        self.club = club
+        self.sicard = sicard
+
+    def __repr__(self):
+        return '<Entry {:s} on {:s}>'.format(self.name, self.cclassshort)
+
+    def __str__(self):
+        return '{:s}'.format(self.name)
 
 
 class Cclass(db.Model):
