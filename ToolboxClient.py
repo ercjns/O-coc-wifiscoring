@@ -52,6 +52,17 @@ def put_cclasstable(file):
         r = requests.put(url, files=f)
     hosts.close()
     
+def put_entrylist(file):
+    with open("confighosts.txt", "r") as hosts:
+        while True:
+            host = hosts.readline().rstrip()
+            if not host: break
+            print("sending classes to " + host)
+            
+            url = host + '/api/entries'
+            f = {'file': open(file, 'r')}
+            r = requests.put(url, files=f)
+    
 def poll_for_results(dir):
     lastUpdate = None
     while True:
@@ -146,6 +157,13 @@ if __name__ == '__main__':
         python ToolboxClient.py classes classcodes.json
         '''
         put_cclasstable(sys.argv[2])
+        
+    elif method == 'entries':
+        '''
+        post a xml file containing the entries for the meet
+        python ToolboxClient.py entries meetentries.xml
+        '''
+        put_entrylist(sys.argv[2])
         
     elif method == 'prep-db':
         '''
