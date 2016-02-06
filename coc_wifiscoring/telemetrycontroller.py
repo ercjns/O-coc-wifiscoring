@@ -10,7 +10,8 @@ telemetry = Blueprint("telemetry", __name__)
 @telemetry.route('/<int:control>', methods=['GET'])
 def get_punches(control):
     try:
-        punches = RemotePunch.query.filter_by(station=control).all()
+        punches = RemotePunch.query.filter_by(station=control).order_by(RemotePunch.time).all()
+        punches.reverse()
         silookup = {}
         entries = Entry.query.all()
         for e in entries:

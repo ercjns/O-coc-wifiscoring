@@ -9,7 +9,7 @@
         socket.emit('my event', {data: 'I\'m connected!'});
     });
     socket.on('new punch', function(data) {
-        $('#punchesTable tr:last').after('<tr><td>' + 'new' + '</td><td>' + data.time + '</td><td>' + data.sicard + '</td><td>' + data.name + '</td></tr>');
+        $('#punchesTable tr:first').after('<tr><td>' + 'new' + '</td><td>' + data.time + '</td><td>' + data.sicard + '</td><td>' + data.name + '</td></tr>');
         console.log('new punch:', data)
     });
 </script>
