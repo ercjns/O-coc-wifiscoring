@@ -1,4 +1,5 @@
 beautifulsoup4==4.4.1
+eventlet==0.18.4
 Flask==0.10.1
 Flask-SocketIO==1.2
 Flask-SQLAlchemy==2.1
@@ -6,6 +7,7 @@ itsdangerous==0.24
 Jinja2==2.8
 lxml==3.4.0
 MarkupSafe==0.23
+psycopg2==2.6.1
 python-engineio==0.8.5
 python-socketio==0.8.2
 requests==2.9.1
