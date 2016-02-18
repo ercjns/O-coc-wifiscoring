@@ -8,4 +8,4 @@ if __name__ == "__main__":
     # context right now, we will instead pass in the configured application
     # into our `create_all` call.
     db.create_all(app=app)
-    socketio.run(app, port=config.PORT)
+    socketio.run(app, host=0.0.0.0, port=config.PORT)
