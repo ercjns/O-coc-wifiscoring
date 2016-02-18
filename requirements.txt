@@ -1,4 +1,5 @@
 beautifulsoup4==4.4.1
+eventlet==0.18.4
 Flask==0.10.1
 Flask-SocketIO==1.2
 Flask-SQLAlchemy==2.1
