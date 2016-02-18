@@ -14,7 +14,16 @@ header li {
 	height: auto;
 }
 
-td .right {
+tr.teamresult {
+	font-weight: bold;
+}
+
+tr.teammember { 
+	color: #222222;
+	font-style: italic;
+}
+
+td.right {
 	text-align: right;
 }
 

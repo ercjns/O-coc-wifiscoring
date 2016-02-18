@@ -19,7 +19,8 @@ def cclass_team_results(cclass):
     c = Club.query.all()
     for club in c:
         teamnames[club.clubshort] = club.clubfull
-    return render_template('TeamResultTable.html', cclass=cclass, teams=teamdata, clubs=teamnames)
+    teamscorers = Result.query.filter((Result.cclassshort.startswith(cclass))).filter_by(isTeamScorer=True).order_by(Result.clubshort, -Result.score).all()
+    return render_template('TeamResultTable.html', cclass=cclass, teams=teamdata, clubs=teamnames, members=teamscorers)
 
 @frontend.route('/results/<cclass>')
 def cclass_results(cclass):
