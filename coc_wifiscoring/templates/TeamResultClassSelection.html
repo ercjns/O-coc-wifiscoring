@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}List of Items{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<p>All results are preliminary. For changes or corrections, talk with meet staff.</p>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-md-4">
+		<h1>WIOL Team Results</h1>
+		<ul class="list-unstyled">
+		<li><a href="{{ url_for('frontend.cclass_team_results', cclass='W2') }}" class="btn btn-default btn-block">Middle School</a></li>
+		<li><a href="{{ url_for('frontend.cclass_team_results', cclass='W3F') }}" class="btn btn-default btn-block">Jr. Varsity Girls</a></li>
+		<li><a href="{{ url_for('frontend.cclass_team_results', cclass='W4M') }}" class="btn btn-default btn-block">Jr. Varsity Boys N</a></li>
+		<li><a href="{{ url_for('frontend.cclass_team_results', cclass='W5M') }}" class="btn btn-default btn-block">Jr. Varsity Boys S</a></li>
+		<li><a href="{{ url_for('frontend.cclass_team_results', cclass='W6F') }}" class="btn btn-default btn-block">Varsity Girls</a></li>
+		<li><a href="{{ url_for('frontend.cclass_team_results', cclass='W6M') }}" class="btn btn-default btn-block">Varsity Boys</a></li>
+		</ul>
+	</div>
+</div>
+
+{% endblock %}

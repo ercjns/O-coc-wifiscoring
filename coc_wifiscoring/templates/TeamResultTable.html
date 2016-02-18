@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Team Results for {{ cclass }}{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<h2>Team Results for {{ cclass }}:</h2>
+		<p>All results are preliminary. For changes or corrections, please talk with meet staff.</p>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-md-8">
+		<table class="table table-condensed table-striped" id="resultTable">
+		<th>#</th>
+		<th>Team</th>
+		<th>Score</th>
+		{% for t in teams %}
+		<tr>
+			<td>{{ t.position }}</td>
+			<td>{{ clubs[t.clubshort] }} ({{ t.clubshort }})</td>
+			<td>{{ t.score }}</td>
+		</tr>
+		{% endfor %}
+		</table>
+	</div>
+	<div class="col-xs-12 col-md-4">
+		<h4>Team Scoring (WIOL):</h4>
+		<p>The score of the fastest three finishers from a given school are summed to arrive at the team score. Ties are broken by comparing results of these three finishers head to head, starting with the highest score.
+	</div>
+</div>
+
+<script src="{{ url_for('static', filename='filter.js') }}"></script>
+
+{% endblock %}

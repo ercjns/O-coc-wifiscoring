@@ -1,0 +1,40 @@
+header {
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+header li {
+	display: inline-block;
+	padding: 5px;
+}
+
+#headlogo {
+	width: 100%;
+	max-width: 300px;
+	height: auto;
+}
+
+td .right {
+	text-align: right;
+}
+
+.center {
+	text-align: center;
+}
+
+.foot {
+	background-color: #222;
+	margin-top: 50px;
+	padding-top: 20px;
+}
+
+footer p {
+	color: white;
+}
+
+#footlogo {
+	width: 95%;
+	max-width: 500px;
+	height: auto;
+}
+
