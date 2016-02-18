@@ -5,7 +5,7 @@ _cwd = dirname(abspath(__file__))
 
 DEBUG = True
 
-PORT = 80 if environ.get('PORT') is None else environ['PORT']
+PORT = 80 if environ.get('PORT') is None else int(environ['PORT'])
 
 SECRET_KEY = 'this-is-a-poor-place-to-store-my-secret-key'
 if environ.get('DATABASE_URL') is None:
