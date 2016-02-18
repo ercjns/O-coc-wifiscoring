@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Awards{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<h2>Individual Award Winners</h2>
+	</div>
+</div>
+
+
+{% for c in indvawards %}
+<div class="row">
+	<div class="col-xs-12 col-md-8">
+		<h4> {{ c.cclassfull }} </h4>
+		<table class="table table-condensed table-striped">
+		<th width="75px">Place</th>
+		<th width="150px">Time</th>
+		<th width="300px">Name</th>
+		<th width="300px">Club / School</th>
+		{% for i in c.winners %}
+		<tr>
+			<td>{{ i.position }}</td>
+			<td>{{ i.timetommmss() }}</td>
+			<td>{{ i.name }} ({{ i.clubshort }})</td>
+			<td>{{ clubs[i.clubshort] }}</td>
+		</tr>
+		{% endfor %}
+		</table>
+	</div>
+</div>
+{% endfor %}
+
+
+<div class="row">
+	<div class="col-xs-12">
+		<h2>Team Award Winners</h2>
+	</div>
+</div>
+
+
+{% for g in teamawards %}
+<div class="row">
+	<div class="col-xs-12 col-md-8">
+		<h4> {{ g.cclassfull }} Teams </h4>
+		<table class="table table-condensed table-striped">
+		<th width="75px">Place</th>
+		<th width="150px">Score</th>
+		<th width="300px">School</th>
+		{% for t in g.winners %}
+		<tr>
+			<td>{{ t.position }}</td>
+			<td>{{ t.score }}</td>
+			<td>{{ clubs[t.clubshort] }} ({{ t.clubshort }})</td>
+		</tr>
+		{% endfor %}
+		</table>
+	</div>
+</div>
+{% endfor %}
+
+
+
+
+{% endblock %}
