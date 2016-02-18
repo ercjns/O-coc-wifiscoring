@@ -2,6 +2,8 @@ from flask import Blueprint, request, abort, render_template
 
 from .models import db, Result, RemotePunch, Club, Cclass, TeamResult
 
+import copy
+
 frontend = Blueprint("frontend", __name__)
 
 @frontend.route('/')
@@ -42,6 +44,40 @@ def cclass_results(cclass):
 def all_results():
     q = Result.query.all()
     return render_template('allresults.html', items=q)
+    
+@frontend.route('/awards/')
+def awards():
+    individualwinners = Result.query.filter(Result.position>0, Result.position<4).order_by(Result.position).all()
+    scoredclasses = Cclass.query.filter_by(isScored=True).all()
+    individualclasses = copy.deepcopy(scoredclasses)
+    
+    empties = []
+    for ic in individualclasses:
+        ic.winners = [i for i in individualwinners if i.cclassshort == ic.cclassshort]
+        if ic.winners == []:
+            empties.append(ic)
+    for ic in empties:
+        individualclasses.pop(individualclasses.index(ic))
+    individualclasses.sort(key=lambda x: x.cclassshort)
+    
+    teamwinners = TeamResult.query.filter(TeamResult.position>0, TeamResult.position<4).order_by(TeamResult.position).all()
+    teamclasses = copy.deepcopy(scoredclasses)
+
+    empties = []
+    for tc in teamclasses:
+        tc.winners = [t for t in teamwinners if t.cclassshort == tc.cclassshort]
+        if tc.winners == []:
+            empties.append(tc)
+    for tc in empties:
+        teamclasses.pop(teamclasses.index(tc))
+    teamclasses.sort(key=lambda x: x.cclassshort)
+
+    c = Club.query.all()
+    cd = {}
+    for club in c:
+        cd[club.clubshort] = club.clubfull
+
+    return render_template('AwardsTable.html', indvawards=individualclasses, teamawards=teamclasses, clubs=cd)
 
 @frontend.route('/meetstats/')
 def meet_stats():
