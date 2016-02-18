@@ -1,27 +1,37 @@
 {% extends "base.html" %}
 
-{% block title %}Team Results for {{ cclass }}{% endblock %}
+{% block title %}Team Results for {{ cclass.cclassfull }}{% endblock %}
 
 {% block content %}
 <div class="row">
 	<div class="col-xs-12">
-		<h2>Team Results for {{ cclass }}:</h2>
+		<h2>Team Results for {{ cclass.cclassfull }}:</h2>
 		<p>All results are preliminary. For changes or corrections, please talk with meet staff.</p>
 	</div>
 </div>
 
 <div class="row">
 	<div class="col-xs-12 col-md-8">
-		<table class="table table-condensed table-striped" id="resultTable">
+		<table class="table table-condensed" id="resultTable">
 		<th>#</th>
-		<th>Team</th>
 		<th>Score</th>
+		<th>Team</th>
 		{% for t in teams %}
-		<tr>
+		<tr class="teamresult">
 			<td>{{ t.position }}</td>
-			<td>{{ clubs[t.clubshort] }} ({{ t.clubshort }})</td>
 			<td>{{ t.score }}</td>
+			<td>{{ clubs[t.clubshort] }} ({{ t.clubshort }})</td>
+			{% for m in members %}
+			{% if m.clubshort == t.clubshort %}
+				<tr class="teammember">
+					<td></td>
+					<td>{{ m.score }}</td>
+					<td>{{ m.name }} ({{ m.clubshort }})</td>
+				</tr>
+			{% endif %}
+			{% endfor %}
 		</tr>
+		
 		{% endfor %}
 		</table>
 	</div>
