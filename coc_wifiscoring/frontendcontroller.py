@@ -32,6 +32,7 @@ def cclass_results(cclass):
     if cclass not in [c.cclassshort for c in knownclass]:
         return '404: Not found. Unknown competition class: {}'.format(cclass), 404
     q = Result.query.filter_by(cclassshort=cclass).all()
+    q.sort(cmp=_sortResults)
     c = Club.query.all()
     cd = {}
     for club in c:
@@ -39,6 +40,19 @@ def cclass_results(cclass):
     classinfo = Cclass.query.filter_by(cclassshort=cclass).one()
     return render_template('resulttable.html', cclass=classinfo, items=q, clubs=cd)
 
+def _sortResults(A, B):
+    if A.position>0 and B.position>0:
+        return A.position - B.position
+    elif (A.position>0) and (B.position<0):
+        return -1
+    elif (B.position>0) and (A.position<0):
+        return 1
+    else:
+        if A.score and B.score:
+            return A.score - B.score
+        else:
+            return 0
+        
 
 @frontend.route('/results/')
 def all_results():
