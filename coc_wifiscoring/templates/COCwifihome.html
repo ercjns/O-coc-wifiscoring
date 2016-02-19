@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}List of Items{% endblock %}
+{% block title %}Individual Results{% endblock %}
 
 {% block content %}
 <div class="row">
 	<div class="col-xs-12">
-		<p>All results are preliminary. For changes or corrections, talk with meet staff.</p>
+		<p>All results are preliminary.</p>
 	</div>
 </div>
 
@@ -18,8 +18,8 @@
 		<li><a href="{{ url_for('frontend.cclass_results', cclass='W2F') }}" class="btn btn-default btn-block">Middle School Girls</a></li>
 		<li><a href="{{ url_for('frontend.cclass_results', cclass='W2M') }}" class="btn btn-default btn-block">Middle School Boys</a></li>
 		<li><a href="{{ url_for('frontend.cclass_results', cclass='W3F') }}" class="btn btn-default btn-block">Jr. Varsity Girls</a></li>
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='W4M') }}" class="btn btn-default btn-block">Jr. Varsity Boys N</a></li>
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='W5M') }}" class="btn btn-default btn-block">Jr. Varsity Boys S</a></li>
+		<li><a href="{{ url_for('frontend.cclass_results', cclass='W4M') }}" class="btn btn-default btn-block">Jr. Varsity Boys</a></li>
+		<!--<li><a href="{{ url_for('frontend.cclass_results', cclass='W5M') }}" class="btn btn-default btn-block">Jr. Varsity Boys S</a></li>-->
 		<li><a href="{{ url_for('frontend.cclass_results', cclass='W6F') }}" class="btn btn-default btn-block">Varsity Girls</a></li>
 		<li><a href="{{ url_for('frontend.cclass_results', cclass='W6M') }}" class="btn btn-default btn-block">Varsity Boys</a></li>
 		</ul>
