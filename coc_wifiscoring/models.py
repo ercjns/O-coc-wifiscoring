@@ -146,3 +146,13 @@ TeamMembers = db.Table('wifiscoring_teammembers',
     db.Column('result_id', db.Integer, db.ForeignKey('wifiscoring_result.id')), 
     db.Column('team_id', db.Integer, db.ForeignKey('wifiscoring_teamresult.id'))
 )
+
+class Action(db.Model):
+    __tablename__ = 'wifiscoring_actions'
+    id = db.Column(db.Integer, primary_key=True)
+    time = db.Column(db.DateTime)
+    action = db.Column(db.String)
+    
+    def __init__(self, time, action):
+        self.time = time
+        self.action = action

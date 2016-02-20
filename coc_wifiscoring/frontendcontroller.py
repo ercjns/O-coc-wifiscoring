@@ -1,6 +1,6 @@
 from flask import Blueprint, request, abort, render_template
 
-from .models import db, Result, RemotePunch, Club, Cclass, TeamResult
+from .models import db, Result, RemotePunch, Club, Cclass, TeamResult, Action
 
 import copy
 
@@ -8,11 +8,13 @@ frontend = Blueprint("frontend", __name__)
 
 @frontend.route('/')
 def home():
-    return render_template('COCwifihome.html')
+    time = _getResultTimestamp()
+    return render_template('COCwifihome.html', time=time)
     
 @frontend.route('/results/teams')
 def team_class_select():
-    return render_template('TeamResultClassSelection.html')
+    time = _getResultTimestamp()
+    return render_template('TeamResultClassSelection.html', time=time)
     
 @frontend.route('/results/teams/<cclass>')
 def cclass_team_results(cclass):
@@ -24,7 +26,8 @@ def cclass_team_results(cclass):
     classinfo = Cclass.query.filter_by(cclassshort=cclass).one()
     teamscorers = Result.query.filter((Result.cclassshort.startswith(cclass))).filter_by(isTeamScorer=True).order_by(Result.clubshort, -Result.score).all()
     
-    return render_template('TeamResultTable.html', cclass=classinfo, teams=teamdata, clubs=teamnames, members=teamscorers)
+    time = _getResultTimestamp()
+    return render_template('TeamResultTable.html', time=time, cclass=classinfo, teams=teamdata, clubs=teamnames, members=teamscorers)
 
 @frontend.route('/results/<cclass>')
 def cclass_results(cclass):
@@ -38,7 +41,8 @@ def cclass_results(cclass):
     for club in c:
         cd[club.clubshort] = club.clubfull
     classinfo = Cclass.query.filter_by(cclassshort=cclass).one()
-    return render_template('resulttable.html', cclass=classinfo, items=q, clubs=cd)
+    time = _getResultTimestamp()
+    return render_template('resulttable.html', time=time, cclass=classinfo, items=q, clubs=cd)
 
 def _sortResults(A, B):
     if A.position>0 and B.position>0:
@@ -90,8 +94,8 @@ def awards():
     cd = {}
     for club in c:
         cd[club.clubshort] = club.clubfull
-
-    return render_template('AwardsTable.html', indvawards=individualclasses, teamawards=teamclasses, clubs=cd)
+    time = _getResultTimestamp()
+    return render_template('AwardsTable.html', time=time, indvawards=individualclasses, teamawards=teamclasses, clubs=cd)
 
 @frontend.route('/meetstats/')
 def meet_stats():
@@ -111,5 +115,12 @@ def meet_stats():
             continue
 
     checked += fin
+    time = _getResultTimestamp()
+    return render_template('meetstats.html', time=time, checked=checked, downloaded=len(download_sicards), out=checked-fin, items=out_items)
     
-    return render_template('meetstats.html', checked=checked, downloaded=len(download_sicards), out=checked-fin, items=out_items)
+def _getResultTimestamp():
+    time = Action.query.order_by(-Action.id).first()
+    if time:
+        return time.time.strftime('%H:%M, %b %d, %Y')
+    else:
+        return None

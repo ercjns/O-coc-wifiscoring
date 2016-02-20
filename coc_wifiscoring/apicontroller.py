@@ -1,6 +1,7 @@
 from flask import Blueprint, request, abort, render_template
+from datetime import datetime
 
-from .models import db, Result, Club, Cclass, TeamResult, Entry
+from .models import db, Result, Club, Cclass, TeamResult, Entry, Action
 from OutilsParse import getRunners
 import ETL as ETL
 
@@ -59,7 +60,10 @@ def results():
         
         _assignTeamScores('WIOL')
         _assignTeamPositions('WIOL')
-        #TODO: calculate team scores
+        
+        new_action = Action(datetime.now(), 'results')
+        db.session.add(new_action)
+        db.session.commit()
         return 'Refreshed', 200
 
 def _assignPositions():
