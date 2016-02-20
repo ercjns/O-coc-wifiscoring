@@ -85,11 +85,12 @@ def poll_for_results(dir):
 def relay_wibox():
     WiBox1 = 'socket://192.168.103.201:10001'
     reader = SIReaderControl(port=WiBox1)
-    with open('confighosts.txt', 'r') as f:
-        hosts = []
-        for line in f:
-            hosts.append(line.rstrip())
+    #with open('confighosts.txt', 'r') as f:
+    #    hosts = []
+    #    for line in f:
+    #        hosts.append(line.rstrip())
 
+    hosts = ['http://localhost']
     while True:
         punches = reader.poll_punch()
         if len(punches) > 0:
