@@ -116,14 +116,14 @@ def meet_stats():
             continue
 
     checked += fin
-    
     time = _getResultTimestamp()
     return render_template('meetstats.html', time=time, checked=checked, downloaded=len(download_sicards), out=checked-fin, items=out_items)
     
+
 def _getResultTimestamp():
     time = Action.query.order_by(-Action.id).first()
     if time:
         return time.time.strftime('%H:%M, %b %d, %Y')
     else:
         return None
-        
+

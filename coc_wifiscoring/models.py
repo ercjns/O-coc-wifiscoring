@@ -158,4 +158,3 @@ class Action(db.Model):
         self.time = time
         self.action = action
 
-    

@@ -61,7 +61,7 @@ def results():
         
         _assignTeamScores('WIOL')
         _assignTeamPositions('WIOL')
-        #TODO: calculate team scores
+
         new_action = Action(datetime.now(), 'results')
         db.session.add(new_action)
         db.session.commit()
