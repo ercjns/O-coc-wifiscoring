@@ -16,16 +16,19 @@ from sireader import SIReaderControl
 def post_iof3_resultList(file):
     hosts = open("confighosts.txt")
     while True:
-        host = hosts.readline().rstrip()
-        if not host: break
-        print("sending results to " + host)
+	try:
+	    host = hosts.readline().rstrip()
+            if not host: break
+            print("sending results to " + host)
 
-        # post sport software IOFv3 results file
-        url = host + '/api/results'
-        f = {'file': open(file, 'r')}
-        #What should be in this header???
-        #header = {'content-type': 'text/plain'}
-        r = requests.post(url, files=f)
+            # post sport software IOFv3 results file
+            url = host + '/api/results'
+            f = {'file': open(file, 'r')}
+            #What should be in this header???
+            #header = {'content-type': 'text/plain'}
+            r = requests.post(url, files=f)
+        except:
+            print("failed to send results to " + host)
     hosts.close()
 
 def put_clubcodetable(file):
