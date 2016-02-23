@@ -1,4 +1,5 @@
 from flask.ext.sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -156,3 +157,4 @@ class Action(db.Model):
     def __init__(self, time, action):
         self.time = time
         self.action = action
+

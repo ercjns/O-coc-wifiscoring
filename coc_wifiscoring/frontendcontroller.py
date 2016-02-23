@@ -94,6 +94,7 @@ def awards():
     cd = {}
     for club in c:
         cd[club.clubshort] = club.clubfull
+
     time = _getResultTimestamp()
     return render_template('AwardsTable.html', time=time, indvawards=individualclasses, teamawards=teamclasses, clubs=cd)
 
@@ -118,9 +119,11 @@ def meet_stats():
     time = _getResultTimestamp()
     return render_template('meetstats.html', time=time, checked=checked, downloaded=len(download_sicards), out=checked-fin, items=out_items)
     
+
 def _getResultTimestamp():
     time = Action.query.order_by(-Action.id).first()
     if time:
         return time.time.strftime('%H:%M, %b %d, %Y')
     else:
         return None
+

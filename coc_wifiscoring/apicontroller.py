@@ -3,6 +3,7 @@ from datetime import datetime
 
 from .models import db, Result, Club, Cclass, TeamResult, Entry, Action
 from OutilsParse import getRunners
+
 import ETL as ETL
 
 
@@ -60,7 +61,7 @@ def results():
         
         _assignTeamScores('WIOL')
         _assignTeamPositions('WIOL')
-        
+
         new_action = Action(datetime.now(), 'results')
         db.session.add(new_action)
         db.session.commit()
@@ -211,16 +212,19 @@ def _assignTeamPositions(algo):
                 else: 
                     a = classteams[i-1]
                     b = classteams[i]
-                    a_scorers = Result.query.filter_by(cclassshort=c,
-                                                       clubshort=a.clubshort, 
-                                                       isTeamScorer=True) \
-                                                       .order_by(Result.score.desc()) \
-                                                       .all()
-                    b_scorers = Result.query.filter_by(cclassshort=c, 
-                                                       clubshort=b.clubshort,
-                                                       isTeamScorer=True) \
-                                                       .order_by(Result.score.desc()) \
-                                                       .all()
+                    runnerclasses = [c]
+                    if c == 'W2':
+                        runnerclasses = ['W2F', 'W2M']
+                    
+                    a_scorers = []
+                    b_scorers = []
+                    for rc in runnerclasses:
+                        a_scorers += Result.query.filter_by(cclassshort=rc, clubshort=a.clubshort, isTeamScorer=True).all()
+                        b_scorers += Result.query.filter_by(cclassshort=rc, clubshort=b.clubshort, isTeamScorer=True).all()
+                        
+                    a_scorers.sort(key=lambda x: -x.score)
+                    b_scorers.sort(key=lambda x: -x.score)
+                    
                     for j in range(3):
                         try:
                             tiebreakerA = a_scorers[j].score
