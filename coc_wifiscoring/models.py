@@ -89,6 +89,7 @@ class Result(db.Model):
     __tablename__ = 'wifiscoring_result'
 
     id = db.Column(db.Integer, primary_key=True)
+    eventnum = db.Column(db.Integer)
     sicard = db.Column(db.Integer)
     name = db.Column(db.String)
     cclassshort = db.Column(db.String)
@@ -123,10 +124,19 @@ class Result(db.Model):
             s = "0" + s
         return m + ":" + s
         
+class MultiResult(db.Model):
+    __tablename__ = 'wifiscoring_multiresult'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    score = db.Column(db.Integer)
+    position = db.Column(db.Integer)
+    # and a reference to the actual result objects?
+        
 class TeamResult(db.Model):
     __tablename__ = 'wifiscoring_teamresult'
     
     id = db.Column(db.Integer, primary_key=True)
+    eventnum = db.Column(db.Integer)
     clubshort = db.Column(db.String)
     cclassshort = db.Column(db.String)
     position = db.Column(db.Integer)
@@ -142,11 +152,6 @@ class TeamResult(db.Model):
         
     def __str__(self):
         return 'Team {} in position {} on {} with a score of {}'.format(self.clubshort, self.position, self.cclassshort, self.score)
-    
-TeamMembers = db.Table('wifiscoring_teammembers', 
-    db.Column('result_id', db.Integer, db.ForeignKey('wifiscoring_result.id')), 
-    db.Column('team_id', db.Integer, db.ForeignKey('wifiscoring_teamresult.id'))
-)
 
 class Action(db.Model):
     __tablename__ = 'wifiscoring_actions'

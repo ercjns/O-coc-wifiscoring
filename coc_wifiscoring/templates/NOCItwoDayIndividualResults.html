@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Results for {{ cclass }}{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<h2>Results for {{ cclass.cclassfull }}:</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-md-8">
+		<table class="table table-condensed table-striped" id="resultTable">
+		<tr>
+			<th>#</th>
+			<th>Name</th>
+			<th>School</th>
+			<th>Day 1</th>
+			<th>Day 2</th>
+			<th>Total Time</th>
+		</tr>
+		{% for mutilresult in results %}
+		<tr>
+			<td>{{ r.position }}</td>
+			<td>{{ r.one.name }} ({{ r.one.clubshort }})</td>
+			<td>{{ clubs[r.clubshort] }}</td>
+			<td>{{ r.one.timetommmss() }}</td>
+			<td>{{ r.two.timetommmss() }}</td>
+			<td>{{ r.score }}
+		</tr>
+		{% endfor %}
+		</table>
+	</div>
+	<div class="col-xs-12 col-md-4">
+		<h4>Two-Day results</h4>
+		<p>
+			Results are simply the sum of the times for each of the comptetior's finishes. If a competitor does not successfully complete the course, he or she is listed at the end of these results and not awared a position.
+		</p>
+	</div>
+</div>
+
+<script src="{{ url_for('static', filename='filter.js') }}"></script>
+
+{% endblock %}

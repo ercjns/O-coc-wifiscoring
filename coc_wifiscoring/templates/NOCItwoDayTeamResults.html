@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}NOCI 2016 Team Results{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12 col-md-8">
+		<table class="table table-condensed table-striped" id="resultTable">
+		<tr>
+			<th>#</th>
+			<th>Team / Competitor</th>
+			<th colspan="2">Day 1</th>
+			<th colspan="2">Day 2</th>
+			<th>Total Score</th>
+		</tr>
+		
+		{% for team in class %}
+		<tr>
+			<td>{{ t.position }}</td>
+			<td>{{ t.clubfull }}</td>
+			<td colspan="2">{{ t.one.score }}</td>
+			<td colspan="2">{{ t.two.score }}</td>
+			<td>{{ t.score }}</td>
+		</tr>
+		
+			{% for person in team %}
+			<tr>
+				<td></td>
+				<td>{{ r.one.name }} ({{ r.one.clubshort }})</td>
+				<td>{{ r.one.timetommmss() }}</td>
+				<td>{{ r.one.score }}</td>
+				<td>{{ r.two.timetommmss() }}</td>
+				<td>{{ r.two.score }}</td>
+				<td></td>
+			</tr>
+			{% endfor %}
+			
+		{% endfor %}
+		</table>
+	</div>
+	<div class="col-xs-12 col-md-4">
+		<h4>Two-Day results</h4>
+		<p>
+			Team scores are summed across the two competition days. Lowest score wins.
+		</p>
+	</div>
+</div>
+
+<script src="{{ url_for('static', filename='filter.js') }}"></script>
+
+{% endblock %}

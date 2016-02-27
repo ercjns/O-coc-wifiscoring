@@ -17,12 +17,8 @@
 		</a>
 		</div>
 		<div class="col-xs-12 col-sm-6 col-md-8">
-			<ul class="list-unstyled">
-				<li><a href="{{ url_for('frontend.home') }}" class="btn btn-default" role="button">Individual Results</a></li>
-				<li><a href="{{ url_for('frontend.team_class_select') }}" class="btn btn-default" role="button">Team Results</a></li> 
-				<!--<li><a href="{{ url_for('telemetry.get_punches', control=149) }}" class="btn btn-default" role="button">Radio Control</a></li> -->
-			</ul> 
-			<p>Last update at {{ time }} UTC</p>
+			<p>Last update at {{ time }}</p>
+			<p>All results are preliminary.</p>
 		</div>
 	</header>
 

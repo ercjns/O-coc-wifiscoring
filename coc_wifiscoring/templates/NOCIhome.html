@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}NOCI 2016{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<h2>NOCI and Ultimate Orienteer #1 and #2</h2>
+		<p>Hosted by Cascade Orienteering Club. March 5-6, 2016</p>
+		<p>Day 1 at Lincoln Tree Farm, Spanaway, WA. Day 2 at Ft. Steilacoom Park, Lakewood, WA</p>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-md-4">
+		<h2>NOCI</h2>
+		<ul class="list-unstyled">
+		<li><a href="{{ url_for('frontend.cclass_results', cclass='W1F') }}" class="btn btn-default btn-block">Day 1 Results</a></li>
+		<li><a href="{{ url_for('frontend.cclass_results', cclass='W1M') }}" class="btn btn-default btn-block">Day 2 Results</a></li>
+		<br />
+		<li><a href="{{ url_for('frontend.cclass_results', cclass='W2F') }}" class="btn btn-default btn-block">Two-day: Individuals</a></li>
+		<li><a href="{{ url_for('frontend.cclass_results', cclass='W2M') }}" class="btn btn-default btn-block">Two-day: Teams</a></li>
+	</div>
+	<div class="col-xs-12 col-md-4">
+		<h2>Public Courses (Ultimate Orienteer)</h2>
+		<ul class="list-unstyled">
+		<li><a href="{{ url_for('frontend.cclass_results', cclass='1') }}" class="btn btn-default btn-block">Day 1</a></li>
+		<li><a href="{{ url_for('frontend.cclass_results', cclass='3') }}" class="btn btn-default btn-block">Day 2</a></li>
+	</div>
+</div>
+
+{% endblock %}
