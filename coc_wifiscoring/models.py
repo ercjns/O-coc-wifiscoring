@@ -162,11 +162,16 @@ class MultiResultIndv(db.Model):
     
 class MultiResultTeam(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    class_code = db.Column(db.String)
     score = db.Column(db.Integer)
     position = db.Column(db.Integer)
+    result_ids = db.Column(db.String)
 
-    def __init__(self, score):
+    def __init__(self, class_code, score, ids):
+        self.class_code = class_code
         self.score = score
+        self.result_ids = ids
+        return
 
 
 class RemotePunch(db.Model):

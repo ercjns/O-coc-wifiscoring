@@ -35,35 +35,37 @@ def results(event):
         except:
             return 'couldn\'t delete things', 500
         
-        # try:
-        for r in results:
-            result_dict = { 'sicard': int(r['estick'] if r['estick']>0 else -1),
-                            'name': str(r['name']),
-                            'bib': int(r['bib'] if r['bib']>0 else -1),
-                            'class_code': str(r['class_code']),
-                            'club_code': str(r['club']),
-                            'time': int(r['time'] if r['time']>0 else -1),
-                            'status': str(r['status'])
-                          }
-            new_result = Result(event, result_dict)
-            db.session.add(new_result)
-            db.session.commit()
-        # except:
-            # return 'Problem building up the db refresh', 500
+        try:
+            for r in results:
+                result_dict = { 'sicard': int(r['estick'] if r['estick']>0 else -1),
+                                'name': str(r['name']),
+                                'bib': int(r['bib'] if r['bib']>0 else -1),
+                                'class_code': str(r['class_code']),
+                                'club_code': str(r['club']),
+                                'time': int(r['time'] if r['time']>0 else -1),
+                                'status': str(r['status'])
+                              }
+                new_result = Result(event, result_dict)
+                db.session.add(new_result)
+                db.session.commit()
+        except:
+            return 'Problem building up the db refresh', 500
         
         # TODO these reference old names. Use "class_code" and "club_code" and "class_name" and "club_name"
-        # try:
-        _assignPositions(event)
-        _assignScores(event)
+        try:
+            _assignPositions(event)
+            _assignScores(event)
             
-        # except:
-            # return 'Problem assigning positions or scores', 500
-        
-        _assignTeamScores(event)
-        _assignTeamPositions(event)
-        
-        _assignMultiScores(event)
-        _assignMultiPositions(event)
+            _assignTeamScores(event)
+            _assignTeamPositions(event)
+            
+            _assignMultiScores(event)
+            _assignMultiPositions(event)
+            
+        except:
+            return 'Problem assigning positions or scores', 500
+            
+
         
         new_action = DBAction(datetime.now(), 'results')
         db.session.add(new_action)
@@ -277,37 +279,85 @@ def _assignTeamPositions(event):
     return
     
 def _assignMultiScores(event):
-    multi_classes = EventClass.query.filter_by(is_team_class=False).filter_by(is_multi_scored=True).filter_by(event=event).all() #filter by event to only get ONE hit for each class.
+    multi_classes = EventClass.query.filter_by(is_multi_scored=True).filter_by(event=event).all() #filter by event to only get ONE hit for each class.
     for c in multi_classes:
-        MultiResultIndv.query.filter_by(class_code=c.class_code).delete()
+        if c.is_team_class:
+            MultiResultTeam.query.filter_by(class_code=c.class_code).delete()
+        else:
+            MultiResultIndv.query.filter_by(class_code=c.class_code).delete()
+        
         if c.multi_score_method == 'time-total':
             indv_results = Result.query.filter_by(class_code=c.class_code).order_by(Result.bib).all()
             if len(indv_results) == 0:
                 continue
-            bib = 0
-            score = 0
-            ids = ''
-            while indv_results:
-                r = indv_results.pop()
-                if (r.bib != bib):
-                    if ids != '':
-                        new_multi_result = MultiResultIndv(c.class_code, score, ids)
-                        db.session.add(new_multi_result)
-                    bib = r.bib
-                    score = r.time
-                    ids = str(r.id)
-                else:
-                    score += r.time
-                    ids += '-{}'.format(r.id)
-            # save the last entry which has no "different" bib after it
-            new_multi_result = MultiResultIndv(c.class_code, score, ids)
+            individuals = _matchMultiResults(indv_results, [], [], lambda x,y: True if x.bib == y.bib else False)
+            for indv in individuals:
+                for i in range(len(indv)):
+                    if i == 0:
+                        score = indv[i].time
+                        ids = str(indv[i].id)
+                    else:
+                        score += indv[i].time
+                        ids += '-{}'.format(indv[i].id)
+                new_multi_result = MultiResultIndv(c.class_code, score, ids)
+                db.session.add(new_multi_result)
+            db.session.commit()
+            # bib = 0
+            # score = 0
+            # ids = ''
+            # while indv_results:
+                # r = indv_results.pop()
+                # if (r.bib != bib):
+                    # if ids != '':
+                        # new_multi_result = MultiResultIndv(c.class_code, score, ids)
+                        # db.session.add(new_multi_result)
+                    # bib = r.bib
+                    # score = r.time
+                    # ids = str(r.id)
+                # else:
+                    # score += r.time
+                    # ids += '-{}'.format(r.id)
+            # # save the last entry which has no "different" bib after it
+            # new_multi_result = MultiResultIndv(c.class_code, score, ids)
+            
             db.session.add(new_multi_result)
             db.session.commit()
-
+        
+        elif c.multi_score_method == 'NOCI-multi':
+            team_results = TeamResult.query.filter_by(class_code=c.class_code).order_by(TeamResult.club_code).all()
+            if len(team_results) == 0:
+                continue
+            teams = _matchMultiResults(team_results, [], [], lambda x,y: True if x.club_code == y.club_code else False)
+            for team in teams:
+                for i in range(len(team)):
+                    if i == 0:
+                        score = team[i].score
+                        ids = str(team[i].id)
+                    else:
+                        score += team[i].score
+                        ids += '-{}'.format(team[i].id)
+                new_multi_team = MultiResultTeam(c.class_code, score, ids)
+                db.session.add(new_multi_team)
+            db.session.commit()
+            
+        
         else:
             pass
     return
-        
+
+def _matchMultiResults(input, same, output, matchf):
+    if len(input) == 0:
+        output.append(same)
+        return output
+    else:
+        i = input.pop()
+        if (len(same) == 0) or matchf(i, same[0]):
+            same.append(i)
+            return _matchMultiResults(input, same, output, matchf)
+        else:
+            output.append(same)
+            same = [i]
+            return _matchMultiResults(input, same, output, matchf)
         
 def _assignMultiPositions(event):
     multi_classes = EventClass.query.filter_by(is_team_class=False).filter_by(is_multi_scored=True).filter_by(event=event).all()

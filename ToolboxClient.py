@@ -16,8 +16,8 @@ from sireader import SIReaderControl
 def post_iof3_resultList(event, file):
     hosts = open("confighosts.txt")
     while True:
-	try:
-	    host = hosts.readline().rstrip()
+        try:
+            host = hosts.readline().rstrip()
             if not host: break
             print("sending results to " + host)
 
@@ -27,6 +27,7 @@ def post_iof3_resultList(event, file):
             #What should be in this header???
             #header = {'content-type': 'text/plain'}
             r = requests.post(url, files=f)
+            print r.status_code, r.text
         except:
             print("failed to send results to " + host)
     hosts.close()
