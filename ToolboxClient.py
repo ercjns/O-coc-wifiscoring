@@ -13,7 +13,7 @@ import json
 import socket
 from sireader import SIReaderControl
 
-def post_iof3_resultList(file):
+def post_iof3_resultList(event, file):
     hosts = open("confighosts.txt")
     while True:
 	try:
@@ -22,7 +22,7 @@ def post_iof3_resultList(file):
             print("sending results to " + host)
 
             # post sport software IOFv3 results file
-            url = host + '/api/results'
+            url = host + '/api/event/' + event + '/results'
             f = {'file': open(file, 'r')}
             #What should be in this header???
             #header = {'content-type': 'text/plain'}
@@ -43,26 +43,26 @@ def put_clubcodetable(file):
         r = requests.put(url, files=f)
     hosts.close()
     
-def put_cclasstable(file):
+def put_cclasstable(event, file):
     hosts = open("confighosts.txt")
     while True:
         host = hosts.readline().rstrip()
         if not host: break
         print("sending classes to " + host)
         
-        url = host + '/api/classes'
+        url = host + '/api/event/' + event + '/classes'
         f = {'file': open(file, 'r')}
         r = requests.put(url, files=f)
     hosts.close()
     
-def put_entrylist(file):
+def put_entrylist(event, file):
     with open("confighosts.txt", "r") as hosts:
         while True:
             host = hosts.readline().rstrip()
             if not host: break
             print("sending classes to " + host)
             
-            url = host + '/api/entries'
+            url = host + '/api/event/' + event + '/entries'
             f = {'file': open(file, 'r')}
             r = requests.put(url, files=f)
     
@@ -115,9 +115,9 @@ if __name__ == '__main__':
     if method == 'iof3':
         ''' 
         post an iof3 resultList file to refresh the data on the server
-        python ToolboxClient.py iof3 testdata.xml 
+        python ToolboxClient.py iof3 2016-02-27-1 testdata.xml 
         '''
-        post_iof3_resultList(sys.argv[2])
+        post_iof3_resultList(sys.argv[2], sys.argv[3])
     
     elif method == 'monitor':
         ''' 
@@ -151,29 +151,29 @@ if __name__ == '__main__':
     elif method == 'clubs':
         '''
         post a json file containing the mapping of club code to full name
-        python ToolboxClient.py clubs clubcodes.json
+        python ToolboxClient.py clubs 2016-02-27-1 clubcodes.json
         '''
-        put_clubcodetable(sys.argv[2])
+        put_clubcodetable(sys.argv[2], sys.argv[3])
         
     elif method == 'classes':
         '''
         post a json file containing the mapping of class code to full name
-        python ToolboxClient.py classes classcodes.json
+        python ToolboxClient.py classes 2016-02-27-1 classcodes.json
         '''
-        put_cclasstable(sys.argv[2])
+        put_cclasstable(sys.argv[2], sys.argv[3])
         
     elif method == 'entries':
         '''
         post a xml file containing the entries for the meet
-        python ToolboxClient.py entries meetentries.xml
+        python ToolboxClient.py entries 2016-02-27-1 meetentries.xml
         '''
-        put_entrylist(sys.argv[2])
+        put_entrylist(sys.argv[2], sys.argv[3])
         
-    elif method == 'prep-db':
-        '''
-        prep the database with classes, teams, and anything else...
-        python ToolboxClient.py prep-db
-        '''
-        put_clubcodetable('clubcodes.json')
-        put_cclasstable('classcodes.json')
+    # elif method == 'prep-db':
+        # '''
+        # prep the database with classes, teams, and anything else...
+        # python ToolboxClient.py prep-db
+        # '''
+        # put_clubcodetable('clubcodes.json')
+        # put_cclasstable('classcodes.json')
 

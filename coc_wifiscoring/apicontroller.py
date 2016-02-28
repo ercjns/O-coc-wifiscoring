@@ -1,19 +1,18 @@
 from flask import Blueprint, request, abort, render_template
 from datetime import datetime
 
-from .models import db, Result, Club, Cclass, TeamResult, Entry, Action
-from OutilsParse import getRunners
+from .models import *
 
 import ETL as ETL
 
 
 API = Blueprint("resultsAPI", __name__)
 
-@API.route('/results', methods=['GET', 'POST'])
-def results():
+@API.route('/event/<event>/results', methods=['GET', 'POST'])
+def results(event):
     if request.method == 'GET':
         #try:
-        q = Result.query.all()
+        q = Result.query.filter_by(event=event).all()
         return render_template('basiclist.html', items=q)
         #except:
         #abort(404)
@@ -25,250 +24,309 @@ def results():
             return 'Please upload an IOF XML ResultsList', 400
 
         try:
-            results = getRunners('latestResultsXML.xml')
+            results = ETL.getRunners('latestResultsXML.xml')
         except:
             return 'GetRunners failed. :(', 500
 
-        #TODO: implement a primary/secondary db swap scheme
+        #TODO: implement a primary/secondary db swap scheme, or only get deltas above.
         try:
-            Result.query.delete()
-            TeamResult.query.delete()
+            Result.query.filter_by(event=event).delete()
+            TeamResult.query.filter_by(event=event).delete()
         except:
             return 'couldn\'t delete things', 500
         
-        try:
-            for r in results:
-                result_dict = { 'sicard': int(r.estick if r.estick>0 else -1),
-                                'name': str(r.name),
-                                'cclassshort': str(r.cclass),
-                                'clubshort': str(r.club),
-                                'time': int(r.time if r.time>0 else -1),
-                                'status': str(r.status),
-                                'position': int(r.position if r.position>0 else -1)
-                              }
-                new_result = Result(result_dict)
-                db.session.add(new_result)
-                db.session.commit()
-        except:
-            return 'Problem building up the db refresh', 500
-
-        try:
-            _assignPositions()
-            _assignScores('COC')
-            
-        except:
-            return 'Problem assigning positions or scores', 500
+        # try:
+        for r in results:
+            result_dict = { 'sicard': int(r['estick'] if r['estick']>0 else -1),
+                            'name': str(r['name']),
+                            'class_code': str(r['class_code']),
+                            'club_code': str(r['club']),
+                            'time': int(r['time'] if r['time']>0 else -1),
+                            'status': str(r['status'])
+                          }
+            new_result = Result(event, result_dict)
+            db.session.add(new_result)
+            db.session.commit()
+        # except:
+            # return 'Problem building up the db refresh', 500
         
-        _assignTeamScores('WIOL')
-        _assignTeamPositions('WIOL')
+        # TODO these reference old names. Use "class_code" and "club_code" and "class_name" and "club_name"
+        # try:
+        _assignPositions(event)
+        _assignScores(event)
+            
+        # except:
+            # return 'Problem assigning positions or scores', 500
+        
+        _assignTeamScores(event)
+        _assignTeamPositions(event)
+        
+        _assignMultiScores()
 
-        new_action = Action(datetime.now(), 'results')
+        new_action = DBAction(datetime.now(), 'results')
         db.session.add(new_action)
         db.session.commit()
         return 'Refreshed', 200
 
-def _assignPositions():
-    cclasses = db.session.query(Result.cclassshort.distinct()).all()
-    for c in cclasses:
-        classresults = Result.query.filter_by(cclassshort=c[0]).filter_by(status="OK").order_by(Result.time).all()
+def _assignPositions(event):
+    event_classes = EventClass.query.filter_by(event=event).filter_by(is_team_class=False).all()
+    for c in event_classes:
+        class_results = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter_by(status="OK").order_by(Result.time).all()
+        if len(class_results) == 0: 
+            # print 'No results for {}'.format(c.class_name)
+            continue
         nextposition = 1
-        for i in range(len(classresults)):
+        for i in range(len(class_results)):
             if i == 0:
-                classresults[i].position = nextposition
-            elif classresults[i].time == classresults[i-1].time:
-                classresults[i].position = classresults[i-1].position
+                class_results[i].position = nextposition
+            elif class_results[i].time == class_results[i-1].time:
+                class_results[i].position = class_results[i-1].position
             else:
-                classresults[i].position = nextposition
+                class_results[i].position = nextposition
             nextposition += 1
-            
-        db.session.add_all(classresults)
+        db.session.add_all(class_results)
         db.session.commit()
     return
 
-def _assignScores(algo):
-    cclasses = db.session.query(Result.cclassshort.distinct()).all()
-    for c in cclasses:
-        if not Cclass.query.filter_by(cclassshort=c[0]).all()[0].isScored:
+def _assignScores(event):
+    event_classes = EventClass.query.filter_by(event=event).filter_by(is_team_class=False).all()
+    for c in event_classes:
+        if not Result.query.filter_by(event=event).filter_by(class_code=c.class_code).all():
             continue
-        
-        classresults = Result.query.filter_by(cclassshort=c[0]).order_by(Result.position).all()
-        
-        if algo is 'COC':
-            for r in classresults:
-                if r.position is -1:
-                    if r.status in ['DidNotFinish', 'MissingPunch', 'Disqualified']:
-                        r.score = 0
-                    else:
-                        r.score = None
-                elif r.position == 1:
-                    r.score = 100
-                elif r.position == 2:
-                    r.score = 95
-                elif r.position == 3:
-                    r.score = 92
+        if c.score_method == '':
+            continue
+            
+        elif c.score_method == 'WIOL-indv':
+            class_finishers = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter(Result.position > 0).all()
+            for r in class_finishers:
+                if r.position == 1: r.score = 100
+                elif r.position == 2: r.score == 95
+                elif r.position ==3: r.score == 92
                 else:
                     r.score = 100 - 6 - int(r.position)
-
-        elif algo is 'ISOC':
-            awt = sum([r.time for r in classresults if r.position <=3]) / 3.0
-            for r in classresults:
+            class_non_finishers = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter(Result.position < 0).all()
+            if len(class_non_finishers) > 0:
+                for r in class_non_finishers:
+                    r.score = 0
+            db.session.add_all(class_finishers)
+            db.session.add_all(class_non_finishers)
+            db.session.commit()
+                
+        elif c.score_method == 'NOCI-indv':
+            class_results = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).all()
+            awt = sum([r.time for r in classresults if (r.position > 0 and r.position <=3)]) / 3.0
+            
+            if c.class_code == 'N2M':
+                paired_class_code = 'N3F'
+            elif c.class_code == 'N3F':
+                paired_class_code = 'N2M'
+            elif c.class_code == 'N4F':
+                paired_class_code = 'N5M'
+            elif c.class_code == 'N5M':
+                paired_class_code = 'N4F'    
+            paired_results = Result.query.filter_by(event=event).filter_by(class_code=paired_class_code).all()
+            paired_awt = sum([r.time for r in paired_results if (r.position > 0 and r.position <=3)]) / 3.0
+            better_awt = awt if awt < paired_awt else paired_awt
+            
+            for r in class_results:
                 if r.status in ['OK']:
-                    r.score = 60*r.time / awt
-                elif r.status in ['DidNotFinish', 'MissingPunch', 'Disqualified', 'Overtime']:
-                    #TODO: need faster awt of male and female classes here.
-                    r.score = 10 + 60*(3*60*60) / awt
+                    r.score = 60 * r.time / awt
                 else:
-                    r.score = None
+                    r.score = (60 * (3*3600) / better_awt) + 10
+            db.session.add_all(class_results)
+            db.session.commit()
         
-        db.session.add_all(classresults)
-        db.session.commit()
+        elif c.score_method == 'ULT-indv':
+            class_results = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter(Result.position > 0).all()
+            winner = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter_by(position=1).all()
+            print type(winner), winner
+            benchmark = float(winner.time)
+            for r in class_results:
+                r.score = int( (benchmark / r.time) * 1000 )
+            db.session.add_all(class_results)
+            db.session.commit()
+
     return
 
-def _assignTeamScores(algo):
-    if algo is 'WIOL':
-        WIOL_team_classes = ['W2', 'W3F', 'W4M', 'W5M', 'W6F', 'W6M']
-        for c in WIOL_team_classes:
-            if c is 'W2':
-                classresults = Result.query.filter_by(cclassshort='W2M').all()
-                classresults += Result.query.filter_by(cclassshort='W2F').all()
-            else:
-                classresults = Result.query.filter_by(cclassshort=c).all()
-
-            classteams = set([r.clubshort for r in classresults])
-
-            for club in classteams:
+def _assignTeamScores(event):
+    event_team_classes = EventClass.query.filter_by(event=event).filter_by(is_team_class=True).all()
+    for c in event_team_classes:
+        if c.score_method == '':
+            continue
+            
+        elif c.score_method == 'WIOL-team':
+            indv_results = []
+            for indv_class in c.team_classes.split('-'):
+                indv_results += Result.query.filter_by(event=event).filter_by(class_code=indv_class).all()
+            teams = set([r.club_code for r in indv_results])
+            for team in teams:
                 score = 0
                 contributors = 0
-                clubmembers = [r for r in classresults if ((r.clubshort == club) and r.score)]
-                clubmembers.sort(key=lambda x: -x.score)
-
-                while (len(clubmembers) > 0) and (contributors < 3):
-                    scorer = clubmembers.pop(0)
+                members = [r for r in indv_results if ((r.club_code == team) and (r.score > 0))]
+                members.sort(key=lambda x: -x.score)
+                while ((len(members) > 0) and (contributors < 3)):
+                    scorer = members.pop(0)
                     score += scorer.score
-                    scorer.isTeamScorer = True
+                    scorer.is_team_scorer = True
                     contributors += 1
                     db.session.add(scorer)
-
-                if clubmembers:
-                    for nonscorer in clubmembers:
+                if members:
+                    for nonscorer in members:
                         nonscorer.isTeamScorer = False
-
-                    db.session.add_all(clubmembers)
-
-                team = TeamResult(c, club, score)
+                    db.session.add_all(members)
+                team = TeamResult(event, c.class_code, team, score)
                 db.session.add(team)
                 db.session.commit()
-                
-    elif algo is 'ISOC':
-        #IS_classes = ['ISVM', 'ISVF', 'ISJVM', 'ISJVF', 'ISIM', 'ISIF', 'ISPM', 'ISPF']
-        #IS_team_classes = ['ISV', 'ISJV', 'ISI']
-        # TODO: determine how meet classes will be set up. Faking with WIOL for now.
-        IS_team_classes = {'ISV':['W6M', 'W6F'], 'JV':['W3F','W4M', 'W5M'], 'ISI':['W2F','W2M']}
-        for IS_team_class, IS_ind_classes in IS_team_classes.items():
-            classresults = []
-            for c in IS_ind_classes:
-                classresults += Result.query.filter_by(cclassshort=c).all()
-            classteams = set([r.clubshort for r in classresults])
-            
-            for team in classteams:
-                team_members = [r for r in classresults if (r.clubshort == team)]
-                team_members.sort(key=lambda x: x.score)
+    
+        elif c.score_method == 'NOCI-team':
+            indv_results = []
+            for indv_class in c.team_classes.split('-'):
+                indv_results += Result.query.filter_by(event=event).filter_by(class_code=indv_class).all()
+            teams = set([r.club_code for r in indv_results])
+            for team in teams:
                 score = 0
-                for i in range(len(team_members)):
-                    if i < 3:
-                        try:
-                            score += team_members[i].score
-                            team_members[i].isTeamScorer = True
-                        except TypeError:
-                            score += 1000 # for a "none" score - flag something wrong
-                            team_members[i].isTeamScorer = False
-                    else:
-                        team_members[i].isTeamScorer = False
-                        
-                if len(team_members) < 3:
-                    score += 5000 # for a team smaller than 3 - flag something wrong
-                        
-                team_result = TeamResult(IS_team_class, team, score)
-                
-                db.session.add_all(team_members)
-                db.session.add(team_result)
+                contributors = 0
+                members = [r for r in indv_results if (r.club_code == team)]
+                members.sort(key=lambda x: x.score)
+                while ((len(members) > 0) and (contributors < 3)):
+                    scorer = members.pop(0)
+                    score += scorer.score
+                    scorer.is_team_scorer = True
+                    contributors += 1
+                    db.session.add(scorer)
+                if members:
+                    for nonscorer in members:
+                        nonscorer.isTeamScorer = False
+                    db.session.add_all(members)
+                team = TeamResult(c.class_code, team, score)
+                db.session.add(team)
                 db.session.commit()
 
     return
 
-def _assignTeamPositions(algo):
-    if algo is 'WIOL':
-        TeamResults = TeamResult.query.all()
-        for c in set([team.cclassshort for team in TeamResults]):
-            classteams = [t for t in TeamResults if t.cclassshort == c]
-            classteams.sort(key=lambda x: -x.score)
-
+def _assignTeamPositions(event):
+    event_team_classes = EventClass.query.filter_by(event=event).filter_by(is_team_class=True).all()
+    for c in event_team_classes:
+        if c.score_method == '':
+            continue
+        
+        elif c.score_method == 'WIOL-team':
+            team_results = TeamResult.query.filter_by(event=event).filter_by(class_code=c.class_code).all()
+            team_results.sort(key=lambda x: -x.score)
             nextposition = 1
-            for i in range(len(classteams)):
+            for i in range(len(team_results)):
                 if i == 0:
-                    classteams[i].position = nextposition
-                elif classteams[i].score < classteams[i-1].score:
-                    classteams[i].position = nextposition
-                else: 
-                    a = classteams[i-1]
-                    b = classteams[i]
-                    runnerclasses = [c]
-                    if c == 'W2':
-                        runnerclasses = ['W2F', 'W2M']
-                    
+                    team_results[i].position = nextposition
+                elif team_results[i].score < team_results[i-1].score:
+                    team_results[i].position = nextposition
+                else:
+                    a_club = team_results[i-1].club_code
+                    b_club = team_results[i].club_code
                     a_scorers = []
                     b_scorers = []
-                    for rc in runnerclasses:
-                        a_scorers += Result.query.filter_by(cclassshort=rc, clubshort=a.clubshort, isTeamScorer=True).all()
-                        b_scorers += Result.query.filter_by(cclassshort=rc, clubshort=b.clubshort, isTeamScorer=True).all()
-                        
+                    for indv_class in c.team_classes.split('-'):
+                        a_scorers += Result.query.filter_by(event=event).filter_by(class_code=indv_class).filter_by(club_code=a_club).filter_by(is_team_scorer=True).all()
+                        b_scorers +=Result.query.filter_by(event=event).filter_by(class_code=indv_class).filter_by(club_code=b_club).filter_by(is_team_scorer=True).all()
                     a_scorers.sort(key=lambda x: -x.score)
                     b_scorers.sort(key=lambda x: -x.score)
-                    
-                    for j in range(3):
-                        try:
-                            tiebreakerA = a_scorers[j].score
-                        except IndexError:
-                            tiebreakerA = 0
-                        try:
-                            tiebreakerB = b_scorers[j].score
-                        except IndexError:
-                            tiebreakerB = 0
+                    while a_scorers and b_scorers:
+                        tiebreakerA = a_scorers.pop(0)
+                        tiebreakerB = b_scorers.pop(0)
                         if tiebreakerA > tiebreakerB:
-                            b.position = nextposition
+                            team_results[i].position = nextposition
                             break
                         elif tiebreakerB > tiebreakerA:
-                            b.position = a.position
-                            a.position = nextposition
+                            team_results[i].position = team_results[i-1].position
+                            team_results[i-1].position = nextposition
                             break
                         else:
                             continue
-                    if b.position == None: 
-                        b.position = a.position
-                nextposition += 1
-
-            db.session.add_all(classteams)
+                    if team_results[i].position == None:
+                        if a_scorers:
+                            team_results[i].posoition = nextposition
+                        elif b_scorers:
+                            team_results[i].position = team_results[i-1].position
+                            team_results[i-1].position = nextposition
+                            break
+                        else:
+                            team_results[i].position = team_results[i-1].position
+                    nextposition += 1
+            db.session.add_all(team_results)
             db.session.commit()
-            
-    elif algo is 'ISOC':
-        TeamResults = TeamResult.query.all()
-        for c in set([team.cclassshort for team in TeamResults]):
-            category_teams = [t for t in TeamResults if t.cclassshort == c]
-            category_teams.sort(key=lambda x: x.score)
+        
+        elif c.score_method == 'NOCI-team':
+            team_results = TeamResult.query.filter_by(event=event).filter_by(class_code=c.class_code).all()
+            team_results.sort(key=lambda x: x.score)
             nextposition = 1
-            for i in range(len(category_teams)):
+            for i in range(len(team_results)):
                 if i == 0:
-                    category_teams[i].position = nextposition
-                elif category_teams[i].score == category_teams[i-1].score:
-                    category_teams[i].position = category_teams[i-1].position
+                    team_results[i].position = nextposition
+                elif team_results[i].score == team_results[i-1].score:
+                    team_results[i].position == team_results[i-1].position
                 else:
-                    category_teams[i].position = nextposition
+                    team_results[i].position = nextposition
                 nextposition += 1
-            
-            db.session.add_all(category_teams)
+            db.session.add_all(team_results)
             db.session.commit()
-
     return
+    
+def _assignMultiScores():
+    multi_classes = EventClass.query.filter_by(is_team_class=False).fitler_by(is_multi_scored=True).all()
+    for c in multi_classes:
+        # ToDo: follow class's multi-score-method. Currently sums all scores.
+        indv_results = Result.query.filter_by(class_code=c.class_code).order_by(Result.bib).all()
+        bib = None
+        score = 0
+        ids = ''
+        for r in indv_results:
+            if r.bib != bib:
+                if ids:
+                   new_multi_result = MultiResultIndv(score, ids)
+                   db.session.add(new_multi_result)
+                bib = r.bib
+                score = r.score
+                ids = str(r.id)
+            else:
+                score += r.score
+                ids += '-' + str(r.id)
+        db.session.commit()
+        
+        
+def _assignMultiPositions():
+    multi_classes = EventClass.query.filter_by(is_team_class=False).fitler_by(is_multi_scored=True).all()
+    for c in multi_classes:
+        if c.multi_score_method == 'time-total':
+            multi_results = MultiResultIndv.query.filter_by(class_code=c.class_code).all()
+            multi_results.sort(key=lambda x: x.score) # Low is better
+            nextposition = 1
+            for i in range(len(multi_results)):
+                if i == 0:
+                    multi_results[i].position = nextposition
+                elif multi_results[i].score == multi_results[i-1].score:
+                    multi_results[i].position == multi_results[i-1].position
+                else:
+                    multi_results[i].position = nextposition
+                nextposition += 1
+            db.session.add_all(multi_results)
+            db.session.commit()
+            
+        if c.multi_score_method == 'WIOL-season':
+            multi_results = MultiResultIndv.query.filter_by(class_code=c.class_code).all()
+            multi_results.sort(key=lambda x: -x.score) # High is better, sort high to the front with -x.
+            nextposition = 1
+            for i in range(len(multi_results)):
+                if i == 0:
+                    multi_results[i].position = nextposition
+                elif multi_results[i].score == multi_results[i-1].score:
+                    multi_results[i].position == multi_results[i-1].position
+                else:
+                    multi_results[i].position = nextposition
+                nextposition += 1
+                # TODO: Implement WIOL season tie-breaking
+            db.session.add_all(multi_results)
+            db.session.commit()
+        
+    
 
 @API.route('/teams', methods=['GET'])
 def teams():
@@ -295,7 +353,7 @@ def clubs():
         for club in clubs:
             abbr = club['abbr']
             full = club['name']
-            q = Club.query.filter_by(clubshort=abbr).all()
+            q = Club.query.filter_by(club_code=abbr).all()
             
             if len(q) > 2:
                 return 'Internal Error: Multiple clubs found for ' + abbr, 500
@@ -317,8 +375,8 @@ def clubs():
         pass
         
 
-@API.route('/classes', methods=['GET', 'PUT', 'DELETE'])
-def cclasses():
+@API.route('/event/<event>/classes', methods=['GET', 'PUT', 'DELETE'])
+def cclasses(event):
     """ Mapping of class code to full name
     
     GET returns a view of all classes
@@ -327,52 +385,27 @@ def cclasses():
     """
     
     if request.method == 'GET':
-        q = Cclass.query.all()
+        q = EventClass.query.filter_by(event=event).all()
         return render_template('basiclist.html', items=q)
 
-        
     elif request.method == 'PUT':
-        f = request.files[request.files.keys()[0]]
-        cclasses = ETL.cclassjson(f)
-        
-        for cclass in cclasses:
-            abbr = cclass['abbr']
-            full = cclass['name']
-            public = bool(cclass['public'])
-            scored = bool(cclass['scored'])
-            
-            q = Cclass.query.filter_by(cclassshort=abbr).all()
-            
-            if len(q) > 2:
-                return 'Internal Error: Multiple clubs found for ' + abbr, 500
-                
-            if not q:
-                new_cclass = Cclass(abbr, full, public, scored)
-                db.session.add(new_cclass)
-                
-            elif q:
-                existing_cclass = q[0]
-                edit = False
-                if existing_cclass.cclassfull != full:
-                    existing_cclass.cclassfull = full
-                    edit = True
-                if existing_cclass.isPublic != public:
-                    existing_cclass.isPublic = public
-                    edit = True
-                if existing_cclass.isScored != scored:
-                    existing_cclass.isScored = scored
-                    edit = True
-                if edit:
-                    db.session.add(existing_cclass)
-                    
+        f = request.files[request.files.keys()[0]].save('~latestclassinfo.csv')
+        eventClasses = ETL.classCSV('~latestclassinfo.csv')
+
+        # TODO: make this a PUT rather than a wipe and reload.
+        EventClass.query.filter_by(event=event).delete()
+
+        for c in eventClasses:
+            new_class = EventClass(event, c)
+            db.session.add(new_class)
         db.session.commit()
-        return 'Competition Class table updated', 200
+        return 'Refreshed EventClass table', 200
 
     elif request.method == 'DELETE':
         pass
         
-@API.route('/entries', methods=['GET','PUT'])
-def entries():
+@API.route('/event/<event>/entries', methods=['GET','PUT'])
+def entries(event):
     """ Name to class and SIcard mapping
     
     GET returns evertyhing
@@ -380,14 +413,14 @@ def entries():
     DELETE clears the collection
     """
     if request.method == 'GET':
-        q = Entry.query.all()
+        q = Entry.query.filter_by(event=event).all()
         return render_template('basiclist.html', items=q)
         
     if request.method == 'PUT':
         request.files[request.files.keys()[0]].save('entries.xml')
         entries = ETL.entriesXML3('entries.xml')
         for e in entries:
-            new_entry = Entry(e['name'], e['cclass'], e['club'], e['sicard'])
+            new_entry = Entry(event, e['name'], e['cclass'], e['club'], e['sicard'])
             db.session.add(new_entry)
         db.session.commit()
         return 'Updated Entries', 200

@@ -3,11 +3,173 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
+class Entry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event = db.Column(db.String)
+    sicard = db.Column(db.Integer)
+    name = db.Column(db.String)
+    class_code = db.Column(db.String)
+    club_code = db.Column(db.String)
+    
+    def __init__(self, event, name, cclassshort, club=None, sicard=None):
+        self.event = event
+        self.name = name
+        self.class_code = cclassshort
+        self.club_code = club
+        self.sicard = sicard
+
+    def __repr__(self):
+        return '<Entry {} on {}>'.format(self.name, self.class_code)
+
+    def __str__(self):
+        return '{}'.format(self.name)
+
+
+class EventClass(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event = db.Column(db.String)
+    class_code = db.Column(db.String)
+    class_name = db.Column(db.String)
+    is_scored = db.Column(db.Boolean)
+    score_method = db.Column(db.String)
+    is_multi_scored = db.Column(db.Boolean)
+    multi_score_method = db.Column(db.String)
+    is_team_class = db.Column(db.Boolean)
+    team_classes = db.Column(db.String)
+    
+    def __init__(self, event, classinfo):
+        self.event = event
+        self.class_code = classinfo['class_code']
+        self.class_name = classinfo['class_name']
+        self.is_scored = classinfo['is_scored']
+        self.score_method = classinfo['score_method']
+        self.is_multi_scored = classinfo['is_multi_scored']
+        self.multi_score_method = classinfo['multi_score_method']
+        self.is_team_class = classinfo['is_team_class']
+        self.team_classes = classinfo['team_classes']
+        return
+
+    def __repr__(self):
+        return '<Course {} - {}>'.format(self.class_code, self.class_name)
+
+    def __str__(self):
+        return '{}'.format(self.class_name)
+
+
+class Club(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    club_code = db.Column(db.String)
+    club_name = db.Column(db.String)
+    
+    def __init__(self, short, long):
+        self.club_code = short
+        self.club_name = long
+
+    def __repr__(self):
+        return '<Club Object - {}>'.format(self.club_code)
+
+    def __str__(self):
+        return '{} ({})'.format(self.club_name, self.club_code)
+
+
+class Result(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event = db.Column(db.String)
+    sicard = db.Column(db.Integer)
+    bib = db.Column(db.Integer)
+    name = db.Column(db.String)
+    class_code = db.Column(db.String)
+    club_code = db.Column(db.String)
+    time = db.Column(db.Integer)
+    status = db.Column(db.String)
+    position = db.Column(db.Integer)
+    score = db.Column(db.Float)
+    team_id = db.Column(db.Integer)
+    is_team_scorer = db.Column(db.Boolean)
+    multi_id = db.Column(db.Integer)
+
+    def __init__(self, event, result_dict):
+        self.event = event
+        self.sicard = result_dict['sicard']
+        self.name = result_dict['name']
+        self.class_code = result_dict['class_code']
+        self.club_code = result_dict['club_code']
+        self.time = result_dict['time']
+        self.status = result_dict['status']
+        return
+        
+    def __repr__(self):
+        return '<Result Object - sicard {}>'.format(self.sicard)
+
+    def __str__(self):
+        return 'Result for {} ({}) in class {}: {}'.format(self.name, self.sicard, self.class_code, self.time)
+
+    def timetommmss(self):
+        if (self.time == None) or (self.time == -1):
+            return '--:--'
+        minutes, seconds = divmod(self.time, 60)
+        m, s = str(minutes), str(seconds)
+        if len(s) < 2:
+            s = "0" + s
+        return m + ":" + s
+
+        
+class TeamResult(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event = db.Column(db.String)
+    club_code = db.Column(db.String)
+    class_code = db.Column(db.String)
+    position = db.Column(db.Integer)
+    score = db.Column(db.Float)
+    multi_id = db.Column(db.Integer)
+    
+    def __init__(self, event, cclass, club, score):
+        self.event = event
+        self.class_code = cclass
+        self.club_code = club
+        self.score = score
+    
+    def __repr__(self):
+        return '<TeamResult for {} in {}>'.format(self.club_code, self.class_code)
+        
+    def __str__(self):
+        return 'Team {} in position {} on {} with a score of {}'.format(self.club_code, self.position, self.class_code, self.score)
+
+
+class MultiResultIndv(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    class_code = db.Column(db.String)
+    score = db.Column(db.Integer)
+    position = db.Column(db.Integer)
+    result_ids = db.Column(db.String)
+    
+    def __init__(self, class_code, score, ids):
+        self.class_code = class_code
+        self.score = score
+        self.result_ids = ids
+        return
+
+    def scoreasmmmss(self):
+        # For individual multi-score as total time, store time as seconds, format as below
+        minutes, seconds = divmod(self.score, 60)
+        m, s = str(minutes), str(seconds)
+        if len(s) < 2:
+            s = "0" + s
+        return m + ":" + s
+    
+    
+class MultiResultTeam(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    score = db.Column(db.Integer)
+    position = db.Column(db.Integer)
+
+    def __init__(self, score):
+        self.score = score
+
 
 class RemotePunch(db.Model):
-    __tablename__ = 'wifiscoring_remotepunch'
-
     id = db.Column(db.Integer, primary_key=True)
+    event = db.Column(db.String)
     station = db.Column(db.Integer)
     sicard = db.Column(db.Integer)
     time = db.Column(db.Time)
@@ -22,138 +184,9 @@ class RemotePunch(db.Model):
 
     def __str__(self):
         return 'At {} -> {:d} punched box #{:d}'.format(self.time, self.sicard, self.station)
-        
-class Entry(db.Model):
-    __tablename__ = 'wifiscoring_entry'
 
-    id = db.Column(db.Integer, primary_key=True)
-    sicard = db.Column(db.Integer)
-    name = db.Column(db.String)
-    cclassshort = db.Column(db.String)
-    clubshort = db.Column(db.String)
-    
-    def __init__(self, name, cclassshort, club=None, sicard=None):
-        self.name = name
-        self.cclassshort = cclassshort
-        self.club = club
-        self.sicard = sicard
-
-    def __repr__(self):
-        return '<Entry {:s} on {:s}>'.format(self.name, self.cclassshort)
-
-    def __str__(self):
-        return '{:s}'.format(self.name)
-
-
-class Cclass(db.Model):
-    __tablename__ = 'wifiscoring_cclass'
-
-    id = db.Column(db.Integer, primary_key=True)
-    cclassshort = db.Column(db.String)
-    cclassfull = db.Column(db.String)
-    isPublic = db.Column(db.Boolean)
-    isScored = db.Column(db.Boolean)
-    
-    def __init__(self, short, long, public, scored):
-        self.cclassshort = short
-        self.cclassfull = long
-        self.isPublic = public
-        self.isScored = scored
-
-    def __repr__(self):
-        return '<Course {:s} - {:s}>'.format(self.cclassshort, self.cclassfull)
-
-    def __str__(self):
-        return '{:s}'.format(self.cclassfull)
-
-
-class Club(db.Model):
-    __tablename__ = 'wifiscoring_club'
-
-    id = db.Column(db.Integer, primary_key=True)
-    clubshort = db.Column(db.String)
-    clubfull = db.Column(db.String)
-    
-    def __init__(self, short, long):
-        self.clubshort = short
-        self.clubfull = long
-
-    def __repr__(self):
-        return '<Club {:s} - {:s}>'.format(self.clubshort, self.clubfull)
-
-    def __str__(self):
-        return '{:s} ({:s})'.format(self.clubfull, self.clubshort)
-
-
-class Result(db.Model):
-    __tablename__ = 'wifiscoring_result'
-
-    id = db.Column(db.Integer, primary_key=True)
-    eventnum = db.Column(db.Integer)
-    sicard = db.Column(db.Integer)
-    name = db.Column(db.String)
-    cclassshort = db.Column(db.String)
-    clubshort = db.Column(db.String)
-    time = db.Column(db.Integer)
-    status = db.Column(db.String)
-    position = db.Column(db.Integer)
-    score = db.Column(db.Float)
-    isTeamScorer = db.Column(db.Boolean)
-
-    def __init__(self, result_dict):
-        self.sicard = result_dict['sicard']
-        self.name = result_dict['name']
-        self.cclassshort = result_dict['cclassshort']
-        self.clubshort = result_dict['clubshort']
-        self.time = result_dict['time']
-        self.status = result_dict['status']
-        self.position = result_dict['position']
-        
-    def __repr__(self):
-        return '<Result in class {0} with sicard {1}>'.format(self.cclassshort, self.sicard)
-
-    def __str__(self):
-        return 'Result for {} ({}) in class {}: {}'.format(self.name, self.sicard, self.cclassshort, self.time)
-
-    def timetommmss(self):
-        if (self.time == None) or (self.time == -1):
-            return '--:--'
-        minutes, seconds = divmod(self.time, 60)
-        m, s = str(minutes), str(seconds)
-        if len(s) < 2:
-            s = "0" + s
-        return m + ":" + s
-        
-class MultiResult(db.Model):
-    __tablename__ = 'wifiscoring_multiresult'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    score = db.Column(db.Integer)
-    position = db.Column(db.Integer)
-    # and a reference to the actual result objects?
-        
-class TeamResult(db.Model):
-    __tablename__ = 'wifiscoring_teamresult'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    eventnum = db.Column(db.Integer)
-    clubshort = db.Column(db.String)
-    cclassshort = db.Column(db.String)
-    position = db.Column(db.Integer)
-    score = db.Column(db.Float)
-    
-    def __init__(self, cclass, club, score):
-        self.cclassshort = cclass
-        self.clubshort = club
-        self.score = score
-    
-    def __repr__(self):
-        return '<TeamResult for {:s} in {:s}>'.format(self.clubshort, self.cclassshort)
-        
-    def __str__(self):
-        return 'Team {} in position {} on {} with a score of {}'.format(self.clubshort, self.position, self.cclassshort, self.score)
-
-class Action(db.Model):
+   
+class DBAction(db.Model):
     __tablename__ = 'wifiscoring_actions'
     id = db.Column(db.Integer, primary_key=True)
     time = db.Column(db.DateTime)
