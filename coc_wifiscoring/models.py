@@ -123,13 +123,16 @@ class TeamResult(db.Model):
     class_code = db.Column(db.String)
     position = db.Column(db.Integer)
     score = db.Column(db.Float)
+    is_valid = db.Column(db.Boolean)
     multi_id = db.Column(db.Integer)
     
-    def __init__(self, event, cclass, club, score):
+    def __init__(self, event, cclass, club, score, valid):
         self.event = event
         self.class_code = cclass
         self.club_code = club
         self.score = score
+        self.is_valid = valid
+        return
     
     def __repr__(self):
         return '<TeamResult for {} in {}>'.format(self.club_code, self.class_code)
@@ -142,13 +145,15 @@ class MultiResultIndv(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     class_code = db.Column(db.String)
     score = db.Column(db.Integer)
+    is_valid = db.Column(db.Boolean)
     position = db.Column(db.Integer)
     result_ids = db.Column(db.String)
     
-    def __init__(self, class_code, score, ids):
+    def __init__(self, class_code, score, ids, valid):
         self.class_code = class_code
         self.score = score
         self.result_ids = ids
+        self.is_valid = valid
         return
 
     def scoreasmmmss(self):
@@ -164,13 +169,15 @@ class MultiResultTeam(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     class_code = db.Column(db.String)
     score = db.Column(db.Integer)
+    is_valid = db.Column(db.Boolean)
     position = db.Column(db.Integer)
     result_ids = db.Column(db.String)
 
-    def __init__(self, class_code, score, ids):
+    def __init__(self, class_code, score, ids, valid):
         self.class_code = class_code
         self.score = score
         self.result_ids = ids
+        self.is_valid = valid
         return
 
 
