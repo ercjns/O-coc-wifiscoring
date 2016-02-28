@@ -39,6 +39,7 @@ def results(event):
         for r in results:
             result_dict = { 'sicard': int(r['estick'] if r['estick']>0 else -1),
                             'name': str(r['name']),
+                            'bib': int(r['bib'] if r['bib']>0 else -1),
                             'class_code': str(r['class_code']),
                             'club_code': str(r['club']),
                             'time': int(r['time'] if r['time']>0 else -1),
@@ -61,7 +62,7 @@ def results(event):
         _assignTeamScores(event)
         _assignTeamPositions(event)
         
-        _assignMultiScores()
+        _assignMultiScores(event)
 
         new_action = DBAction(datetime.now(), 'results')
         db.session.add(new_action)
@@ -114,7 +115,7 @@ def _assignScores(event):
                 
         elif c.score_method == 'NOCI-indv':
             class_results = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).all()
-            awt = sum([r.time for r in classresults if (r.position > 0 and r.position <=3)]) / 3.0
+            awt = sum([r.time for r in class_results if (r.position > 0 and r.position <=3)]) / 3.0
             
             if c.class_code == 'N2M':
                 paired_class_code = 'N3F'
@@ -157,6 +158,7 @@ def _assignTeamScores(event):
         elif c.score_method == 'WIOL-team':
             indv_results = []
             for indv_class in c.team_classes.split('-'):
+                indv_class = indv_class.strip()
                 indv_results += Result.query.filter_by(event=event).filter_by(class_code=indv_class).all()
             teams = set([r.club_code for r in indv_results])
             for team in teams:
@@ -181,6 +183,9 @@ def _assignTeamScores(event):
         elif c.score_method == 'NOCI-team':
             indv_results = []
             for indv_class in c.team_classes.split('-'):
+                indv_class = indv_class.strip()
+                q = Result.query.filter_by(event=event).filter_by(class_code=indv_class).all()
+                print q
                 indv_results += Result.query.filter_by(event=event).filter_by(class_code=indv_class).all()
             teams = set([r.club_code for r in indv_results])
             for team in teams:
@@ -198,7 +203,7 @@ def _assignTeamScores(event):
                     for nonscorer in members:
                         nonscorer.isTeamScorer = False
                     db.session.add_all(members)
-                team = TeamResult(c.class_code, team, score)
+                team = TeamResult(event, c.class_code, team, score)
                 db.session.add(team)
                 db.session.commit()
 
@@ -225,6 +230,7 @@ def _assignTeamPositions(event):
                     a_scorers = []
                     b_scorers = []
                     for indv_class in c.team_classes.split('-'):
+                        indv_class = indv_class.strip()
                         a_scorers += Result.query.filter_by(event=event).filter_by(class_code=indv_class).filter_by(club_code=a_club).filter_by(is_team_scorer=True).all()
                         b_scorers +=Result.query.filter_by(event=event).filter_by(class_code=indv_class).filter_by(club_code=b_club).filter_by(is_team_scorer=True).all()
                     a_scorers.sort(key=lambda x: -x.score)
@@ -270,26 +276,38 @@ def _assignTeamPositions(event):
             db.session.commit()
     return
     
-def _assignMultiScores():
-    multi_classes = EventClass.query.filter_by(is_team_class=False).fitler_by(is_multi_scored=True).all()
+def _assignMultiScores(event):
+    multi_classes = EventClass.query.filter_by(is_team_class=False).filter_by(is_multi_scored=True).filter_by(event=event).all() #filter by event to only get ONE hit for each class.
     for c in multi_classes:
-        # ToDo: follow class's multi-score-method. Currently sums all scores.
-        indv_results = Result.query.filter_by(class_code=c.class_code).order_by(Result.bib).all()
-        bib = None
-        score = 0
-        ids = ''
-        for r in indv_results:
-            if r.bib != bib:
-                if ids:
-                   new_multi_result = MultiResultIndv(score, ids)
-                   db.session.add(new_multi_result)
-                bib = r.bib
-                score = r.score
-                ids = str(r.id)
-            else:
-                score += r.score
-                ids += '-' + str(r.id)
-        db.session.commit()
+        if c.multi_score_method == 'time-total':
+            print c.class_code
+            indv_results = Result.query.filter_by(class_code=c.class_code).order_by(Result.bib).all()
+            if len(indv_results) == 0:
+                continue
+            bib = None
+            score = 0
+            ids = ''
+            while indv_results:
+                next = indv_results.pop()
+                print next.bib, next.score, next.id
+                if (next.bib != bib):
+                    print 'new bib'
+                    if ids:
+                        print 'saving data'
+                        new_multi_result = MultiResultIndv(c.class_code, score, ids)
+                        db.session.add(new_multi_result)
+                    print 'resetting'
+                    bib = next.bib
+                    score = next.time
+                    ids = str(next.id)
+                else:
+                    score += next.time
+                    ids += '-{}'.format(next.id)
+            db.session.commit()
+
+        else:
+            pass
+    return
         
         
 def _assignMultiPositions():

@@ -92,10 +92,12 @@ class Result(db.Model):
         self.event = event
         self.sicard = result_dict['sicard']
         self.name = result_dict['name']
+        self.bib = result_dict['bib']
         self.class_code = result_dict['class_code']
         self.club_code = result_dict['club_code']
         self.time = result_dict['time']
         self.status = result_dict['status']
+        
         return
         
     def __repr__(self):
