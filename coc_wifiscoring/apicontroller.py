@@ -471,6 +471,35 @@ def cclasses(event):
     elif request.method == 'DELETE':
         pass
         
+@API.route('/events', methods=['GET', 'PUT', 'DELETE'])
+def events():
+    """ Mapping of class code to full name
+    
+    GET returns a view of all classes
+    PUT accepts a list of classes and will update data
+    DELETE will clear the entire collection
+    """
+    
+    if request.method == 'GET':
+        q = Event.query.all()
+        return render_template('basiclist.html', items=q)
+
+    elif request.method == 'PUT':
+        f = request.files[request.files.keys()[0]].save('~latesteventinfo.tsv')
+        events = ETL.eventsTSV('~latesteventinfo.tsv')
+
+        # TODO: make this a PUT rather than a wipe and reload.
+        Event.query.delete()
+
+        for e in events:
+            new_event = Event(e, c)
+            db.session.add(new_event)
+        db.session.commit()
+        return 'Refreshed Event table', 200
+
+    elif request.method == 'DELETE':
+        pass
+        
 @API.route('/event/<event>/entries', methods=['GET','PUT'])
 def entries(event):
     """ Name to class and SIcard mapping

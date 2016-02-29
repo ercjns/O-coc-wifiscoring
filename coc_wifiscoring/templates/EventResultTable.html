@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Results for {{ cclass }}{% endblock %}
+{% block title %}{{ event_info.event_name }} {{ class_info.class_name }}{% endblock %}
 
 {% block content %}
 <div class="row">
 	<div class="col-xs-12">
-		<h2>Results for {{ cclass.cclassfull }}:</h2>
-		<p>All results are preliminary.</p>
+		<h2 style="margin-bottom: 0px">Results for {{ class_info.class_name }}</h2>
+		<p class="text-muted">{{ event_info.event_name }} at {{ event_info.venue }}{{ event_info.date }}</p>
 	</div>
 </div>
 
@@ -17,10 +17,10 @@
 		<th>Name</th>
 		<th>Club</th>
 		<th>Result</th>
-		{% if cclass.isScored %}
+		{% if class_info.is_scored %}
 		<th>Score</th>
 		{% endif %}
-		{% for r in items %}
+		{% for r in results %}
 		<tr>
 		{% if r.status == 'OK' %}
 			<td>{{ r.position }}</td>
@@ -34,7 +34,7 @@
 		{% else %}
 			<td>{{ r.status }}</td>
 		{% endif %}
-		{% if cclass.isScored %}
+		{% if class_info.is_scored %}
 		<td>{{ r.score }}</td>
 		{% endif %}
 		</tr>
@@ -42,6 +42,15 @@
 		</table>
 	</div>
 	<div class="col-xs-12 col-md-4">
+		<h4>Result Classifications:</h4>
+		<dl>
+			<dt>Did Not Finish</dt>
+			<dd>Started the course but returned to the finish before finding all of the controls.</dd>
+			<dt>Mis-Punch</dt>
+			<dd>Completed majority of the course, but punched out of order or skipped a control or two.</dd>
+			<dt>Not Competing</dt>
+			<dd>Indicates the competitor should not be scored in this class. Does NOT indicate course completion status.</dd>
+		</dl>
 		<h4>Read your split ticket:</h4>
 		<p>The <strong>left column shows the order</strong> you punched the controls for your course. It shows both the order (1, 2, 3) and the control code (108, 111, 132).</p>
 		<p>The <strong>middle column shows your split time</strong>, the time you took to navigate from the previous control to this one.</p>
@@ -51,6 +60,6 @@
 	</div>
 </div>
 
-<script src="{{ url_for('static', filename='filter.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='filter.js') }}"></script> -->
 
 {% endblock %}

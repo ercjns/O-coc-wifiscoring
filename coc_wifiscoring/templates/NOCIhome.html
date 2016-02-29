@@ -4,28 +4,34 @@
 
 {% block content %}
 <div class="row">
-	<div class="col-xs-12">
-		<h2>NOCI and Ultimate Orienteer #1 and #2</h2>
-		<p>Hosted by Cascade Orienteering Club. March 5-6, 2016</p>
-		<p>Day 1 at Lincoln Tree Farm, Spanaway, WA. Day 2 at Ft. Steilacoom Park, Lakewood, WA</p>
+	<div class="col-md-1">
+	</div>
+	<div class="col-xs-12 col-md-6">
+		<h2>NOCI 2016</h2>
+		<p>Hosted by Cascade Orienteering Club</p>
 	</div>
 </div>
 
 <div class="row">
-	<div class="col-xs-12 col-md-4">
-		<h2>NOCI</h2>
-		<ul class="list-unstyled">
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='W1F') }}" class="btn btn-default btn-block">Day 1 Results</a></li>
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='W1M') }}" class="btn btn-default btn-block">Day 2 Results</a></li>
-		<br />
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='W2F') }}" class="btn btn-default btn-block">Two-day: Individuals</a></li>
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='W2M') }}" class="btn btn-default btn-block">Two-day: Teams</a></li>
+	<div class="col-md-1">
 	</div>
 	<div class="col-xs-12 col-md-4">
-		<h2>Public Courses (Ultimate Orienteer)</h2>
-		<ul class="list-unstyled">
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='1') }}" class="btn btn-default btn-block">Day 1</a></li>
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='3') }}" class="btn btn-default btn-block">Day 2</a></li>
+		<div class="well">
+			<h2>Single-day results</h2>
+			<ul class="list-unstyled">
+			<li><a href="{{ url_for('frontend.event_class_select', event='2016-03-05-1') }}" class="btn btn-default btn-lg btn-link">Day 1 - Lincoln Tree Farm</a></li>
+			<li><a href="{{ url_for('frontend.event_class_select', event='2016-03-06-1') }}" class="btn btn-default btn-lg btn-link">Day 2 - Ft. Steilacoom Park</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="col-xs-12 col-md-4">
+		<div class="well">
+			<h2>NOCI 2016</h2>
+			<ul class="list-unstyled">
+			<li><a href="{{ url_for('frontend.noci_results_indv') }}" class="btn btn-default btn-lg btn-link">Individuals</a></li>
+			<li><a href="{{ url_for('frontend.noci_results_team') }}" class="btn btn-default btn-lg btn-link">Teams</a></li>
+			</ul>
+		</div>
 	</div>
 </div>
 

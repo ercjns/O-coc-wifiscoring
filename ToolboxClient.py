@@ -56,12 +56,24 @@ def put_cclasstable(event, file):
         r = requests.put(url, files=f)
     hosts.close()
     
+def put_eventtable(file):
+    hosts = open("confighosts.txt")
+    while True:
+        host = hosts.readline().rstrip()
+        if not host: break
+        print("sending events to " + host)
+        
+        url = host + '/api/events'
+        f = {'file': open(file, 'r')}
+        r = requests.put(url, files=f)
+    hosts.close()
+    
 def put_entrylist(event, file):
     with open("confighosts.txt", "r") as hosts:
         while True:
             host = hosts.readline().rstrip()
             if not host: break
-            print("sending classes to " + host)
+            print("sending entries to " + host)
             
             url = host + '/api/event/' + event + '/entries'
             f = {'file': open(file, 'r')}
@@ -152,9 +164,9 @@ if __name__ == '__main__':
     elif method == 'clubs':
         '''
         post a json file containing the mapping of club code to full name
-        python ToolboxClient.py clubs 2016-02-27-1 clubcodes.json
+        python ToolboxClient.py clubs clubcodes.json
         '''
-        put_clubcodetable(sys.argv[2], sys.argv[3])
+        put_clubcodetable(sys.argv[2])
         
     elif method == 'classes':
         '''
@@ -169,6 +181,13 @@ if __name__ == '__main__':
         python ToolboxClient.py entries 2016-02-27-1 meetentries.xml
         '''
         put_entrylist(sys.argv[2], sys.argv[3])
+        
+    elif method == 'events':
+        '''
+        post a xml file containing the entries for the meet
+        python ToolboxClient.py events eventinfo.tsv
+        '''
+        put_eventtable(sys.argv[2])
         
     # elif method == 'prep-db':
         # '''

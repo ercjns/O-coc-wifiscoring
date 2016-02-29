@@ -1,7 +1,5 @@
 from flask import Blueprint, request, abort, render_template
-
-from .models import db, Result, RemotePunch, Club, Cclass, TeamResult, Action
-
+from .models import *
 import copy
 
 frontend = Blueprint("frontend", __name__)
@@ -9,7 +7,38 @@ frontend = Blueprint("frontend", __name__)
 @frontend.route('/')
 def home():
     time = _getResultTimestamp()
-    return render_template('COCwifihome.html', time=time)
+    events = Event.query.all()
+    
+    return render_template('NOCIhome.html', time=time, events=events)
+
+@frontend.route('/event/<event>/')
+def event_class_select(event):
+    time = _getResultTimestamp()
+    event_classes = EventClass.query.filter_by(event='2016-02-28-2', is_team_class=False).all()
+    noci_classes = [c for c in event_classes if (c.class_code[0] == 'N' and c.class_code[2] != 'I')]
+    noci_classes.sort(key=lambda x: x.class_code)
+    noci_classes.append(next(c for c in event_classes if c.class_code == 'N4I'))
+    ult_classes = [c for c in event_classes if c.class_code[0] != 'N']
+    ult_classes.sort(key=lambda x: x.class_code)
+    
+    return render_template('EventClassSelect.html', time=time, 
+                                                    event=event,
+                                                    noci_classes=noci_classes, 
+                                                    ult_classes=ult_classes)
+
+@frontend.route('/noci/individual')
+def noci_results_indv():
+    time = _getResultTimestamp()
+    event_classes = EventClass.query.filter_by(event=event, is_team_class=False, multi_score_method='time-total').all()
+    
+    return render_template('EventClassSelect.html', time=time, classes=event_classes)
+    
+@frontend.route('/noci/team')
+def noci_results_team():
+    time = _getResultTimestamp()
+    event_classes = EventClass.query.filter_by(event=event, is_team_class=True, multi_score_method='NOCI-multi').all()
+    
+    return render_template('EventClassSelect.html', time=time, classes=event_classes)
     
 @frontend.route('/results/teams')
 def team_class_select():
@@ -29,20 +58,23 @@ def cclass_team_results(cclass):
     time = _getResultTimestamp()
     return render_template('TeamResultTable.html', time=time, cclass=classinfo, teams=teamdata, clubs=teamnames, members=teamscorers)
 
-@frontend.route('/results/<cclass>')
-def cclass_results(cclass):
-    knownclass = Cclass.query.all()
-    if cclass not in [c.cclassshort for c in knownclass]:
-        return '404: Not found. Unknown competition class: {}'.format(cclass), 404
-    q = Result.query.filter_by(cclassshort=cclass).all()
-    q.sort(cmp=_sortResults)
-    c = Club.query.all()
-    cd = {}
-    for club in c:
-        cd[club.clubshort] = club.clubfull
-    classinfo = Cclass.query.filter_by(cclassshort=cclass).one()
+@frontend.route('/event/<event>/results/<indv_class>')
+def event_class_result_indv(event, indv_class):
+    event_info = Event.query.filter_by(event_code=event).first_or_404()
+    class_info = EventClass.query.filter_by(event=event, class_code=indv_class).first_or_404()
+    indv_results = Result.query.filter_by(event=event, class_code=indv_class).all()
+    indv_results.sort(cmp=_sortResults)
+    clubs = Club.query.all()
+    club_lookup = {}
+    for club in clubs:
+        club_lookup[club.club_code] = club.club_name
     time = _getResultTimestamp()
-    return render_template('resulttable.html', time=time, cclass=classinfo, items=q, clubs=cd)
+
+    return render_template('EventResultTable.html', time=time, 
+                                                    event=event_info,
+                                                    class_info=class_info,
+                                                    clubs=club_lookup,
+                                                    results=indv_results)
 
 def _sortResults(A, B):
     if A.position>0 and B.position>0:
@@ -121,7 +153,7 @@ def meet_stats():
     
 
 def _getResultTimestamp():
-    time = Action.query.order_by(-Action.id).first()
+    time = DBAction.query.order_by(-DBAction.id).first()
     if time:
         return time.time.strftime('%H:%M, %b %d, %Y')
     else:

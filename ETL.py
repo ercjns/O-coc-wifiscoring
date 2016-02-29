@@ -285,6 +285,25 @@ def classCSV(file):
             classes.append(classinfo)
     return classes
     
+def eventTSV(file):
+    ''' returns array of eventinfo dictionaries '''
+    events = []
+    with open(file, 'r') as f:
+        for line in f:
+            props = line.split('\t')
+            if props[0] == 'event_code':
+                continue # skip header row
+            if len(props) != 5:
+                raise ValueError
+            eventinfo = {}
+            eventinfo['event_code'] = props[0]
+            eventinfo['event_name'] = props[1]
+            eventinfo['date'] = True if props[2] == 'TRUE' else False
+            eventinfo['venue'] = props[3]
+            eventinfo['description'] = True if props[4] == 'TRUE' else False
+            events.append(eventinfo)
+    return events
+    
 def entriesXML3(file):
     """ returns array of entry dicts """
     entries = []

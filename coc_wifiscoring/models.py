@@ -179,7 +179,22 @@ class MultiResultTeam(db.Model):
         self.result_ids = ids
         self.is_valid = valid
         return
-
+        
+class Event(db.Model)
+    id = db.Column(db.Integer, primary_key=True)
+    event_code = db.Column(db.String)
+    event_name = db.Column(db.String)
+    date = db.Column(db.String)
+    venue = db.Column(db.String)
+    description = db.Columb(db.String)
+    
+    def __init__(self, code, name, date, venue, description=None):
+        self.event_code = code
+        self.event_name = name
+        self.date = date
+        self.venue = venue
+        self.description = description
+        return
 
 class RemotePunch(db.Model):
     id = db.Column(db.Integer, primary_key=True)
