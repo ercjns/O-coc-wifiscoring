@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}{{ event_info.event_name }} {{ class_info.class_name }}{% endblock %}
+{% block title %}{{ event.event_name }} {{ class_info.class_name }}{% endblock %}
 
 {% block content %}
 <div class="row">
 	<div class="col-xs-12">
 		<h2 style="margin-bottom: 0px">Results for {{ class_info.class_name }}</h2>
-		<p class="text-muted">{{ event_info.event_name }} at {{ event_info.venue }}{{ event_info.date }}</p>
+		<p class="text-muted">{{ event.event_name }} at {{ event.venue }}{{ event.date }}</p>
 	</div>
 </div>
 

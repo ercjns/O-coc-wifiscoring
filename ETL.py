@@ -285,7 +285,7 @@ def classCSV(file):
             classes.append(classinfo)
     return classes
     
-def eventTSV(file):
+def eventsTSV(file):
     ''' returns array of eventinfo dictionaries '''
     events = []
     with open(file, 'r') as f:
@@ -298,9 +298,9 @@ def eventTSV(file):
             eventinfo = {}
             eventinfo['event_code'] = props[0]
             eventinfo['event_name'] = props[1]
-            eventinfo['date'] = True if props[2] == 'TRUE' else False
+            eventinfo['date'] = props[2]
             eventinfo['venue'] = props[3]
-            eventinfo['description'] = True if props[4] == 'TRUE' else False
+            eventinfo['description'] = props[4]
             events.append(eventinfo)
     return events
     

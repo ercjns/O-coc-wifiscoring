@@ -11,13 +11,17 @@ def home():
     
     return render_template('NOCIhome.html', time=time, events=events)
 
-@frontend.route('/event/<event>/')
-def event_class_select(event):
+@frontend.route('/event/<event_code>/')
+def event_class_select(event_code):
     time = _getResultTimestamp()
-    event_classes = EventClass.query.filter_by(event='2016-02-28-2', is_team_class=False).all()
+    event = Event.query.filter_by(event_code=event_code).first_or_404()
+    event_classes = EventClass.query.filter_by(event=event_code, is_team_class=False).all()
     noci_classes = [c for c in event_classes if (c.class_code[0] == 'N' and c.class_code[2] != 'I')]
     noci_classes.sort(key=lambda x: x.class_code)
-    noci_classes.append(next(c for c in event_classes if c.class_code == 'N4I'))
+    try:
+        noci_classes.append(next(c for c in event_classes if c.class_code == 'N4I'))
+    except:
+        pass
     ult_classes = [c for c in event_classes if c.class_code[0] != 'N']
     ult_classes.sort(key=lambda x: x.class_code)
     
@@ -58,11 +62,11 @@ def cclass_team_results(cclass):
     time = _getResultTimestamp()
     return render_template('TeamResultTable.html', time=time, cclass=classinfo, teams=teamdata, clubs=teamnames, members=teamscorers)
 
-@frontend.route('/event/<event>/results/<indv_class>')
-def event_class_result_indv(event, indv_class):
-    event_info = Event.query.filter_by(event_code=event).first_or_404()
-    class_info = EventClass.query.filter_by(event=event, class_code=indv_class).first_or_404()
-    indv_results = Result.query.filter_by(event=event, class_code=indv_class).all()
+@frontend.route('/event/<event_code>/results/<indv_class>')
+def event_class_result_indv(event_code, indv_class):
+    event = Event.query.filter_by(event_code=event_code).first_or_404()
+    class_info = EventClass.query.filter_by(event=event_code, class_code=indv_class).first_or_404()
+    indv_results = Result.query.filter_by(event=event_code, class_code=indv_class).all()
     indv_results.sort(cmp=_sortResults)
     clubs = Club.query.all()
     club_lookup = {}
@@ -71,7 +75,7 @@ def event_class_result_indv(event, indv_class):
     time = _getResultTimestamp()
 
     return render_template('EventResultTable.html', time=time, 
-                                                    event=event_info,
+                                                    event=event,
                                                     class_info=class_info,
                                                     clubs=club_lookup,
                                                     results=indv_results)

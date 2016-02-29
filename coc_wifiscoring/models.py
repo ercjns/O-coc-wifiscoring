@@ -180,13 +180,13 @@ class MultiResultTeam(db.Model):
         self.is_valid = valid
         return
         
-class Event(db.Model)
+class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event_code = db.Column(db.String)
     event_name = db.Column(db.String)
     date = db.Column(db.String)
     venue = db.Column(db.String)
-    description = db.Columb(db.String)
+    description = db.Column(db.String)
     
     def __init__(self, code, name, date, venue, description=None):
         self.event_code = code

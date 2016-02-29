@@ -492,7 +492,7 @@ def events():
         Event.query.delete()
 
         for e in events:
-            new_event = Event(e, c)
+            new_event = Event(e['event_code'], e['event_name'], e['date'], e['venue'], e['description'])
             db.session.add(new_event)
         db.session.commit()
         return 'Refreshed Event table', 200

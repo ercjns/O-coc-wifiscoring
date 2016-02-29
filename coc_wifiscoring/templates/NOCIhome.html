@@ -19,8 +19,11 @@
 		<div class="well">
 			<h2>Single-day results</h2>
 			<ul class="list-unstyled">
-			<li><a href="{{ url_for('frontend.event_class_select', event='2016-03-05-1') }}" class="btn btn-default btn-lg btn-link">Day 1 - Lincoln Tree Farm</a></li>
-			<li><a href="{{ url_for('frontend.event_class_select', event='2016-03-06-1') }}" class="btn btn-default btn-lg btn-link">Day 2 - Ft. Steilacoom Park</a></li>
+			<li><a href="{{ url_for('frontend.event_class_select', event_code='2016-03-05-1') }}" class="btn btn-default btn-lg btn-link">Day 1 - Lincoln Tree Farm</a></li>
+			<li><a href="{{ url_for('frontend.event_class_select', event_code='2016-03-06-1') }}" class="btn btn-default btn-lg btn-link">Day 2 - Ft. Steilacoom Park</a></li>
+			{% for e in events %}
+			<li><a href="{{ url_for('frontend.event_class_select', event_code=e.event_code) }}" class="btn btn-default btn-lg btn-link">TEST {{ e.event_name }}</a></li>
+			{% endfor %}
 			</ul>
 		</div>
 	</div>
