@@ -31,11 +31,32 @@ def event_class_select(event_code):
                                                     ult_classes=ult_classes)
 
 @frontend.route('/noci/individual')
-def noci_results_indv():
+def noci_indv_class_select():
     time = _getResultTimestamp()
-    event_classes = EventClass.query.filter_by(event=event, is_team_class=False, multi_score_method='time-total').all()
+    event_classes = EventClass.query.filter_by(event='2016-03-05-1', is_team_class=False, multi_score_method='time-total').all()
     
     return render_template('EventClassSelect.html', time=time, classes=event_classes)
+    
+@frontend.route('/noci/individual/<class_code>')
+def noci_results_indv(class_code):
+    time = _getResultTimestamp()
+    class_info = EventClass.query.filter_by(event='2016-02-28-1', class_code=class_code).first_or_404()
+    clubs = Club.query.all()
+    club_lookup = {}
+    for club in clubs:
+        club_lookup[club.club_code] = club.club_name
+    multi_results = MultiResultIndv.query.filter_by(class_code=class_code).all()
+    for m in multi_results:
+        m.results = []
+        for r in m.result_ids.split('-'):
+            print r
+            m.results.append(Result.query.get(r))
+    multi_results.sort(cmp=_sortResults)
+    
+    return render_template('NOCItwoDayIndividualResults.html', time=time, 
+                                                               class_info=class_info,
+                                                               clubs=club_lookup,
+                                                               results=multi_results)
     
 @frontend.route('/noci/team')
 def noci_results_team():

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Results for {{ cclass }}{% endblock %}
+{% block title %}{{ class_info.class_name }} two-day results{% endblock %}
 
 {% block content %}
 <div class="row">
 	<div class="col-xs-12">
-		<h2>Results for {{ cclass.cclassfull }}:</h2>
+		<h2>Two-day Results for {{ class_info.class_name }}:</h2>
 	</div>
 </div>
 
@@ -20,14 +20,18 @@
 			<th>Day 2</th>
 			<th>Total Time</th>
 		</tr>
-		{% for mutilresult in results %}
+		{% for r in results %}
 		<tr>
 			<td>{{ r.position }}</td>
-			<td>{{ r.one.name }} ({{ r.one.clubshort }})</td>
+			<td>{{ r.results[0].name }} ({{ r.results[0].club_code }})</td>
 			<td>{{ clubs[r.clubshort] }}</td>
-			<td>{{ r.one.timetommmss() }}</td>
-			<td>{{ r.two.timetommmss() }}</td>
-			<td>{{ r.score }}
+			<td>{{ r.results[0].timetommmss() }}</td>
+			{% if r.results[1] %}
+			<td>{{ r.results[1].timetommmss() }}</td>
+			{% else %}
+			<td></td>
+			{% endif %}
+			<td>{{ r.scoreasmmmss() }}
 		</tr>
 		{% endfor %}
 		</table>

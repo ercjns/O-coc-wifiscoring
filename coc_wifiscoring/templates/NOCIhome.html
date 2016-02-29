@@ -4,11 +4,16 @@
 
 {% block content %}
 <div class="row">
-	<div class="col-md-1">
+	<div class="col-xs-12 col-md-6 col-md-offset-1">
+		<h2>Live Results: NOCI 2016</h2>
 	</div>
-	<div class="col-xs-12 col-md-6">
-		<h2>NOCI 2016</h2>
-		<p>Hosted by Cascade Orienteering Club</p>
+</div>
+<div class="row">
+	<div class="col-xs-12 col-md-6 col-md-offset-1">
+		<p>We're doing our best to provide updates to results every five minutes during the weekend. As with orienteering, your milage may very. All results presented here are preliminary. Please contact meet volunteers to resolve any issues.</p>
+	</div>
+	<div class="col-md-2 hidden-xs hidden-sm">
+		<p><img src="{{ url_for('static', filename='IMG_9318_s.jpg') }}" class="img-rounded img-responsive" style="max-height: 100px"></p>
 	</div>
 </div>
 
@@ -22,7 +27,7 @@
 			<li><a href="{{ url_for('frontend.event_class_select', event_code='2016-03-05-1') }}" class="btn btn-default btn-lg btn-link">Day 1 - Lincoln Tree Farm</a></li>
 			<li><a href="{{ url_for('frontend.event_class_select', event_code='2016-03-06-1') }}" class="btn btn-default btn-lg btn-link">Day 2 - Ft. Steilacoom Park</a></li>
 			{% for e in events %}
-			<li><a href="{{ url_for('frontend.event_class_select', event_code=e.event_code) }}" class="btn btn-default btn-lg btn-link">TEST {{ e.event_name }}</a></li>
+			<li><a href="{{ url_for('frontend.event_class_select', event_code=e.event_code) }}" class="btn btn-default btn-lg btn-link">{{ e.event_name }} - {{ e.venue }}</a></li>
 			{% endfor %}
 			</ul>
 		</div>
