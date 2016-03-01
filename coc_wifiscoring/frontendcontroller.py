@@ -8,8 +8,9 @@ frontend = Blueprint("frontend", __name__)
 def home():
     time = _getResultTimestamp()
     events = Event.query.all()
-    noci_team_classes = EventClass.query.filter_by(event='2016-02-28-1', is_team_class=True, multi_score_method='NOCI-multi').all()
-    noci_indv_classes = EventClass.query.filter_by(event='2016-02-28-1', is_team_class=False, multi_score_method='time-total').all()
+    event_code = events[0].event_code # events and classes are pre-populated, this is almost a hard-code
+    noci_team_classes = EventClass.query.filter_by(event=event_code, is_team_class=True, multi_score_method='NOCI-multi').all()
+    noci_indv_classes = EventClass.query.filter_by(event=event_code, is_team_class=False, multi_score_method='time-total').all()
     
     return render_template('NOCIhome.html', time=time, events=events, noci_team_classes=noci_team_classes, noci_indv_classes=noci_indv_classes)
 
@@ -73,7 +74,8 @@ def _sortResults(A, B):
 @frontend.route('/noci/individual/<class_code>')
 def noci_results_indv(class_code):
     time = _getResultTimestamp()
-    class_info = EventClass.query.filter_by(event='2016-02-28-1', class_code=class_code).first_or_404()
+    event_code = Event.query.first().event_code # events and classes are pre-populated, take whatever.
+    class_info = EventClass.query.filter_by(event=event_code, class_code=class_code).first_or_404()
     clubs = Club.query.all()
     club_lookup = {}
     for club in clubs:
@@ -101,7 +103,8 @@ def noci_results_indv(class_code):
 @frontend.route('/noci/team/<class_code>')
 def noci_results_team(class_code):
     time = _getResultTimestamp()
-    class_info = EventClass.query.filter_by(event='2016-02-28-1', class_code=class_code).first_or_404()
+    event_code = Event.query.first().event_code # events and classes are pre-populated, take whatever.    
+    class_info = EventClass.query.filter_by(event=event_code, class_code=class_code).first_or_404()
     indv_class_codes = [c.strip() for c in class_info.team_classes.split('-')]
     clubs = Club.query.all()
     club_lookup = {}
