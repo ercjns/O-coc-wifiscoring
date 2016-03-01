@@ -8,8 +8,10 @@ frontend = Blueprint("frontend", __name__)
 def home():
     time = _getResultTimestamp()
     events = Event.query.all()
+    noci_team_classes = EventClass.query.filter_by(event='2016-02-28-1', is_team_class=True, multi_score_method='NOCI-multi').all()
+    noci_indv_classes = EventClass.query.filter_by(event='2016-02-28-1', is_team_class=False, multi_score_method='time-total').all()
     
-    return render_template('NOCIhome.html', time=time, events=events)
+    return render_template('NOCIhome.html', time=time, events=events, noci_team_classes=noci_team_classes, noci_indv_classes=noci_indv_classes)
 
 @frontend.route('/event/<event_code>/')
 def event_class_select(event_code):
@@ -29,59 +31,6 @@ def event_class_select(event_code):
                                                     event=event,
                                                     noci_classes=noci_classes, 
                                                     ult_classes=ult_classes)
-
-@frontend.route('/noci/individual')
-def noci_indv_class_select():
-    time = _getResultTimestamp()
-    event_classes = EventClass.query.filter_by(event='2016-03-05-1', is_team_class=False, multi_score_method='time-total').all()
-    
-    return render_template('EventClassSelect.html', time=time, classes=event_classes)
-    
-@frontend.route('/noci/individual/<class_code>')
-def noci_results_indv(class_code):
-    time = _getResultTimestamp()
-    class_info = EventClass.query.filter_by(event='2016-02-28-1', class_code=class_code).first_or_404()
-    clubs = Club.query.all()
-    club_lookup = {}
-    for club in clubs:
-        club_lookup[club.club_code] = club.club_name
-    multi_results = MultiResultIndv.query.filter_by(class_code=class_code).all()
-    for m in multi_results:
-        m.results = []
-        for r in m.result_ids.split('-'):
-            print r
-            m.results.append(Result.query.get(r))
-    multi_results.sort(cmp=_sortResults)
-    
-    return render_template('NOCItwoDayIndividualResults.html', time=time, 
-                                                               class_info=class_info,
-                                                               clubs=club_lookup,
-                                                               results=multi_results)
-    
-@frontend.route('/noci/team')
-def noci_results_team():
-    time = _getResultTimestamp()
-    event_classes = EventClass.query.filter_by(event=event, is_team_class=True, multi_score_method='NOCI-multi').all()
-    
-    return render_template('EventClassSelect.html', time=time, classes=event_classes)
-    
-@frontend.route('/results/teams')
-def team_class_select():
-    time = _getResultTimestamp()
-    return render_template('TeamResultClassSelection.html', time=time)
-    
-@frontend.route('/results/teams/<cclass>')
-def cclass_team_results(cclass):
-    teamdata = TeamResult.query.filter_by(cclassshort=cclass).order_by(TeamResult.position)
-    teamnames = {}
-    c = Club.query.all()
-    for club in c:
-        teamnames[club.clubshort] = club.clubfull
-    classinfo = Cclass.query.filter_by(cclassshort=cclass).one()
-    teamscorers = Result.query.filter((Result.cclassshort.startswith(cclass))).filter_by(isTeamScorer=True).order_by(Result.clubshort, -Result.score).all()
-    
-    time = _getResultTimestamp()
-    return render_template('TeamResultTable.html', time=time, cclass=classinfo, teams=teamdata, clubs=teamnames, members=teamscorers)
 
 @frontend.route('/event/<event_code>/results/<indv_class>')
 def event_class_result_indv(event_code, indv_class):
@@ -113,12 +62,122 @@ def _sortResults(A, B):
             return A.score - B.score
         else:
             return 0
+
+# @frontend.route('/noci/individual')
+# def noci_indv_class_select():
+    # time = _getResultTimestamp()
+    # event_classes = EventClass.query.filter_by(event='2016-02-28-1', is_team_class=False, multi_score_method='time-total').all()
+    
+    # return render_template('NOCIclassSelect.html', time=time, isTeams=False, noci_classes=event_classes)
+    
+@frontend.route('/noci/individual/<class_code>')
+def noci_results_indv(class_code):
+    time = _getResultTimestamp()
+    class_info = EventClass.query.filter_by(event='2016-02-28-1', class_code=class_code).first_or_404()
+    clubs = Club.query.all()
+    club_lookup = {}
+    for club in clubs:
+        club_lookup[club.club_code] = club.club_name
+    multi_results = MultiResultIndv.query.filter_by(class_code=class_code).all()
+    for m in multi_results:
+        m.results = []
+        for r in m.result_ids.split('-'):
+            r = r.strip()
+            m.results.append(Result.query.get(r))
+    multi_results.sort(cmp=_sortResults)
+    
+    return render_template('NOCItwoDayIndividualResults.html', time=time, 
+                                                               class_info=class_info,
+                                                               clubs=club_lookup,
+                                                               results=multi_results)
+
+# @frontend.route('/noci/team')
+# def noci_team_class_select():
+    # time = _getResultTimestamp()
+    # event_classes = EventClass.query.filter_by(event='2016-02-28-1', is_team_class=True, multi_score_method='NOCI-multi').all()
+    
+    # return render_template('NOCIclassSelect.html', time=time, isTeams=True, noci_classes=event_classes)
+                                                               
+@frontend.route('/noci/team/<class_code>')
+def noci_results_team(class_code):
+    time = _getResultTimestamp()
+    class_info = EventClass.query.filter_by(event='2016-02-28-1', class_code=class_code).first_or_404()
+    indv_class_codes = [c.strip() for c in class_info.team_classes.split('-')]
+    clubs = Club.query.all()
+    club_lookup = {}
+    for club in clubs:
+        club_lookup[club.club_code] = club.club_name
+    multi_results = MultiResultTeam.query.filter_by(class_code=class_code).all()
+    event_codes = []
+    for m in multi_results:
+        m.team_results = []
+        for t in m.result_ids.split('-'):
+            t = t.strip()
+            team_result = TeamResult.query.get(t)
+            m.team_results.append(team_result)
+            if team_result.event not in event_codes:
+                event_codes.append(team_result.event)
+        m.team_results.sort(key=lambda x: x.event)
+        
+        
+        m.members = {}
+        # key is bib number
+        # value is dict with various keys - clubcode, name, eventcode->result
+        indv_results = []
+        for t in m.team_results:
+            for c in indv_class_codes:
+                indv_results += Result.query.filter_by(event=t.event, club_code=t.club_code, class_code=c).all()
+            
+            for r in indv_results:
+                if r.bib not in m.members.keys():
+                    m.members[r.bib] = {'name': r.name, 'club_code': r.club_code}
+                m.members[r.bib][r.event] = r
+        
+        
+        # indv_twoday = MultiResultIndv.query.filter_by(club_code=m.
+        
+        # m.members = []
+        # indv_results = []
+        # for t in m.results:
+            # for c in indv_class_codes:
+                # c = c.strip()
+                # indv_results += Result.query.filter_by(event=t.event, club_code=t.club_code, class_code=c).all()
+            # m.members.append((indv_results))
+            # indv_results = []
+    multi_results.sort(cmp=_sortResults)
+    
+    
+    return render_template('NOCItwoDayTeamResults.html', time=time, 
+                                                         class_info=class_info,
+                                                         clubs=club_lookup,
+                                                         events=event_codes,
+                                                         results=multi_results)
+    
+# @frontend.route('/results/teams')
+# def team_class_select():
+    # time = _getResultTimestamp()
+    # return render_template('TeamResultClassSelection.html', time=time)
+    
+# @frontend.route('/results/teams/<cclass>')
+# def cclass_team_results(cclass):
+    # teamdata = TeamResult.query.filter_by(cclassshort=cclass).order_by(TeamResult.position)
+    # teamnames = {}
+    # c = Club.query.all()
+    # for club in c:
+        # teamnames[club.clubshort] = club.clubfull
+    # classinfo = Cclass.query.filter_by(cclassshort=cclass).one()
+    # teamscorers = Result.query.filter((Result.cclassshort.startswith(cclass))).filter_by(isTeamScorer=True).order_by(Result.clubshort, -Result.score).all()
+    
+    # time = _getResultTimestamp()
+    # return render_template('TeamResultTable.html', time=time, cclass=classinfo, teams=teamdata, clubs=teamnames, members=teamscorers)
+
+
         
 
-@frontend.route('/results/')
-def all_results():
-    q = Result.query.all()
-    return render_template('allresults.html', items=q)
+# @frontend.route('/results/')
+# def all_results():
+    # q = Result.query.all()
+    # return render_template('allresults.html', items=q)
     
 @frontend.route('/awards/')
 def awards():

@@ -1,17 +1,38 @@
 {% extends "base.html" %}
 
-{% block title %}NOCI Day {{ eventnum }} {% endblock %}
+{% block title %}NOCI 2016 Two-day Results{% endblock %}
 
 {% block content %}
+<div class="row">
+	<div class="col-md-1">
+	</div>
+	<div class="col-xs-12 col-md-6">
+		<h2>NOCI 2016 Two-day Results</h2>
+	</div>
+</div>
 
 <div class="row">
+	<div class="col-md-1">
+	</div>
 	<div class="col-xs-12 col-md-4">
-		<h1>Select a class</h1>
-		<ul class="list-unstyled">
-		{% for class in NOCIcclasses %}
-			<li><a href="{{ url_for('frontend.cclass_results', cclass=class.code) }}" class="btn btn-default btn-block">{{ class.name }}</a></li>
-		{% endfor %}
-		</ul>
+		<div class="well">
+			{% if isTeams %}
+			<h2>Team Classes</h2>
+			{% else %}
+			<h2>Individual Classes</h2>
+			{% endif %}
+			
+			<ul class="list-unstyled">
+			{% for c in noci_classes %}
+			<li>
+				{% if isTeams %}
+				<a href="{{ url_for('frontend.noci_results_team', class_code=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
+				{% else %}
+				<a href="{{ url_for('frontend.noci_results_indv', class_code=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
+				{% endif %}
+			{% endfor %}
+			</ul>
+		</div>
 	</div>
 </div>
 

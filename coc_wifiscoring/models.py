@@ -114,6 +114,9 @@ class Result(db.Model):
         if len(s) < 2:
             s = "0" + s
         return m + ":" + s
+        
+    def score2f(self):
+        return '{:.2f}'.format(self.score)
 
         
 class TeamResult(db.Model):
@@ -139,6 +142,9 @@ class TeamResult(db.Model):
         
     def __str__(self):
         return 'Team {} in position {} on {} with a score of {}'.format(self.club_code, self.position, self.class_code, self.score)
+        
+    def score2f(self):
+        return '{:.2f}'.format(self.score)
 
 
 class MultiResultIndv(db.Model):
@@ -179,6 +185,9 @@ class MultiResultTeam(db.Model):
         self.result_ids = ids
         self.is_valid = valid
         return
+
+    def score2f(self):
+        return '{:.2f}'.format(self.score)
         
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
