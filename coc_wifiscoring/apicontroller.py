@@ -431,8 +431,8 @@ def clubs():
                 
             elif q:
                 existing_club = q[0]
-                if existing_club.clubfull != full:
-                    existing_club.clubfull = full
+                if existing_club.club_name != full:
+                    existing_club.club_name = full
                     db.session.add(existing_club)
                     
         db.session.commit()

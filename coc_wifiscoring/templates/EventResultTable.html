@@ -27,8 +27,8 @@
 		{% else %}
 			<td></td>
 		{% endif %}
-		<td>{{ r.name }}</td>
-		<td>{{ clubs[r.clubshort] }} ({{ r.clubshort }})</td>
+		<td>{{ r.name }} ({{ r.club_code }})</td>
+		<td>{{ clubs[r.club_code] }} ({{ r.club_code }})</td>
 		{% if r.status == 'OK' %}
 			<td>{{ r.timetommmss() }}</td>
 		{% else %}
