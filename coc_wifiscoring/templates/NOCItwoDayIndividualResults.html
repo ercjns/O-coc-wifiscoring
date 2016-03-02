@@ -24,7 +24,7 @@
 		<tr>
 			<td>{{ r.position }}</td>
 			<td>{{ r.results[0].name }} ({{ r.results[0].club_code }})</td>
-			<td>{{ clubs[r.clubshort] }}</td>
+			<td>{{ clubs[r.results[0].club_code] }} ({{ r.results[0].club_code }})</td>
 			<td>{{ r.results[0].timetommmss() }}</td>
 			{% if r.results[1] %}
 			<td>{{ r.results[1].timetommmss() }}</td>
@@ -39,7 +39,7 @@
 	<div class="col-xs-12 col-md-4">
 		<h4>Two-Day results</h4>
 		<p>
-			Results are simply the sum of the times for each of the comptetior's finishes. If a competitor does not successfully complete the course, he or she is listed at the end of these results and not awared a position.
+			Two day individual results are the sum of each of the comptetior's finish times. A competitor is not awarded a two-day result until successful completion of both courses.
 		</p>
 	</div>
 </div>

@@ -12,14 +12,22 @@
 <div class="row">
 	<div class="col-xs-12 col-md-8">
 		<table class="table table-condensed" id="resultTable">
-		<tr>
+		<tr class="active">
 			<th>#</th>
-			<th>Team / Competitor</th>
-			<th colspan="2" class="text-center">Day 1</th>
-			<th colspan="2" class="text-center">Day 2</th>
+			<th>Team</th>
+			<th colspan="2" class="text-center">Day 1 Score</th>
+			<th colspan="2" class="text-center">Day 2 Score</th>
 			<th class="text-right">Total Score</th>
 		</tr>
-		
+		<tr class="active">
+			<td></td>
+			<td class="text-italic">Competitor</td>
+			<td class="text-italic text-center">Time</td>
+			<td class="text-italic text-center">Points</td>
+			<td class="text-italic text-center">Time</td>
+			<td class="text-italic text-center">Points</td>
+			<td></td>
+		</tr>
 		
 		{% for r in results %}
 		<tr class="teamresult info">
@@ -68,9 +76,10 @@
 		</table>
 	</div>
 	<div class="col-xs-12 col-md-4">
-		<h4>Two-Day results</h4>
-		<p>
-			Team scores are summed across the two competition days. Lowest score wins.
+		<h4>Two-Day team results</h4>
+		<p>Single day team scores are the sum of the best (lowest) three individual scores from the team on that day, indicated by <span class="bg-success">green highlight</span>. Scores are calculated separately for girls and boys and are based on a ratio of the individual's time against the average of the top three times.</p>
+		<p>The team scores for day one and day two are summed for the total score. The lowest total score is the winner. Teams will only show up with a team result for the day once at least three competitors have a result.</p>
+		<p></p>
 		</p>
 	</div>
 </div>
