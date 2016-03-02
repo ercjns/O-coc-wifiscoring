@@ -30,6 +30,7 @@
 		</tr>
 		
 		{% for r in results %}
+		<tr><td colspan="7"></td></tr>
 		<tr class="teamresult info">
 			<td>{{ r.position }}</td>
 			<td>{{ clubs[r.team_results[0].club_code] }} ({{ r.team_results[0].club_code }})</td>
@@ -54,7 +55,13 @@
 					{% else %}
 					<td class="text-center">
 					{% endif %}
-					{{ i[e].timetommmss() }}</td>
+					
+					{% if i[e].status == 'OK' %}
+						{{ i[e].timetommmss() }}
+					{% else %}
+						{{ i[e].status }}
+					{% endif %}
+					</td>
 					
 					
 					{% if i[e].is_team_scorer %}

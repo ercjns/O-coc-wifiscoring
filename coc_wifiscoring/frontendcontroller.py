@@ -240,9 +240,10 @@ def meet_stats():
     
 
 def _getResultTimestamp():
-    time = DBAction.query.order_by(-DBAction.id).first()
-    if time:
-        return time.time.strftime('%H:%M, %b %d, %Y')
-    else:
-        return None
+    action = DBAction.query.order_by(-DBAction.id).first()
+    return str(action.time) if action else None
+    # if time:
+        # return time.time.strftime('%H:%M, %b %d, %Y')
+    # else:
+        # return None
 

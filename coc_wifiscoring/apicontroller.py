@@ -24,7 +24,7 @@ def results(event):
             return 'Please upload an IOF XML ResultsList', 400
 
         try:
-            results = ETL.getRunners('latestResultsXML.xml')
+            results, timestamp = ETL.getRunners('latestResultsXML.xml')
         except:
             return 'GetRunners failed. :(', 500
 
@@ -67,7 +67,7 @@ def results(event):
             
 
         
-        new_action = DBAction(datetime.now(), 'results')
+        new_action = DBAction(timestamp, 'results')
         db.session.add(new_action)
         db.session.commit()
         return 'Refreshed', 200
@@ -294,14 +294,18 @@ def _assignMultiScores(event):
             individuals = _matchMultiResults(indv_results, [], [], lambda x,y: True if x.bib == y.bib else False)
             num_needed_scores = max([len(x) for x in individuals])
             for indv in individuals:
+                score = 0
+                valid = True
                 for i in range(len(indv)):
                     if i == 0:
-                        score = indv[i].time
                         ids = str(indv[i].id)
                     else:
+                        ids += '-{}'.format(indv[i].id)                                                
+                    if indv[i].status == 'OK':
                         score += indv[i].time
-                        ids += '-{}'.format(indv[i].id)
-                valid = True if len(indv) == num_needed_scores else False
+                    else:
+                        valid = False
+                valid = True if (len(indv) == num_needed_scores) and valid else False
                 new_multi_result = MultiResultIndv(c.class_code, score, ids, valid)
                 db.session.add(new_multi_result)
             db.session.commit()
@@ -351,6 +355,9 @@ def _assignMultiPositions(event):
             multi_results.sort(key=lambda x: x.score) # Low is better
             nextposition = 1
             for i in range(len(multi_results)):
+                # if not multi_results[i].is_valid:
+                    # multi_results[i].position = -1
+                    # continue
                 if i == 0:
                     multi_results[i].position = nextposition
                 elif multi_results[i].score == multi_results[i-1].score:

@@ -338,6 +338,12 @@ def getRunners(file):
         iofV = 2
     else:
         iofV = 3
+        
+    if iofV == 3:
+        time = soup.ResultList['createTime']
+        date, hms = time.split('T')
+        hms = hms.split('.')[0]
+        timestamp = date + ' ' + hms
 
     cclasses = soup.ResultList.find_all('ClassResult')
     for c in cclasses:
@@ -362,4 +368,4 @@ def getRunners(file):
                 runner['mmmss'] = timeToMMMSS(runner['time'])
             runners.append(runner)
     
-    return runners
+    return runners, timestamp

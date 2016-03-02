@@ -25,9 +25,17 @@
 			<td>{{ r.position }}</td>
 			<td>{{ r.results[0].name }} ({{ r.results[0].club_code }})</td>
 			<td>{{ clubs[r.results[0].club_code] }} ({{ r.results[0].club_code }})</td>
+			{% if r.results[0].status == 'OK' %}
 			<td>{{ r.results[0].timetommmss() }}</td>
+			{% else %}
+			<td>{{ r.results[0].status }}</td>
+			{% endif %}
 			{% if r.results[1] %}
-			<td>{{ r.results[1].timetommmss() }}</td>
+				{% if r.results[1].status == 'OK' %}
+				<td>{{ r.results[1].timetommmss() }}</td>
+				{% else %}
+				<td>{{ r.results[1].status }}</td>
+				{% endif %}
 			{% else %}
 			<td></td>
 			{% endif %}

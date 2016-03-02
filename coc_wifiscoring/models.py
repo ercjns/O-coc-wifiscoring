@@ -227,7 +227,7 @@ class RemotePunch(db.Model):
 class DBAction(db.Model):
     __tablename__ = 'wifiscoring_actions'
     id = db.Column(db.Integer, primary_key=True)
-    time = db.Column(db.DateTime)
+    time = db.Column(db.String)
     action = db.Column(db.String)
     
     def __init__(self, time, action):
