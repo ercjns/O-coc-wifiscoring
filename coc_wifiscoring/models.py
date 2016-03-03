@@ -174,13 +174,16 @@ class MultiResultIndv(db.Model):
 class MultiResultTeam(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     class_code = db.Column(db.String)
-    score = db.Column(db.Integer)
+    club_code = db.Column(db.String)
+    score = db.Column(db.Float)
     is_valid = db.Column(db.Boolean)
     position = db.Column(db.Integer)
     result_ids = db.Column(db.String)
+    champ_score = db.Column(db.Float)
 
-    def __init__(self, class_code, score, ids, valid):
+    def __init__(self, class_code, club_code, score, ids, valid):
         self.class_code = class_code
+        self.club_code = club_code
         self.score = score
         self.result_ids = ids
         self.is_valid = valid

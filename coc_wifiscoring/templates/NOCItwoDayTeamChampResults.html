@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}{{ class_info.class_name }} two-day results{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<h2>Two-day Results for {{ class_info.class_name }}:</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-md-8">
+		<table class="table table-condensed table-striped" id="resultTable">
+		<tr>
+			<th>#</th>
+			<th>School</th>
+			<th>Jr. Varsity</th>
+			<th>Varsity</th>
+			<th>Total Score</th>
+		</tr>
+		{% for r in results %}
+		<tr>
+			<td>{{ r.position }}</td>
+			<td>{{ clubs[r.club_code] }} ({{ r.club_code }})</td>
+			{% if r.jv %}
+			<td>{{ r.jv.champ_score }}</td>
+			{% else %}
+			<td></td>
+			{% endif %}
+			{% if r.v %}
+			<td>{{ r.v.champ_score }}</td>
+			{% else %}
+			<td></td>
+			{% endif %}
+			<td>{{ r.score }}</td>
+		</tr>
+		{% endfor %}
+		</table>
+	</div>
+	<div class="col-xs-12 col-md-4">
+		<h4>Two-Day Team Championship</h4>
+		<p>
+			Teams are awarded a point value based on their two-day ranking in the Varsity and Jr. Varsity team competitions. The sum of these two new scores is the team's championship score. Highest score wins.
+		</p>
+	</div>
+</div>
+
+<script src="{{ url_for('static', filename='filter.js') }}"></script>
+
+{% endblock %}

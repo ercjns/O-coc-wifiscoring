@@ -1,4 +1,4 @@
-from flask import Blueprint, request, abort, render_template
+from flask import Blueprint, request, abort, render_template, redirect, url_for
 from .models import *
 import copy
 
@@ -64,12 +64,6 @@ def _sortResults(A, B):
         else:
             return 0
 
-# @frontend.route('/noci/individual')
-# def noci_indv_class_select():
-    # time = _getResultTimestamp()
-    # event_classes = EventClass.query.filter_by(event='2016-02-28-1', is_team_class=False, multi_score_method='time-total').all()
-    
-    # return render_template('NOCIclassSelect.html', time=time, isTeams=False, noci_classes=event_classes)
     
 @frontend.route('/noci/individual/<class_code>')
 def noci_results_indv(class_code):
@@ -93,15 +87,11 @@ def noci_results_indv(class_code):
                                                                clubs=club_lookup,
                                                                results=multi_results)
 
-# @frontend.route('/noci/team')
-# def noci_team_class_select():
-    # time = _getResultTimestamp()
-    # event_classes = EventClass.query.filter_by(event='2016-02-28-1', is_team_class=True, multi_score_method='NOCI-multi').all()
-    
-    # return render_template('NOCIclassSelect.html', time=time, isTeams=True, noci_classes=event_classes)
                                                                
 @frontend.route('/noci/team/<class_code>')
 def noci_results_team(class_code):
+    if class_code == 'NTU':
+        return redirect(url_for('frontend.noci_results_champs'))
     time = _getResultTimestamp()
     event_code = Event.query.first().event_code # events and classes are pre-populated, take whatever.    
     class_info = EventClass.query.filter_by(event=event_code, class_code=class_code).first_or_404()
@@ -121,11 +111,8 @@ def noci_results_team(class_code):
             if team_result.event not in event_codes:
                 event_codes.append(team_result.event)
         m.team_results.sort(key=lambda x: x.event)
-        
-        
+  
         m.members = {}
-        # key is bib number
-        # value is dict with various keys - clubcode, name, eventcode->result
         indv_results = []
         for t in m.team_results:
             for c in indv_class_codes:
@@ -136,17 +123,6 @@ def noci_results_team(class_code):
                     m.members[r.bib] = {'name': r.name, 'club_code': r.club_code}
                 m.members[r.bib][r.event] = r
         
-        
-        # indv_twoday = MultiResultIndv.query.filter_by(club_code=m.
-        
-        # m.members = []
-        # indv_results = []
-        # for t in m.results:
-            # for c in indv_class_codes:
-                # c = c.strip()
-                # indv_results += Result.query.filter_by(event=t.event, club_code=t.club_code, class_code=c).all()
-            # m.members.append((indv_results))
-            # indv_results = []
     multi_results.sort(cmp=_sortResults)
     
     
@@ -155,7 +131,28 @@ def noci_results_team(class_code):
                                                          clubs=club_lookup,
                                                          events=event_codes,
                                                          results=multi_results)
+@frontend.route('/noci/teamchamps')
+def noci_results_champs():
+    time = _getResultTimestamp()
+    class_info = EventClass.query.filter_by(class_code='NTU').first_or_404()
+    clubs = Club.query.all()
+    club_lookup = {}
+    for club in clubs:
+        club_lookup[club.club_code] = club.club_name
+    champs_teams = MultiResultTeam.query.filter_by(class_code='NTU').all()
+    for t in champs_teams:
+        for cat in t.result_ids.split('-'):
+            multi_result = MultiResultTeam.query.get(cat)
+            if multi_result.class_code == 'NTV':
+                t.v = multi_result
+            elif multi_result.class_code == 'NTJV':
+                t.jv = multi_result
+    champs_teams.sort(cmp=_sortResults)
     
+    return render_template('NOCItwoDayTeamChampResults.html', time=time,
+                                                              class_info=class_info,
+                                                              clubs=club_lookup,
+                                                              results=champs_teams)
 # @frontend.route('/results/teams')
 # def team_class_select():
     # time = _getResultTimestamp()

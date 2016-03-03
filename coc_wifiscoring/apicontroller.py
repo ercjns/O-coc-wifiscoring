@@ -61,6 +61,8 @@ def results(event):
         
         _assignMultiScores(event)
         _assignMultiPositions(event)
+        
+        _assignChampPositions()
             
         # except:
             # return 'Problem assigning positions or scores', 500
@@ -187,7 +189,6 @@ def _assignTeamScores(event):
             indv_results = []
             for indv_class in c.team_classes.split('-'):
                 indv_class = indv_class.strip()
-                q = Result.query.filter_by(event=event).filter_by(class_code=indv_class).all()
                 indv_results += Result.query.filter_by(event=event).filter_by(class_code=indv_class).all()
             teams = set([r.club_code for r in indv_results])
             for team in teams:
@@ -319,16 +320,17 @@ def _assignMultiScores(event):
             for team in teams:
                 for i in range(len(team)):
                     if i == 0:
+                        club = team[i].club_code
                         score = team[i].score
                         ids = str(team[i].id)
                     else:
                         score += team[i].score
                         ids += '-{}'.format(team[i].id)
                 valid = True if len(team) == num_needed_scores else False
-                new_multi_team = MultiResultTeam(c.class_code, score, ids, valid)
+                new_multi_team = MultiResultTeam(c.class_code, club, score, ids, valid)
                 db.session.add(new_multi_team)
-            db.session.commit()
-
+            db.session.commit()            
+        
         else:
             pass
     return
@@ -380,6 +382,13 @@ def _assignMultiPositions(event):
                 else:
                     multi_results[i].position = nextposition
                 nextposition += 1
+                
+            for twoday_team in multi_results:
+                if c.class_code == 'NTV':
+                    champscore = 300 - 30*(twoday_team.position - 1)
+                elif c.class_code == 'NTJV':
+                    champscore = 200 - 20*(twoday_team.position - 1)
+                twoday_team.champ_score = champscore if champscore > 0 else 0
             db.session.add_all(multi_results)
             db.session.commit()
             
@@ -399,8 +408,51 @@ def _assignMultiPositions(event):
                 # TODO: Implement WIOL season tie-breaking
             db.session.add_all(multi_results)
             db.session.commit()
-        
+
+def _assignChampPositions():
+    champ_class = EventClass.query.filter_by(score_method='NOCIuber').first()
+    multi_teams = []
+    for team_class in champ_class.team_classes.split('-'):
+        team_class = team_class.strip()
+        multi_teams += MultiResultTeam.query.filter_by(class_code=team_class, is_valid=True).all()
+    multi_teams.sort(key=lambda x: x.club_code)
+    champ_teams = _matchMultiResults(multi_teams, [], [], lambda x,y: True if x.club_code == y.club_code else False)
+    for club in champ_teams:
+        v = False
+        jv = False
+        score = 0
+        ids = ''
+        club_code = club[0].club_code
+        for i in range(len(club)):
+            v = True if v or club[i].class_code == 'NTV' else False
+            jv = True if jv or club[i].class_code == 'NTJV' else False
+            
+            if i == 0:
+                ids += str(club[i].id)
+            else:
+                ids += '-{}'.format(club[i].id)
+            score += club[i].champ_score
+        print club_code, v, jv    
+        valid = True if v and jv else False
+        new_champ_team = MultiResultTeam(champ_class.class_code, club_code, score, ids, valid)
+        db.session.add(new_champ_team)
+    db.session.commit()
     
+    champ_teams = MultiResultTeam.query.filter_by(class_code=champ_class.class_code, is_valid=True).all()
+    champ_teams.sort(key=lambda x: -x.score) #higher better
+    nextposition = 1
+    for i in range(len(champ_teams)):
+        if i == 0:
+            champ_teams[i].position = nextposition
+        elif champ_teams[i].score == champ_teams[i-1].score:
+            champ_teams[i].position == champ_teams[i-1].position
+        else:
+            champ_teams[i].position = nextposition
+        nextposition += 1
+    
+    db.session.add_all(champ_teams)
+    db.session.commit()
+    return
 
 @API.route('/teams', methods=['GET'])
 def teams():
