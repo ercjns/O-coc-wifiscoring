@@ -51,23 +51,29 @@ def results(event):
         except:
             return 'Problem building up the db refresh', 500
         
-        # TODO these reference old names. Use "class_code" and "club_code" and "class_name" and "club_name"
-        # try:
-        _assignPositions(event)
-        _assignScores(event)
+        try:
+            _assignPositions(event)
+            _assignScores(event)
+        except:
+            return 'Problem assigning individual positions and scores', 500
         
-        _assignTeamScores(event)
-        _assignTeamPositions(event)
-        
-        _assignMultiScores(event)
-        _assignMultiPositions(event)
-        
-        _assignChampPositions()
+        try:
+            _assignTeamScores(event)
+            _assignTeamPositions(event)
+        except:
+            return 'Problem assigning team scores and positions', 500
             
-        # except:
-            # return 'Problem assigning positions or scores', 500
+        try:
+            _assignMultiScores(event)
+            _assignMultiPositions(event)
+        except:
+            return 'Problem assigning multi-day scores and positions', 500
+        
+        try:
+            _assignChampPositions()
+        except:
+            return 'Problem assigning NOCI overall champ postitions', 500
             
-
         
         new_action = DBAction(timestamp, 'results')
         db.session.add(new_action)
@@ -418,6 +424,8 @@ def _assignChampPositions():
     multi_teams.sort(key=lambda x: x.club_code)
     champ_teams = _matchMultiResults(multi_teams, [], [], lambda x,y: True if x.club_code == y.club_code else False)
     for club in champ_teams:
+        if len(club) < 1:
+            continue
         v = False
         jv = False
         score = 0
