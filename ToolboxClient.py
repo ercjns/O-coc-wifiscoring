@@ -42,6 +42,7 @@ def put_clubcodetable(file):
         url = host + '/api/clubs'
         f = {'file': open(file, 'r')}
         r = requests.put(url, files=f)
+        print r.status_code, r.text
     hosts.close()
     
 def put_cclasstable(event, file):
@@ -54,6 +55,7 @@ def put_cclasstable(event, file):
         url = host + '/api/event/' + event + '/classes'
         f = {'file': open(file, 'r')}
         r = requests.put(url, files=f)
+        print r.status_code, r.text
     hosts.close()
     
 def put_eventtable(file):
@@ -66,6 +68,7 @@ def put_eventtable(file):
         url = host + '/api/events'
         f = {'file': open(file, 'r')}
         r = requests.put(url, files=f)
+        print r.status_code, r.text
     hosts.close()
     
 def put_entrylist(event, file):
