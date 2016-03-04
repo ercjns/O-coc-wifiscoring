@@ -4,29 +4,54 @@
 
 {% block content %}
 <div class="row">
-	<div class="col-xs-12">
-		<h2>NOCI and Ultimate Orienteer #1 and #2</h2>
-		<p>Hosted by Cascade Orienteering Club. March 5-6, 2016</p>
-		<p>Day 1 at Lincoln Tree Farm, Spanaway, WA. Day 2 at Ft. Steilacoom Park, Lakewood, WA</p>
+	<div class="col-xs-12 col-md-6 col-md-offset-1">
+		<h2>Live Results: NOCI 2016</h2>
+	</div>
+</div>
+<div class="row">
+	<div class="col-xs-12 col-md-6 col-md-offset-1">
+		<p>We're doing our best to provide updates to results every five minutes during the weekend. As with orienteering, your mileage may vary. All results presented here are preliminary.</p>
+		<p>For results concerns or issues, please contact Meet Co-Director Bob Forgrave (425-985-6219).</p>
 	</div>
 </div>
 
 <div class="row">
-	<div class="col-xs-12 col-md-4">
-		<h2>NOCI</h2>
-		<ul class="list-unstyled">
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='W1F') }}" class="btn btn-default btn-block">Day 1 Results</a></li>
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='W1M') }}" class="btn btn-default btn-block">Day 2 Results</a></li>
-		<br />
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='W2F') }}" class="btn btn-default btn-block">Two-day: Individuals</a></li>
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='W2M') }}" class="btn btn-default btn-block">Two-day: Teams</a></li>
+	<div class="col-xs-12 col-md-5 col-md-offset-1">
+		<div class="well">
+			<h2>Single-day results</h2>
+			<ul class="list-unstyled">
+			{% for e in events %}
+			<li><a href="{{ url_for('frontend.event_class_select', event_code=e.event_code) }}" class="btn btn-default btn-lg btn-link">{{ e.event_name }} - {{ e.venue }}</a></li>
+			{% endfor %}
+			</ul>
+		</div>
+		<img class="img-rounded img-responsive center-block hidden-xs hidden-sm" style="max-height: 225px" src="{{ url_for('static', filename='IMG_9318_s.jpg') }}">
 	</div>
-	<div class="col-xs-12 col-md-4">
-		<h2>Public Courses (Ultimate Orienteer)</h2>
-		<ul class="list-unstyled">
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='1') }}" class="btn btn-default btn-block">Day 1</a></li>
-		<li><a href="{{ url_for('frontend.cclass_results', cclass='3') }}" class="btn btn-default btn-block">Day 2</a></li>
+	
+	<div class="col-xs-12 col-md-5">
+		<div class="well">
+		<h2>NOCI 2016 two-day results</h2>
+		<div class="row">
+			<div class="col-md-6">
+				<h3>Individual Classes</h3>
+				<ul class="list-unstyled">
+				{% for c in noci_indv_classes %}
+				<li><a href="{{ url_for('frontend.noci_results_indv', class_code=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
+				{% endfor %}
+				</ul>
+			</div>
+			<div class="col-md-6">
+				<h3>Team Classes</h3>
+				<ul class="list-unstyled">
+				{% for c in noci_team_classes %}
+				<li><a href="{{ url_for('frontend.noci_results_team', class_code=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
+				{% endfor %}
+				</ul>
+			</div>
+		</div>
+		</div>
 	</div>
+
 </div>
 
 {% endblock %}

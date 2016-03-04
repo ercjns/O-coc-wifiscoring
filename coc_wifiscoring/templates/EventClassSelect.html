@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.event_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-md-1">
+	</div>
+	<div class="col-xs-12 col-md-6">
+		<h2 style="margin-bottom: 0px">{{ event.event_name }} - {{ event.venue }}</h2>
+		<p class="text-muted">{{ event.date }}</p>
+		<p>{{ event.description }}
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-1">
+	</div>
+	<div class="col-xs-12 col-md-5">
+		<div class="well">
+			<h2>NOCI</h2>
+			<ul class="list-unstyled">
+			{% for c in noci_classes %}
+			<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event.event_code, indv_class=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
+			{% endfor %}
+			</ul>
+		</div>
+	</div>
+	<div class="col-xs-12 col-md-5">
+		<div class="well">
+			<h2>Ultimate O (Public)</h2>
+			<ul class="list-unstyled">
+			{% for c in ult_classes %}
+			<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event.event_code, indv_class=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
+			{% endfor %}
+			</ul>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

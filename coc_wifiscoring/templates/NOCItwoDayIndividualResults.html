@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Results for {{ cclass }}{% endblock %}
+{% block title %}{{ class_info.class_name }} two-day results{% endblock %}
 
 {% block content %}
 <div class="row">
 	<div class="col-xs-12">
-		<h2>Results for {{ cclass.cclassfull }}:</h2>
+		<h2>Two-day Results for {{ class_info.class_name }}:</h2>
 	</div>
 </div>
 
@@ -20,14 +20,26 @@
 			<th>Day 2</th>
 			<th>Total Time</th>
 		</tr>
-		{% for mutilresult in results %}
+		{% for r in results %}
 		<tr>
 			<td>{{ r.position }}</td>
-			<td>{{ r.one.name }} ({{ r.one.clubshort }})</td>
-			<td>{{ clubs[r.clubshort] }}</td>
-			<td>{{ r.one.timetommmss() }}</td>
-			<td>{{ r.two.timetommmss() }}</td>
-			<td>{{ r.score }}
+			<td>{{ r.results[0].name }} ({{ r.results[0].club_code }})</td>
+			<td>{{ clubs[r.results[0].club_code] }} ({{ r.results[0].club_code }})</td>
+			{% if r.results[0].status == 'OK' %}
+			<td>{{ r.results[0].timetommmss() }}</td>
+			{% else %}
+			<td>{{ r.results[0].status }}</td>
+			{% endif %}
+			{% if r.results[1] %}
+				{% if r.results[1].status == 'OK' %}
+				<td>{{ r.results[1].timetommmss() }}</td>
+				{% else %}
+				<td>{{ r.results[1].status }}</td>
+				{% endif %}
+			{% else %}
+			<td></td>
+			{% endif %}
+			<td>{{ r.scoreasmmmss() }}
 		</tr>
 		{% endfor %}
 		</table>
@@ -35,7 +47,7 @@
 	<div class="col-xs-12 col-md-4">
 		<h4>Two-Day results</h4>
 		<p>
-			Results are simply the sum of the times for each of the comptetior's finishes. If a competitor does not successfully complete the course, he or she is listed at the end of these results and not awared a position.
+			Two day individual results are the sum of each of the comptetior's finish times. A competitor is not awarded a two-day result until successful completion of both courses.
 		</p>
 	</div>
 </div>

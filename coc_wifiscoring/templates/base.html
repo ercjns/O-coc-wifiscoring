@@ -16,21 +16,19 @@
 			<img id="headlogo" src="{{ url_for('static', filename='COC-logo-diamond-red-large.png') }}">
 		</a>
 		</div>
-		<div class="col-xs-12 col-sm-6 col-md-8">
-			<p>Last update at {{ time }}</p>
-			<p>All results are preliminary.</p>
-		</div>
 	</header>
 
 	{% block content %}{% endblock %}
 
 	<footer class="row foot">
 		<div class="col-xs-12 col-sm-6">
-		<p class="center">Live results brought to you by the COC Tech Team</p>
-		<p class="center">Go to <a href="http://cascadeoc.org">CascadeOC.org</a>.</p>
+		<p class="text-center"><em>All Results Preliminary. <br />Last update at {{ time }}.</em></p>
+		<p>&nbsp</p>
+		<p class="text-center">Live results brought to you by the COC Tech Team</p>
+		<p class="text-center"><a href="http://cascadeoc.org">CascadeOC.org</a></p>
 		</div>
 		<div class="col-xs-12 col-sm-6">
-		<p class="center"><img id="footlogo" src="{{ url_for('static', filename='COC-logo-diamond-white-large.png') }}"></p>
+		<p class="text-center"><img id="footlogo" src="{{ url_for('static', filename='COC-logo-diamond-white-large.png') }}"></p>
 		</div>
 
 	</footer>

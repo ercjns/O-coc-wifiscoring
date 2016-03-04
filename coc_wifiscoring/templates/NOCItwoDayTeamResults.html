@@ -1,37 +1,81 @@
 {% extends "base.html" %}
 
-{% block title %}NOCI 2016 Team Results{% endblock %}
+{% block title %}{{ class_info.class_name }} two-day results{% endblock %}
 
 {% block content %}
 <div class="row">
+	<div class="col-xs-12">
+		<h2>Two-day Results for {{ class_info.class_name }}:</h2>
+	</div>
+</div>
+
+<div class="row">
 	<div class="col-xs-12 col-md-8">
-		<table class="table table-condensed table-striped" id="resultTable">
-		<tr>
+		<table class="table table-condensed" id="resultTable">
+		<tr class="active">
 			<th>#</th>
-			<th>Team / Competitor</th>
-			<th colspan="2">Day 1</th>
-			<th colspan="2">Day 2</th>
-			<th>Total Score</th>
+			<th>Team</th>
+			<th colspan="2" class="text-center">Day 1 Score</th>
+			<th colspan="2" class="text-center">Day 2 Score</th>
+			<th class="text-right">Total Score</th>
+		</tr>
+		<tr class="active">
+			<td></td>
+			<td class="text-italic">Competitor</td>
+			<td class="text-italic text-center">Time</td>
+			<td class="text-italic text-center">Points</td>
+			<td class="text-italic text-center">Time</td>
+			<td class="text-italic text-center">Points</td>
+			<td></td>
 		</tr>
 		
-		{% for team in class %}
-		<tr>
-			<td>{{ t.position }}</td>
-			<td>{{ t.clubfull }}</td>
-			<td colspan="2">{{ t.one.score }}</td>
-			<td colspan="2">{{ t.two.score }}</td>
-			<td>{{ t.score }}</td>
+		{% for r in results %}
+		<tr><td colspan="7"></td></tr>
+		<tr class="teamresult info">
+			<td>{{ r.position }}</td>
+			<td>{{ clubs[r.team_results[0].club_code] }} ({{ r.team_results[0].club_code }})</td>
+
+			<td colspan="2" class="text-center">{{ r.team_results[0].score2f() }}</td>
+			{% if r.team_results[1] %}
+			<td colspan="2" class="text-center">{{ r.team_results[1].score2f() }}</td>
+			{% else %}
+			<td colspan="2"></td>
+			{% endif %}
+			<td class="text-right">{{ r.score2f() }}</td>
 		</tr>
 		
-			{% for person in team %}
-			<tr>
+			{% for i in r.members.values() %}
+			<tr class="teammember">
 				<td></td>
-				<td>{{ r.one.name }} ({{ r.one.clubshort }})</td>
-				<td>{{ r.one.timetommmss() }}</td>
-				<td>{{ r.one.score }}</td>
-				<td>{{ r.two.timetommmss() }}</td>
-				<td>{{ r.two.score }}</td>
-				<td></td>
+				<td>{{ i.name }} ({{i.club_code}})</td>
+				{% for e in events %}
+					{% if i[e] %}
+					{% if i[e].is_team_scorer %}
+					<td class="success text-center">
+					{% else %}
+					<td class="text-center">
+					{% endif %}
+					
+					{% if i[e].status == 'OK' %}
+						{{ i[e].timetommmss() }}
+					{% else %}
+						{{ i[e].status }}
+					{% endif %}
+					</td>
+					
+					
+					{% if i[e].is_team_scorer %}
+					<td class="success text-center">
+					{% else %}
+					<td class="text-center">
+					{% endif %}
+					{{ i[e].score2f() }}</td>
+					{% else %}
+					<td></td>
+					<td></td>
+					{% endif %}
+				{% endfor %}
+				
 			</tr>
 			{% endfor %}
 			
@@ -39,9 +83,10 @@
 		</table>
 	</div>
 	<div class="col-xs-12 col-md-4">
-		<h4>Two-Day results</h4>
-		<p>
-			Team scores are summed across the two competition days. Lowest score wins.
+		<h4>Two-Day team results</h4>
+		<p>Single day team scores are the sum of the best (lowest) three individual scores from the team on that day, indicated by <span class="bg-success">green highlight</span>. Scores are calculated separately for girls and boys and are based on a ratio of the individual's time against the average of the top three times.</p>
+		<p>The team scores for day one and day two are summed for the total score. The lowest total score is the winner. Teams will only show up with a team result for the day once at least three competitors have a result.</p>
+		<p></p>
 		</p>
 	</div>
 </div>
