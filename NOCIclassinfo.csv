@@ -1,0 +1,21 @@
+class_code,class_name,is_scored,score_method,is_multi_scored,multi_score_method,is_team_class,team_classes
+1,Beginner,FALSE,,FALSE,,FALSE,
+3,Intermediate,FALSE,,FALSE,,FALSE,
+4,Short Advanced,FALSE,,FALSE,,FALSE,
+6G,Long Advanced Groups,FALSE,,FALSE,,FALSE,
+UJF,Ultimate O Juniors Female,TRUE,ULT-indv,TRUE,ULT-season,FALSE,
+UJM,Ultimate O Juniors Male,TRUE,ULT-indv,TRUE,ULT-season,FALSE,
+UMF,Ultimate O Masters Female,TRUE,ULT-indv,TRUE,ULT-season,FALSE,
+UMM,Ultimate O Masters Male,TRUE,ULT-indv,TRUE,ULT-season,FALSE,
+UOF,Ultimate O Open Female,TRUE,ULT-indv,TRUE,ULT-season,FALSE,
+UOM,Ultimate O Open Male,TRUE,ULT-indv,TRUE,ULT-season,FALSE,
+N1F,NOCI Intermediate Girls,FALSE,NOCI-indv,TRUE,time-total,FALSE,
+N1M,NOCI Intermediate Boys,FALSE,NOCI-indv,TRUE,time-total,FALSE,
+N2M,NOCI Jr Varsity Boys,FALSE,NOCI-indv,TRUE,time-total,FALSE,
+N3F,NOCI Jr Varsity Girls,FALSE,NOCI-indv,TRUE,time-total,FALSE,
+N4F,NOCI Varsity Girls,FALSE,NOCI-indv,TRUE,time-total,FALSE,
+N4I,Instructors (NOCI),FALSE,,FALSE,,FALSE,
+N5M,NOCI Varsity Boys,FALSE,NOCI-indv,TRUE,time-total,FALSE,
+NTJV,NOCI Jr Varsity Teams,TRUE,NOCI-team,TRUE,NOCI-multi,TRUE,N3F-N2M
+NTV,NOCI Varsity Teams,TRUE,NOCI-team,TRUE,NOCI-multi,TRUE,N4F-N5M
+NTU,NOCI Overall Teams,TRUE,NOCIuber,TRUE,NOCI-multi,TRUE,NTJV-NTV
