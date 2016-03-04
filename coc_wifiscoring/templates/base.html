@@ -16,6 +16,12 @@
 			<img id="headlogo" src="{{ url_for('static', filename='COC-logo-diamond-red-large.png') }}">
 		</a>
 		</div>
+		<div class="hidden-xs hidden-sm col-sm-6 col-md-4 col-md-offset-4 text-right">
+		<a href="{{ url_for('frontend.home') }}" class="btn btn-default btn-lg btn-link">Live Scoring Home</a>
+		</div>
+		<div class="col-xs-12 hidden-md hidden-lg">
+		<p><a href="{{ url_for('frontend.home') }}" class="btn btn-default btn-lg btn-link">Live Scoring Home</a></p>
+		</div>
 	</header>
 
 	{% block content %}{% endblock %}
