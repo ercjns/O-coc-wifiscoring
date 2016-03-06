@@ -161,7 +161,7 @@ def _assignScores(event):
         elif c.score_method == 'ULT-indv':
             class_results = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter(Result.position > 0).all()
             winner = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter_by(position=1).one()
-            print type(winner), winner
+            # print type(winner), winner
             benchmark = float(winner.time)
             for r in class_results:
                 r.score = int( (benchmark / r.time) * 1000 )
