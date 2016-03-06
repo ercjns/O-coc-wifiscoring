@@ -63,11 +63,11 @@ def results(event):
         except:
             return 'Problem assigning team scores and positions', 500
             
-        try:
-            _assignMultiScores(event)
-            _assignMultiPositions(event)
-        except:
-            return 'Problem assigning multi-day scores and positions', 500
+        # try:
+        _assignMultiScores(event)
+        _assignMultiPositions(event)
+        # except:
+            # return 'Problem assigning multi-day scores and positions', 500
         
         try:
             _assignChampPositions()
@@ -135,10 +135,20 @@ def _assignScores(event):
             elif c.class_code == 'N4F':
                 paired_class_code = 'N5M'
             elif c.class_code == 'N5M':
-                paired_class_code = 'N4F'    
-            paired_results = Result.query.filter_by(event=event).filter_by(class_code=paired_class_code).all()
-            paired_awt = sum([r.time for r in paired_results if (r.position > 0 and r.position <=3)]) / 3.0
-            better_awt = awt if awt < paired_awt else paired_awt
+                paired_class_code = 'N4F'
+            elif c.class_code == 'N1F':
+                paired_class_code = 'N1M'
+            elif c.class_code == 'N1M':
+                paired_class_code = 'N1F'
+            else:
+                paired_class_code = 'none'
+            
+            try:
+                paired_results = Result.query.filter_by(event=event).filter_by(class_code=paired_class_code).all()
+                paired_awt = sum([r.time for r in paired_results if (r.position > 0 and r.position <=3)]) / 3.0
+                better_awt = awt if awt < paired_awt else paired_awt
+            except:
+                better_awt = 60 * 3 * 3600
             
             for r in class_results:
                 if r.status in ['OK']:
@@ -150,8 +160,8 @@ def _assignScores(event):
         
         elif c.score_method == 'ULT-indv':
             class_results = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter(Result.position > 0).all()
-            winner = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter_by(position=1).all()
-            print type(winner), winner
+            winner = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter_by(position=1).one()
+            # print type(winner), winner
             benchmark = float(winner.time)
             for r in class_results:
                 r.score = int( (benchmark / r.time) * 1000 )
@@ -278,7 +288,7 @@ def _assignTeamPositions(event):
                 if i == 0:
                     team_results[i].position = nextposition
                 elif team_results[i].score == team_results[i-1].score:
-                    team_results[i].position == team_results[i-1].position
+                    team_results[i].position = team_results[i-1].position
                 else:
                     team_results[i].position = nextposition
                 nextposition += 1
@@ -369,7 +379,7 @@ def _assignMultiPositions(event):
                 if i == 0:
                     multi_results[i].position = nextposition
                 elif multi_results[i].score == multi_results[i-1].score:
-                    multi_results[i].position == multi_results[i-1].position
+                    multi_results[i].position = multi_results[i-1].position
                 else:
                     multi_results[i].position = nextposition
                 nextposition += 1
@@ -384,7 +394,7 @@ def _assignMultiPositions(event):
                 if i == 0:
                     multi_results[i].position = nextposition
                 elif multi_results[i].score == multi_results[i-1].score:
-                    multi_results[i].position == multi_results[i-1].position
+                    multi_results[i].position = multi_results[i-1].position
                 else:
                     multi_results[i].position = nextposition
                 nextposition += 1
@@ -407,7 +417,7 @@ def _assignMultiPositions(event):
                 if i == 0:
                     multi_results[i].position = nextposition
                 elif multi_results[i].score == multi_results[i-1].score:
-                    multi_results[i].position == multi_results[i-1].position
+                    multi_results[i].position = multi_results[i-1].position
                 else:
                     multi_results[i].position = nextposition
                 nextposition += 1
@@ -440,7 +450,6 @@ def _assignChampPositions():
             else:
                 ids += '-{}'.format(club[i].id)
             score += club[i].champ_score
-        print club_code, v, jv    
         valid = True if v and jv else False
         new_champ_team = MultiResultTeam(champ_class.class_code, club_code, score, ids, valid)
         db.session.add(new_champ_team)
@@ -453,7 +462,7 @@ def _assignChampPositions():
         if i == 0:
             champ_teams[i].position = nextposition
         elif champ_teams[i].score == champ_teams[i-1].score:
-            champ_teams[i].position == champ_teams[i-1].position
+            champ_teams[i].position = champ_teams[i-1].position
         else:
             champ_teams[i].position = nextposition
         nextposition += 1
