@@ -51,11 +51,11 @@ def results(event):
         except:
             return 'Problem building up the db refresh', 500
         
-        # try:
-        _assignPositions(event)
-        _assignScores(event)
-        # except:
-            # return 'Problem assigning individual positions and scores', 500
+        try:
+            _assignPositions(event)
+            _assignScores(event)
+        except:
+            return 'Problem assigning individual positions and scores', 500
         
         try:
             _assignTeamScores(event)
@@ -63,11 +63,11 @@ def results(event):
         except:
             return 'Problem assigning team scores and positions', 500
             
-        try:
-            _assignMultiScores(event)
-            _assignMultiPositions(event)
-        except:
-            return 'Problem assigning multi-day scores and positions', 500
+        # try:
+        _assignMultiScores(event)
+        _assignMultiPositions(event)
+        # except:
+            # return 'Problem assigning multi-day scores and positions', 500
         
         try:
             _assignChampPositions()
@@ -288,7 +288,7 @@ def _assignTeamPositions(event):
                 if i == 0:
                     team_results[i].position = nextposition
                 elif team_results[i].score == team_results[i-1].score:
-                    team_results[i].position == team_results[i-1].position
+                    team_results[i].position = team_results[i-1].position
                 else:
                     team_results[i].position = nextposition
                 nextposition += 1
@@ -379,7 +379,7 @@ def _assignMultiPositions(event):
                 if i == 0:
                     multi_results[i].position = nextposition
                 elif multi_results[i].score == multi_results[i-1].score:
-                    multi_results[i].position == multi_results[i-1].position
+                    multi_results[i].position = multi_results[i-1].position
                 else:
                     multi_results[i].position = nextposition
                 nextposition += 1
@@ -394,7 +394,7 @@ def _assignMultiPositions(event):
                 if i == 0:
                     multi_results[i].position = nextposition
                 elif multi_results[i].score == multi_results[i-1].score:
-                    multi_results[i].position == multi_results[i-1].position
+                    multi_results[i].position = multi_results[i-1].position
                 else:
                     multi_results[i].position = nextposition
                 nextposition += 1
@@ -417,7 +417,7 @@ def _assignMultiPositions(event):
                 if i == 0:
                     multi_results[i].position = nextposition
                 elif multi_results[i].score == multi_results[i-1].score:
-                    multi_results[i].position == multi_results[i-1].position
+                    multi_results[i].position = multi_results[i-1].position
                 else:
                     multi_results[i].position = nextposition
                 nextposition += 1
@@ -462,7 +462,7 @@ def _assignChampPositions():
         if i == 0:
             champ_teams[i].position = nextposition
         elif champ_teams[i].score == champ_teams[i-1].score:
-            champ_teams[i].position == champ_teams[i-1].position
+            champ_teams[i].position = champ_teams[i-1].position
         else:
             champ_teams[i].position = nextposition
         nextposition += 1
