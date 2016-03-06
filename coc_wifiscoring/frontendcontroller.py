@@ -60,7 +60,7 @@ def _sortResults(A, B):
         return 1
     else:
         if A.score and B.score:
-            return A.score - B.score
+            return int(A.score - B.score)
         else:
             return 0
 
