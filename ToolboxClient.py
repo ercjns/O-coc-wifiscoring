@@ -82,7 +82,7 @@ def put_entrylist(event, file):
             f = {'file': open(file, 'r')}
             r = requests.put(url, files=f)
     
-def poll_for_results(dir):
+def poll_for_results(eventcode, dir):
     lastUpdate = None
     while True:
         dircontents = os.listdir(dir)
@@ -92,7 +92,7 @@ def poll_for_results(dir):
             t = os.path.getmtime(fn)
             if t > lastUpdate:
                 print "found new file, posting"
-                post_iof3_resultList(fn)
+                post_iof3_resultList(eventcode, fn)
                 lastUpdate = t
             else:
                 print "no new file"
@@ -138,9 +138,9 @@ if __name__ == '__main__':
     elif method == 'monitor':
         ''' 
         monitor a folder for new results and post them
-        usage: python ToolboxClient.py monitor ./results_go_here 
+        usage: python ToolboxClient.py monitor 2016-05-05-1 ./results_go_here 
         '''
-        poll_for_results(sys.argv[2])
+        poll_for_results(sys.argv[2], sys.argv[3])
         
     elif method == 'wibox-relay':
         '''
