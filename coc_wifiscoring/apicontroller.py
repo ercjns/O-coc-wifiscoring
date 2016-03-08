@@ -400,11 +400,14 @@ def _assignMultiPositions(event):
                 nextposition += 1
                 
             for twoday_team in multi_results:
-                if c.class_code == 'NTV':
-                    champscore = 300 - 30*(twoday_team.position - 1)
-                elif c.class_code == 'NTJV':
-                    champscore = 200 - 20*(twoday_team.position - 1)
-                twoday_team.champ_score = champscore if champscore > 0 else 0
+                if c.class_code in ['NTV', 'NTJV']:
+                    if c.class_code == 'NTV':
+                        champscore = 300 - 30*(twoday_team.position - 1)
+                    elif c.class_code == 'NTJV':
+                        champscore = 200 - 20*(twoday_team.position - 1)
+                    twoday_team.champ_score = champscore if champscore > 0 else 0
+                else:
+                    twoday_team.champ_score = None
             db.session.add_all(multi_results)
             db.session.commit()
             
@@ -449,7 +452,8 @@ def _assignChampPositions():
                 ids += str(club[i].id)
             else:
                 ids += '-{}'.format(club[i].id)
-            score += club[i].champ_score
+            if club[i].class_code in ['NTV', 'NTJV']:
+                score += club[i].champ_score
         valid = True if v and jv else False
         new_champ_team = MultiResultTeam(champ_class.class_code, club_code, score, ids, valid)
         db.session.add(new_champ_team)

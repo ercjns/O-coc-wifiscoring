@@ -16,6 +16,7 @@ N3F,NOCI Jr Varsity Girls,FALSE,NOCI-indv,TRUE,time-total,FALSE,
 N4F,NOCI Varsity Girls,FALSE,NOCI-indv,TRUE,time-total,FALSE,
 N4I,Instructors (NOCI),FALSE,,FALSE,,FALSE,
 N5M,NOCI Varsity Boys,FALSE,NOCI-indv,TRUE,time-total,FALSE,
+NTI,NOCI Intermediate Teams,TRUE,NOCI-team,TRUE,NOCI-multi,TRUE,N1F-N1M
 NTJV,NOCI Jr Varsity Teams,TRUE,NOCI-team,TRUE,NOCI-multi,TRUE,N3F-N2M
 NTV,NOCI Varsity Teams,TRUE,NOCI-team,TRUE,NOCI-multi,TRUE,N4F-N5M
 NTU,NOCI Overall Teams,TRUE,NOCIuber,TRUE,NOCI-multi,TRUE,NTJV-NTV
