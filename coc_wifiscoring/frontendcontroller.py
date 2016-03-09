@@ -111,7 +111,7 @@ def noci_results_team(class_code):
             if team_result.event not in event_codes:
                 event_codes.append(team_result.event)
         m.team_results.sort(key=lambda x: x.event)
-  
+    
         m.members = {}
         indv_results = []
         for t in m.team_results:
@@ -122,7 +122,8 @@ def noci_results_team(class_code):
                 if r.bib not in m.members.keys():
                     m.members[r.bib] = {'name': r.name, 'club_code': r.club_code}
                 m.members[r.bib][r.event] = r
-        
+    
+    event_codes.sort()    
     multi_results.sort(cmp=_sortResults)
     
     
