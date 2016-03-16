@@ -164,7 +164,10 @@ def _assignScores(event):
             # print type(winner), winner
             benchmark = float(winner.time)
             for r in class_results:
-                r.score = int( (benchmark / r.time) * 1000 )
+                if r.time:
+                    r.score = round( (benchmark / r.time) * 1000 )
+                else:
+                    r.score = 0
             db.session.add_all(class_results)
             db.session.commit()
 
@@ -299,6 +302,7 @@ def _assignTeamPositions(event):
 def _assignMultiScores(event):
     multi_classes = EventClass.query.filter_by(is_multi_scored=True).filter_by(event=event).all() #filter by event to only get ONE hit for each class.
     for c in multi_classes:
+        # TODO: what are these lines doing??
         if c.is_team_class:
             MultiResultTeam.query.filter_by(class_code=c.class_code).delete()
         else:
@@ -347,6 +351,27 @@ def _assignMultiScores(event):
                 db.session.add(new_multi_team)
             db.session.commit()            
         
+        elif c.multi_score_method == 'ULT-season':
+            # TODO: might need better sort by name algorithm here.
+            indv_results = Result.query.filter_by(class_code=c.class_code).order_by(Result.name).all()
+            if len(indv_results) == 0:
+                continue
+            individuals = _matchMultiResults(indv_results, [], [], lambda x,y: True if x.name == y.name else False)
+            scores_to_count = 6
+            for indv in individuals:
+                for x in indv:
+                    print x, x.score
+                indv.sort(key=lambda x: -x.score if x.score else 0)
+                score = 0
+                ids = ''
+                for i in range(len(indv)):
+                    if i < scores_to_count:
+                        score += indv[i].score if indv[i].score else 0
+                    ids += '-{}'.format(indv[i].id)
+                new_multi_result = MultiResultIndv(c.class_code, score, ids.lstrip('-'), True)
+                db.session.add(new_multi_result)
+            db.session.commit()
+            
         else:
             pass
     return
@@ -386,7 +411,7 @@ def _assignMultiPositions(event):
             db.session.add_all(multi_results)
             db.session.commit()
             
-        if c.multi_score_method == 'NOCI-multi':
+        elif c.multi_score_method == 'NOCI-multi':
             multi_results = MultiResultTeam.query.filter_by(class_code=c.class_code, is_valid=True).all()
             multi_results.sort(key=lambda x: x.score) # Low is better
             nextposition = 1
@@ -412,7 +437,7 @@ def _assignMultiPositions(event):
             db.session.commit()
             
             
-        if c.multi_score_method == 'WIOL-season':
+        elif c.multi_score_method == 'WIOL-season':
             multi_results = MultiResultIndv.query.filter_by(class_code=c.class_code).all()
             multi_results.sort(key=lambda x: -x.score) # High is better, sort high to the front with -x.
             nextposition = 1
@@ -427,6 +452,23 @@ def _assignMultiPositions(event):
                 # TODO: Implement WIOL season tie-breaking
             db.session.add_all(multi_results)
             db.session.commit()
+            
+        elif c.multi_score_method == 'ULT-season':
+            multi_results = MultiResultIndv.query.filter_by(class_code=c.class_code).all()
+            multi_results.sort(key=lambda x: -x.score) # High is better, sort high to the front with -x.
+            nextposition = 1
+            for i in range(len(multi_results)):
+                if i == 0:
+                    multi_results[i].position = nextposition
+                elif multi_results[i].score == multi_results[i-1].score:
+                    multi_results[i].position = multi_results[i-1].position
+                else:
+                    multi_results[i].position = nextposition
+                nextposition += 1
+                # TODO: Implement Ultimate season tie-breaking
+            db.session.add_all(multi_results)
+            db.session.commit()
+            
 
 def _assignChampPositions():
     champ_class = EventClass.query.filter_by(score_method='NOCIuber').first()

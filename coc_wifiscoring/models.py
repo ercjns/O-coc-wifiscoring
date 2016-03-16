@@ -169,6 +169,12 @@ class MultiResultIndv(db.Model):
         if len(s) < 2:
             s = "0" + s
         return m + ":" + s
+        
+    def __repr__(self):
+        return '<MultiResult for NAME in {}>'.format(self.class_code)
+        
+    def __str__(self):
+        return '<Name> in position {} on {} with a score of {}'.format(self.position, self.class_code, self.score)
     
     
 class MultiResultTeam(db.Model):

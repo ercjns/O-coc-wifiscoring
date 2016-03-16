@@ -64,6 +64,36 @@ def _sortResults(A, B):
         else:
             return 0
 
+            
+@frontend.route('/ultseason/<class_code>')
+def ult_season_standings(class_code):
+    time = _getResultTimestamp()
+    events = Event.query.all()
+    class_info = EventClass.query.filter_by(event=events[0].event_code, class_code=class_code).first_or_404()
+    #club lookup dict
+    clubs = Club.query.all()
+    club_lookup = {}
+    for club in clubs:
+        club_lookup[club.club_code] = club.club_name
+    
+    multi_results = MultiResultIndv.query.filter_by(class_code=class_code).all()
+    for m in multi_results:
+        m.race_results = {}
+        for r in m.result_ids.split('-'):
+            r = r.strip()
+            the_result = Result.query.get(r)
+            m.race_results[the_result.event] = the_result
+        m.name = the_result.name
+        m.club_code = the_result.club_code
+    multi_results.sort(cmp=_sortResults)
+    
+    return render_template('UltimateSeasonResults.html', time=time, 
+                                                         results=multi_results, 
+                                                         events=events,
+                                                         class_info=class_info)
+    
+        
+    
     
 @frontend.route('/noci/individual/<class_code>')
 def noci_results_indv(class_code):
