@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}{{ class_info.class_name }} two-day results{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<h2>{{ class_info.class_name }}:</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-md-8">
+		<table class="table table-condensed table-striped" id="resultTable">
+		<tr>
+			<th>#</th>
+			<th>Name</th>
+			{% for e in events %}
+			<th>{{ e.venue }}</th>
+			{% endfor %}
+			<th>Total Score</th>
+		</tr>
+		{% for r in results %}
+		<tr>
+			<td>{{ r.position }}</td>
+			<td>{{ r.name }} ({{ r.club_code }})</td>
+
+			{% for e in events %}
+				{% if r.race_results[e.event_code] %}
+				<td>{{ r.race_results[e.event_code].score }}</td>
+				{% else %}
+				<td></td>
+				{% endif %}
+				
+			{% endfor %}
+
+			<td>{{ r.score }}</td>
+		</tr>
+		{% endfor %}
+		</table>
+	</div>
+	<div class="col-xs-12 col-md-4">
+		<h4>Ultimate Orienteer Season</h4>
+		<p>
+			Scores are calculated as a ratio against the best time for each specific race in each class. The top 6 scores sum for the season score.
+		</p>
+	</div>
+</div>
+
+<script src="{{ url_for('static', filename='filter.js') }}"></script>
+
+{% endblock %}
