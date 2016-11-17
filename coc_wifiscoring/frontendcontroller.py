@@ -6,32 +6,39 @@ frontend = Blueprint("frontend", __name__)
 
 @frontend.route('/')
 def home():
-    time = _getResultTimestamp()
-    events = Event.query.all()
-    event_code = events[0].event_code # events and classes are pre-populated, this is almost a hard-code
-    noci_team_classes = EventClass.query.filter_by(event=event_code, is_team_class=True, multi_score_method='NOCI-multi').all()
-    noci_indv_classes = EventClass.query.filter_by(event=event_code, is_team_class=False, multi_score_method='time-total').all()
+    # time = _getResultTimestamp()
+    # events = Event.query.all()
+    # event_code = events[0].event_code # events and classes are pre-populated, this is almost a hard-code
+    # noci_team_classes = EventClass.query.filter_by(event=event_code, is_team_class=True, multi_score_method='NOCI-multi').all()
+    # noci_indv_classes = EventClass.query.filter_by(event=event_code, is_team_class=False, multi_score_method='time-total').all()
     
-    return render_template('NOCIhome.html', time=time, events=events, noci_team_classes=noci_team_classes, noci_indv_classes=noci_indv_classes)
+    # return render_template('NOCIhome.html', time=time, events=events, noci_team_classes=noci_team_classes, noci_indv_classes=noci_indv_classes)
+
+    return render_template('COCwifihome.html', event='2016-01-09-1') #hard-code event code
 
 @frontend.route('/event/<event_code>/')
 def event_class_select(event_code):
     time = _getResultTimestamp()
     event = Event.query.filter_by(event_code=event_code).first_or_404()
     event_classes = EventClass.query.filter_by(event=event_code, is_team_class=False).all()
-    noci_classes = [c for c in event_classes if (c.class_code[0] == 'N' and c.class_code[2] != 'I')]
-    noci_classes.sort(key=lambda x: x.class_code)
-    try:
-        noci_classes.append(next(c for c in event_classes if c.class_code == 'N4I'))
-    except:
-        pass
-    ult_classes = [c for c in event_classes if c.class_code[0] != 'N']
-    ult_classes.sort(key=lambda x: x.class_code)
-    
+    wiol_classes = [c for c in event_classes if (c.class_code[0] == 'W')]
+    public_classes = [c for c in event_classes if c not in wiol_classes]
+    wiol_classes.sort(key=lambda x: x.class_code)
+    public_classes.sort(key=lambda x: x.class_code)
+
+    # noci_classes = [c for c in event_classes if (c.class_code[0] == 'N' and c.class_code[2] != 'I')]
+    # noci_classes.sort(key=lambda x: x.class_code)
+    # try:
+    #     noci_classes.append(next(c for c in event_classes if c.class_code == 'N4I'))
+    # except:
+    #     pass
+    # ult_classes = [c for c in event_classes if c.class_code[0] != 'N']
+    # ult_classes.sort(key=lambda x: x.class_code)
+
     return render_template('EventClassSelect.html', time=time, 
                                                     event=event,
-                                                    noci_classes=noci_classes, 
-                                                    ult_classes=ult_classes)
+                                                    noci_classes=wiol_classes, 
+                                                    ult_classes=public_classes)
 
 @frontend.route('/event/<event_code>/results/<indv_class>')
 def event_class_result_indv(event_code, indv_class):

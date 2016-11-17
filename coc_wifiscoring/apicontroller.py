@@ -34,7 +34,7 @@ def results(event):
             TeamResult.query.filter_by(event=event).delete()
         except:
             return 'couldn\'t delete things', 500
-        
+
         try:
             for r in results:
                 result_dict = { 'sicard': int(r['estick'] if r['estick']>0 else -1),
@@ -50,31 +50,31 @@ def results(event):
                 db.session.commit()
         except:
             return 'Problem building up the db refresh', 500
-        
+
         try:
             _assignPositions(event)
             _assignScores(event)
         except:
             return 'Problem assigning individual positions and scores', 500
-        
+
         try:
             _assignTeamScores(event)
             _assignTeamPositions(event)
         except:
             return 'Problem assigning team scores and positions', 500
-            
-        # try:
-        _assignMultiScores(event)
-        _assignMultiPositions(event)
-        # except:
-            # return 'Problem assigning multi-day scores and positions', 500
-        
+
+        try:
+            _assignMultiScores(event)
+            _assignMultiPositions(event)
+        except:
+            return 'Problem assigning multi-day scores and positions', 500
+
         try:
             _assignChampPositions()
         except:
             return 'Problem assigning NOCI overall champ postitions', 500
-            
-        
+
+
         new_action = DBAction(timestamp, 'results')
         db.session.add(new_action)
         db.session.commit()
@@ -302,7 +302,7 @@ def _assignTeamPositions(event):
 def _assignMultiScores(event):
     multi_classes = EventClass.query.filter_by(is_multi_scored=True).filter_by(event=event).all() #filter by event to only get ONE hit for each class.
     for c in multi_classes:
-        # TODO: what are these lines doing??
+        # Delete existing MultiResults
         if c.is_team_class:
             MultiResultTeam.query.filter_by(class_code=c.class_code).delete()
         else:
@@ -392,6 +392,8 @@ def _matchMultiResults(input, same, output, matchf):
         
 def _assignMultiPositions(event):
     multi_classes = EventClass.query.filter_by(is_multi_scored=True).filter_by(event=event).all()
+    if len(multi_classes) == 0:
+        return
     for c in multi_classes:
         if c.multi_score_method == 'time-total':
             multi_results = MultiResultIndv.query.filter_by(class_code=c.class_code, is_valid=True).all()
@@ -468,10 +470,16 @@ def _assignMultiPositions(event):
                 # TODO: Implement Ultimate season tie-breaking
             db.session.add_all(multi_results)
             db.session.commit()
+        
+        else:
+            pass
+    return
             
 
 def _assignChampPositions():
     champ_class = EventClass.query.filter_by(score_method='NOCIuber').first()
+    if champ_class is None:
+        return
     multi_teams = []
     for team_class in champ_class.team_classes.split('-'):
         team_class = team_class.strip()

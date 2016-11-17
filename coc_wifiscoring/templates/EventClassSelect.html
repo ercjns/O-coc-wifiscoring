@@ -18,7 +18,7 @@
 	</div>
 	<div class="col-xs-12 col-md-5">
 		<div class="well">
-			<h2>NOCI</h2>
+			<h2>WIOL (School League)</h2>
 			<ul class="list-unstyled">
 			{% for c in noci_classes %}
 			<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event.event_code, indv_class=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
@@ -28,7 +28,7 @@
 	</div>
 	<div class="col-xs-12 col-md-5">
 		<div class="well">
-			<h2>Ultimate O (Public)</h2>
+			<h2>Winter O (Public)</h2>
 			<ul class="list-unstyled">
 			{% for c in ult_classes %}
 			<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event.event_code, indv_class=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
