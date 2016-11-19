@@ -14,7 +14,7 @@ def home():
     
     # return render_template('NOCIhome.html', time=time, events=events, noci_team_classes=noci_team_classes, noci_indv_classes=noci_indv_classes)
 
-    return render_template('COCwifihome.html', event='2016-01-09-1') #hard-code event code
+    return render_template('COCwifihome.html', event='2016-11-19-1') #hard-code event code
 
 @frontend.route('/event/<event_code>/')
 def event_class_select(event_code):

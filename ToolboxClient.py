@@ -174,7 +174,7 @@ if __name__ == '__main__':
     elif method == 'classes':
         '''
         post a json file containing the mapping of class code to full name
-        python ToolboxClient.py classes 2016-02-27-1 classcodes.json
+        python ToolboxClient.py classes 2016-02-27-1 classcodes.csv
         '''
         put_cclasstable(sys.argv[2], sys.argv[3])
         
