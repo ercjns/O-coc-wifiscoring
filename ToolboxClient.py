@@ -187,7 +187,7 @@ if __name__ == '__main__':
         
     elif method == 'events':
         '''
-        post a xml file containing the entries for the meet
+        post a tsv file containing the entries for the meet
         python ToolboxClient.py events eventinfo.tsv
         '''
         put_eventtable(sys.argv[2])
