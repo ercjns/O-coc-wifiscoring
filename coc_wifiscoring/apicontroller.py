@@ -112,8 +112,8 @@ def _assignScores(event):
             class_finishers = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter(Result.position > 0).all()
             for r in class_finishers:
                 if r.position == 1: r.score = 100
-                elif r.position == 2: r.score == 95
-                elif r.position ==3: r.score == 92
+                elif r.position == 2: r.score = 95
+                elif r.position == 3: r.score = 92
                 else:
                     r.score = 100 - 6 - int(r.position)
             class_non_finishers = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter(Result.position < 0).all()
@@ -127,7 +127,7 @@ def _assignScores(event):
         elif c.score_method == 'NOCI-indv':
             class_results = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).all()
             awt = sum([r.time for r in class_results if (r.position > 0 and r.position <=3)]) / 3.0
-            
+
             if c.class_code == 'N2M':
                 paired_class_code = 'N3F'
             elif c.class_code == 'N3F':
@@ -142,14 +142,14 @@ def _assignScores(event):
                 paired_class_code = 'N1F'
             else:
                 paired_class_code = 'none'
-            
+
             try:
                 paired_results = Result.query.filter_by(event=event).filter_by(class_code=paired_class_code).all()
                 paired_awt = sum([r.time for r in paired_results if (r.position > 0 and r.position <=3)]) / 3.0
                 better_awt = awt if awt < paired_awt else paired_awt
             except:
                 better_awt = 60 * 3 * 3600
-            
+
             for r in class_results:
                 if r.status in ['OK']:
                     r.score = 60 * r.time / awt
@@ -157,7 +157,7 @@ def _assignScores(event):
                     r.score = (60 * (3*3600) / better_awt) + 10
             db.session.add_all(class_results)
             db.session.commit()
-        
+
         elif c.score_method == 'ULT-indv':
             class_results = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter(Result.position > 0).all()
             winner = Result.query.filter_by(event=event).filter_by(class_code=c.class_code).filter_by(position=1).one()
@@ -178,7 +178,7 @@ def _assignTeamScores(event):
     for c in event_team_classes:
         if c.score_method == '':
             continue
-            
+
         elif c.score_method == 'WIOL-team':
             indv_results = []
             for indv_class in c.team_classes.split('-'):
@@ -203,7 +203,7 @@ def _assignTeamScores(event):
                 team = TeamResult(event, c.class_code, team, score, True)
                 db.session.add(team)
                 db.session.commit()
-    
+
         elif c.score_method == 'NOCI-team':
             indv_results = []
             for indv_class in c.team_classes.split('-'):
@@ -237,7 +237,7 @@ def _assignTeamPositions(event):
     for c in event_team_classes:
         if c.score_method == '':
             continue
-        
+
         elif c.score_method == 'WIOL-team':
             team_results = TeamResult.query.filter_by(event=event).filter_by(class_code=c.class_code).all()
             team_results.sort(key=lambda x: -x.score)
@@ -282,7 +282,7 @@ def _assignTeamPositions(event):
                     nextposition += 1
             db.session.add_all(team_results)
             db.session.commit()
-        
+
         elif c.score_method == 'NOCI-team':
             team_results = TeamResult.query.filter_by(event=event, class_code=c.class_code, is_valid=True).all()
             team_results.sort(key=lambda x: x.score)
@@ -298,7 +298,7 @@ def _assignTeamPositions(event):
             db.session.add_all(team_results)
             db.session.commit()
     return
-    
+
 def _assignMultiScores(event):
     multi_classes = EventClass.query.filter_by(is_multi_scored=True).filter_by(event=event).all() #filter by event to only get ONE hit for each class.
     for c in multi_classes:
@@ -307,7 +307,7 @@ def _assignMultiScores(event):
             MultiResultTeam.query.filter_by(class_code=c.class_code).delete()
         else:
             MultiResultIndv.query.filter_by(class_code=c.class_code).delete()
-        
+
         if c.multi_score_method == 'time-total':
             indv_results = Result.query.filter_by(class_code=c.class_code).order_by(Result.bib).all()
             if len(indv_results) == 0:
@@ -330,7 +330,7 @@ def _assignMultiScores(event):
                 new_multi_result = MultiResultIndv(c.class_code, score, ids, valid)
                 db.session.add(new_multi_result)
             db.session.commit()
-        
+
         elif c.multi_score_method == 'NOCI-multi':
             team_results = TeamResult.query.filter_by(class_code=c.class_code, is_valid=True).order_by(TeamResult.club_code).all()
             if len(team_results) == 0:
@@ -350,7 +350,7 @@ def _assignMultiScores(event):
                 new_multi_team = MultiResultTeam(c.class_code, club, score, ids, valid)
                 db.session.add(new_multi_team)
             db.session.commit()            
-        
+
         elif c.multi_score_method == 'ULT-season':
             # TODO: might need better sort by name algorithm here.
             indv_results = Result.query.filter_by(class_code=c.class_code).order_by(Result.name).all()
@@ -371,7 +371,7 @@ def _assignMultiScores(event):
                 new_multi_result = MultiResultIndv(c.class_code, score, ids.lstrip('-'), True)
                 db.session.add(new_multi_result)
             db.session.commit()
-            
+
         else:
             pass
     return
@@ -389,7 +389,7 @@ def _matchMultiResults(input, same, output, matchf):
             output.append(same)
             same = [i]
             return _matchMultiResults(input, same, output, matchf)
-        
+
 def _assignMultiPositions(event):
     multi_classes = EventClass.query.filter_by(is_multi_scored=True).filter_by(event=event).all()
     if len(multi_classes) == 0:
@@ -412,7 +412,7 @@ def _assignMultiPositions(event):
                 nextposition += 1
             db.session.add_all(multi_results)
             db.session.commit()
-            
+
         elif c.multi_score_method == 'NOCI-multi':
             multi_results = MultiResultTeam.query.filter_by(class_code=c.class_code, is_valid=True).all()
             multi_results.sort(key=lambda x: x.score) # Low is better
@@ -425,7 +425,7 @@ def _assignMultiPositions(event):
                 else:
                     multi_results[i].position = nextposition
                 nextposition += 1
-                
+
             for twoday_team in multi_results:
                 if c.class_code in ['NTV', 'NTJV']:
                     if c.class_code == 'NTV':
@@ -437,8 +437,8 @@ def _assignMultiPositions(event):
                     twoday_team.champ_score = None
             db.session.add_all(multi_results)
             db.session.commit()
-            
-            
+
+
         elif c.multi_score_method == 'WIOL-season':
             multi_results = MultiResultIndv.query.filter_by(class_code=c.class_code).all()
             multi_results.sort(key=lambda x: -x.score) # High is better, sort high to the front with -x.
@@ -454,7 +454,7 @@ def _assignMultiPositions(event):
                 # TODO: Implement WIOL season tie-breaking
             db.session.add_all(multi_results)
             db.session.commit()
-            
+
         elif c.multi_score_method == 'ULT-season':
             multi_results = MultiResultIndv.query.filter_by(class_code=c.class_code).all()
             multi_results.sort(key=lambda x: -x.score) # High is better, sort high to the front with -x.
@@ -470,11 +470,11 @@ def _assignMultiPositions(event):
                 # TODO: Implement Ultimate season tie-breaking
             db.session.add_all(multi_results)
             db.session.commit()
-        
+
         else:
             pass
     return
-            
+
 
 def _assignChampPositions():
     champ_class = EventClass.query.filter_by(score_method='NOCIuber').first()

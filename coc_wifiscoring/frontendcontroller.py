@@ -6,15 +6,16 @@ frontend = Blueprint("frontend", __name__)
 
 @frontend.route('/')
 def home():
-    # time = _getResultTimestamp()
-    # events = Event.query.all()
-    # event_code = events[0].event_code # events and classes are pre-populated, this is almost a hard-code
+    time = _getResultTimestamp()
+    events = Event.query.all()
+    events.sort(key=lambda x: x.event_code)
+    event_code = events[0].event_code # events and classes are pre-populated, this is almost a hard-code
     # noci_team_classes = EventClass.query.filter_by(event=event_code, is_team_class=True, multi_score_method='NOCI-multi').all()
     # noci_indv_classes = EventClass.query.filter_by(event=event_code, is_team_class=False, multi_score_method='time-total').all()
     
     # return render_template('NOCIhome.html', time=time, events=events, noci_team_classes=noci_team_classes, noci_indv_classes=noci_indv_classes)
 
-    return render_template('COCwifihome.html', event='2016-12-17-1') #hard-code event code
+    return render_template('COCwifihome.html', event=event_code, time=time)
 
 @frontend.route('/event/<event_code>/')
 def event_class_select(event_code):
