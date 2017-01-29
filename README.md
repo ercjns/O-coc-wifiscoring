@@ -27,7 +27,19 @@ Send a tab separated file with event information: code, name, date, venue, descr
 Send a comma separated file with class information for this event: class code, class name, scored, scoring method, multi-scored, multi-score method, team class, team classes
 
 ## Deployment
-For brand new single WIOL events, the easiest deployment is to simply delete the database file and then repopulate the proper event information via the above APIs for event and class information. Once an event is set up, the server is ready to receive new data via the results API.
+For brand new single WIOL events, the easiest deployment is to simply delete the database file and then repopulate the proper event information via the above APIs for event and class information. (This can easily be done using ```ToolboxClient.py```.) Once an event is set up, the server is ready to receive new data via the results API.
+
+For COC deployment:
+from windows, find the shared folder on the pi and delete any files (previous meet's xml file)
+log in to pi
+cd to ```~/code/coc-wifi```
+rm the old ```wifiscoring.db``` file
+start the virtual environment: ```source ./venv/bin/activate```
+start the server: ```sudo python run.py```
+verify startup, then make background task with ```ctrl+Z``` then ```bg```
+start the monitor task ```python ToolboxClient.py monitor <eventID> ../meetResults/data/```
+in Sport software: results->prelim->classes, then on the settings tab, automatic report->export->start->xmlv3
+
 
 ## License
 This work is licensed under the [Creative Commons BY-NC-SA 4.0](http://creativecommons.org/licenses/by-nc-sa/4.0/) license. 
