@@ -2,7 +2,14 @@ from flask import Blueprint, request, abort, render_template, redirect, url_for
 from .models import *
 import copy
 
+
 frontend = Blueprint("frontend", __name__)
+
+
+RenderConfig = {}
+RenderConfig['BrandLarge'] = 'armadillo.png'
+
+
 
 @frontend.route('/')
 def home():
@@ -15,7 +22,8 @@ def home():
     
     # return render_template('NOCIhome.html', time=time, events=events, noci_team_classes=noci_team_classes, noci_indv_classes=noci_indv_classes)
 
-    return render_template('COCwifihome.html', event=event_code, time=time)
+
+    return render_template('COCwifihome.html', config=RenderConfig, event=event_code, time=time)
 
 @frontend.route('/event/<event_code>/')
 def event_class_select(event_code):
@@ -36,7 +44,8 @@ def event_class_select(event_code):
     # ult_classes = [c for c in event_classes if c.class_code[0] != 'N']
     # ult_classes.sort(key=lambda x: x.class_code)
 
-    return render_template('EventClassSelect.html', time=time, 
+    return render_template('EventClassSelect.html', config=RenderConfig, 
+                                                    time=time, 
                                                     event=event,
                                                     noci_classes=wiol_classes, 
                                                     ult_classes=public_classes)
@@ -53,7 +62,8 @@ def event_class_result_indv(event_code, indv_class):
         club_lookup[club.club_code] = club.club_name
     time = _getResultTimestamp()
 
-    return render_template('EventResultTable.html', time=time, 
+    return render_template('EventResultTable.html', config=RenderConfig, 
+                                                    time=time, 
                                                     event=event,
                                                     class_info=class_info,
                                                     clubs=club_lookup,
@@ -95,7 +105,8 @@ def ult_season_standings(class_code):
         m.club_code = the_result.club_code
     multi_results.sort(cmp=_sortResults)
     
-    return render_template('UltimateSeasonResults.html', time=time, 
+    return render_template('UltimateSeasonResults.html', config=RenderConfig, 
+                                                         time=time, 
                                                          results=multi_results, 
                                                          events=events,
                                                          class_info=class_info)
@@ -120,7 +131,8 @@ def noci_results_indv(class_code):
             m.results.append(Result.query.get(r))
     multi_results.sort(cmp=_sortResults)
     
-    return render_template('NOCItwoDayIndividualResults.html', time=time, 
+    return render_template('NOCItwoDayIndividualResults.html', config=RenderConfig, 
+                                                               time=time, 
                                                                class_info=class_info,
                                                                clubs=club_lookup,
                                                                results=multi_results)
@@ -165,7 +177,8 @@ def noci_results_team(class_code):
     multi_results.sort(cmp=_sortResults)
     
     
-    return render_template('NOCItwoDayTeamResults.html', time=time, 
+    return render_template('NOCItwoDayTeamResults.html', config=RenderConfig, 
+                                                         time=time, 
                                                          class_info=class_info,
                                                          clubs=club_lookup,
                                                          events=event_codes,
@@ -188,7 +201,8 @@ def noci_results_champs():
                 t.jv = multi_result
     champs_teams.sort(cmp=_sortResults)
     
-    return render_template('NOCItwoDayTeamChampResults.html', time=time,
+    return render_template('NOCItwoDayTeamChampResults.html', config=RenderConfig, 
+                                                              time=time,
                                                               class_info=class_info,
                                                               clubs=club_lookup,
                                                               results=champs_teams)
@@ -251,7 +265,7 @@ def awards():
         cd[club.clubshort] = club.clubfull
 
     time = _getResultTimestamp()
-    return render_template('AwardsTable.html', time=time, indvawards=individualclasses, teamawards=teamclasses, clubs=cd)
+    return render_template('AwardsTable.html', config=RenderConfig, time=time, indvawards=individualclasses, teamawards=teamclasses, clubs=cd)
 
 @frontend.route('/meetstats/')
 def meet_stats():
@@ -272,7 +286,7 @@ def meet_stats():
 
     checked += fin
     time = _getResultTimestamp()
-    return render_template('meetstats.html', time=time, checked=checked, downloaded=len(download_sicards), out=checked-fin, items=out_items)
+    return render_template('meetstats.html', config=RenderConfig, time=time, checked=checked, downloaded=len(download_sicards), out=checked-fin, items=out_items)
     
 
 def _getResultTimestamp():
@@ -282,4 +296,3 @@ def _getResultTimestamp():
         # return time.time.strftime('%H:%M, %b %d, %Y')
     # else:
         # return None
-
