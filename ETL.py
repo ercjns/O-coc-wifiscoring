@@ -249,9 +249,10 @@ def timeToMMMSS(timeint):
 
 
 def clubcodejson(file):
-	""" returns array of {'abbr':u'COC'; 'name':u'Cascade'} """
-	f = json.load(file)
-	return f['clubs']
+    """ returns array of {'abbr':u'COC'; 'name':u'Cascade'} """
+    f = json.load(file)
+    # return f['clubs']
+    return f
     
 def cclassjson(file):
 	""" returns array of {'abbr':   u'8M'
