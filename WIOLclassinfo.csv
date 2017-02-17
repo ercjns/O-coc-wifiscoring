@@ -14,3 +14,9 @@ W4M,JV Boys North,TRUE,WIOL-indv,FALSE,,FALSE,
 W5M,JV Boys South,TRUE,WIOL-indv,FALSE,,FALSE,
 W6F,Varsity Girls,TRUE,WIOL-indv,FALSE,,FALSE,
 W6M,Varsity Boys,TRUE,WIOL-indv,FALSE,,FALSE,
+W2T,Middle School Teams,TRUE,WIOL-team,FALSE,,TRUE,W2M-W2F
+W3FT,JV Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W3F
+W4MT,JV Boys North Teams,TRUE,WIOL-team,FALSE,,TRUE,W4M
+W5MT,JV Boys South Teams,TRUE,WIOL-team,FALSE,,TRUE,W5M
+W6FT,Varsity Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W6F
+W6MT,Varsity Boys Teams,TRUE,WIOL-team,FALSE,,TRUE,W6M
