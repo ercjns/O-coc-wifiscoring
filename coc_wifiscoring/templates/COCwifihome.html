@@ -18,11 +18,20 @@
 		<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event, indv_class='W2F') }}" class="btn btn-default btn-block">Middle School Girls</a></li>
 		<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event, indv_class='W2M') }}" class="btn btn-default btn-block">Middle School Boys</a></li>
 		<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event, indv_class='W3F') }}" class="btn btn-default btn-block">Jr. Varsity Girls</a></li>
-		<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event, indv_class='W4M') }}" class="btn btn-default btn-block">Jr. Varsity Boys North</a></li>
-		<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event, indv_class='W5M') }}" class="btn btn-default btn-block">Jr. Varsity Boys South</a></li>
+		<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event, indv_class='W4M') }}" class="btn btn-default btn-block">Jr. Varsity Boys</a></li>
+		<!--<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event, indv_class='W5M') }}" class="btn btn-default btn-block">Jr. Varsity Boys South</a></li>-->
 		<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event, indv_class='W6F') }}" class="btn btn-default btn-block">Varsity Girls</a></li>
 		<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event, indv_class='W6M') }}" class="btn btn-default btn-block">Varsity Boys</a></li>
 		</ul>
+	</div>
+	<div class="col-xs-12 col-md-4">
+		<h1>WIOL Teams</h1>		
+		<ul class="list-unstyled">
+		<li><a href="{{ url_for('frontend.wiol_team_results', event_code=event, team_class='W2T') }}" class="btn btn-default btn-block">Middle School Teams</a></li>
+		<li><a href="{{ url_for('frontend.wiol_team_results', event_code=event, team_class='W3FT') }}" class="btn btn-default btn-block">Jr. Varsity Girls Teams</a></li>
+		<li><a href="{{ url_for('frontend.wiol_team_results', event_code=event, team_class='W4MT') }}" class="btn btn-default btn-block">Jr. Varsity Boys Teams</a></li>
+		<li><a href="{{ url_for('frontend.wiol_team_results', event_code=event, team_class='W6FT') }}" class="btn btn-default btn-block">Varsity Girls Teams</a></li>
+		<li><a href="{{ url_for('frontend.wiol_team_results', event_code=event, team_class='W6MT') }}" class="btn btn-default btn-block">Varsity Boys Teams</a></li>
 	</div>
 	<div class="col-xs-12 col-md-4">
 		<h1>Winter O (Public)</h1>
