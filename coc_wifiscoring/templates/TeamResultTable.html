@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Team Results for {{ cclass.cclassfull }}{% endblock %}
+{% block title %}Team Results for {{ cclass.class_name }}{% endblock %}
 
 {% block content %}
 <div class="row">
 	<div class="col-xs-12">
-		<h2>Team Results for {{ cclass.cclassfull }}:</h2>
+		<h2>Team Results for {{ cclass.class_name }}:</h2>
 		<p>All results are preliminary.</p>
 	</div>
 </div>
@@ -20,13 +20,13 @@
 		<tr class="teamresult">
 			<td>{{ t.position }}</td>
 			<td>{{ t.score }}</td>
-			<td>{{ clubs[t.clubshort] }} ({{ t.clubshort }})</td>
+			<td>{{ clubs[t.club_code] }} ({{ t.club_code }})</td>
 			{% for m in members %}
-			{% if m.clubshort == t.clubshort %}
+			{% if m.club_code == t.club_code %}
 				<tr class="teammember">
 					<td></td>
 					<td>{{ m.score }}</td>
-					<td>{{ m.name }} ({{ m.clubshort }})</td>
+					<td>{{ m.name }} ({{ m.club_code }})</td>
 				</tr>
 			{% endif %}
 			{% endfor %}

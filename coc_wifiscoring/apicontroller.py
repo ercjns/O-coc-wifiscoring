@@ -198,7 +198,7 @@ def _assignTeamScores(event):
                     db.session.add(scorer)
                 if members:
                     for nonscorer in members:
-                        nonscorer.isTeamScorer = False
+                        nonscorer.is_team_scorer = False
                     db.session.add_all(members)
                 team = TeamResult(event, c.class_code, team, score, True)
                 db.session.add(team)
@@ -243,19 +243,23 @@ def _assignTeamPositions(event):
             team_results.sort(key=lambda x: -x.score)
             nextposition = 1
             for i in range(len(team_results)):
+                # print team_results[i].class_code, team_results[i].club_code, team_results[i].score
                 if i == 0:
                     team_results[i].position = nextposition
+                    print team_results[i].class_code, team_results[i].club_code, team_results[i].score, team_results[i].position
                 elif team_results[i].score < team_results[i-1].score:
                     team_results[i].position = nextposition
+                    print team_results[i].class_code, team_results[i].club_code, team_results[i].score, team_results[i].position
                 else:
+                    print team_results[i].class_code, team_results[i].club_code, team_results[i].score, "TIE BREAKING HAPPENING"
                     a_club = team_results[i-1].club_code
                     b_club = team_results[i].club_code
                     a_scorers = []
                     b_scorers = []
                     for indv_class in c.team_classes.split('-'):
                         indv_class = indv_class.strip()
-                        a_scorers += Result.query.filter_by(event=event).filter_by(class_code=indv_class).filter_by(club_code=a_club).filter_by(is_team_scorer=True).all()
-                        b_scorers +=Result.query.filter_by(event=event).filter_by(class_code=indv_class).filter_by(club_code=b_club).filter_by(is_team_scorer=True).all()
+                        a_scorers += Result.query.filter_by(event=event, class_code=indv_class, club_code=a_club, is_team_scorer=True).all()
+                        b_scorers += Result.query.filter_by(event=event, class_code=indv_class, club_code=b_club, is_team_scorer=True).all()
                     a_scorers.sort(key=lambda x: -x.score)
                     b_scorers.sort(key=lambda x: -x.score)
                     while a_scorers and b_scorers:
@@ -279,7 +283,7 @@ def _assignTeamPositions(event):
                             break
                         else:
                             team_results[i].position = team_results[i-1].position
-                    nextposition += 1
+                nextposition += 1
             db.session.add_all(team_results)
             db.session.commit()
 
@@ -548,7 +552,8 @@ def clubs():
         f = request.files[request.files.keys()[0]]
         clubs = ETL.clubcodejson(f)
         for club in clubs:
-            abbr = club['abbr']
+            # abbr = club['abbr']
+            abbr = club['code']
             full = club['name']
             q = Club.query.filter_by(club_code=abbr).all()
             
