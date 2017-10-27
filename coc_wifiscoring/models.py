@@ -1,4 +1,4 @@
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 db = SQLAlchemy()
@@ -75,6 +75,7 @@ class Club(db.Model):
 class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event = db.Column(db.String)
+    version = db.Column(db.Integer)
     sicard = db.Column(db.Integer)
     bib = db.Column(db.Integer)
     name = db.Column(db.String)
@@ -88,8 +89,9 @@ class Result(db.Model):
     is_team_scorer = db.Column(db.Boolean)
     multi_id = db.Column(db.Integer)
 
-    def __init__(self, event, result_dict):
+    def __init__(self, event, version, result_dict):
         self.event = event
+        self.version = version
         self.sicard = result_dict['sicard']
         self.name = result_dict['name']
         self.bib = result_dict['bib']
@@ -122,6 +124,7 @@ class Result(db.Model):
 class TeamResult(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event = db.Column(db.String)
+    version = db.Column(db.Integer)
     club_code = db.Column(db.String)
     class_code = db.Column(db.String)
     position = db.Column(db.Integer)
@@ -129,8 +132,9 @@ class TeamResult(db.Model):
     is_valid = db.Column(db.Boolean)
     multi_id = db.Column(db.Integer)
     
-    def __init__(self, event, cclass, club, score, valid):
+    def __init__(self, event, version, cclass, club, score, valid):
         self.event = event
+        self.version = version
         self.class_code = cclass
         self.club_code = club
         self.score = score
@@ -233,13 +237,26 @@ class RemotePunch(db.Model):
         return 'At {} -> {:d} punched box #{:d}'.format(self.time, self.sicard, self.station)
 
    
-class DBAction(db.Model):
-    __tablename__ = 'wifiscoring_actions'
-    id = db.Column(db.Integer, primary_key=True)
-    time = db.Column(db.String)
-    action = db.Column(db.String)
+# class DBAction(db.Model):
+#     __tablename__ = 'wifiscoring_actions'
+#     id = db.Column(db.Integer, primary_key=True)
+#     time = db.Column(db.String)
+#     action = db.Column(db.String)
     
-    def __init__(self, time, action):
-        self.time = time
-        self.action = action
+#     def __init__(self, time, action):
+#         self.time = time
+#         self.action = action
 
+class Version(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    event = db.Column(db.String)
+    created = db.Column(db.DateTime)
+    ready = db.Column(db.Boolean)
+    filetimestamp = db.Column(db.String)
+
+    def __init__(self, event, ts):
+        self.event = event
+        self.created = datetime.now()
+        self.ready = False
+        self.filetimestamp = ts
+        return

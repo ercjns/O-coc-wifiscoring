@@ -4,38 +4,39 @@
 
 {% block content %}
 <div class="row">
-	<div class="col-md-1">
-	</div>
-	<div class="col-xs-12 col-md-6">
+	<div class="col-xs-12 col-md-8">
 		<h2 style="margin-bottom: 0px">{{ event.event_name }} - {{ event.venue }}</h2>
 		<p class="text-muted">{{ event.date }}</p>
-		<p>{{ event.description }}
+		<p>{{ event.description }}</p>
 	</div>
 </div>
 
 <div class="row">
-	<div class="col-md-1">
-	</div>
-	<div class="col-xs-12 col-md-5">
+	{% if wiol|length > 0 %}
+	<div class="col-xs-12 col-md-6">
 		<div class="well">
 			<h2>WIOL (School League)</h2>
 			<ul class="list-unstyled">
-			{% for c in noci_classes %}
+			{% for c in wiol %}
 			<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event.event_code, indv_class=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
+			{% endfor %}
+			<h4>WIOL Teams</h4>
+			{% for c in wiolT %}
+			<li><a href="{{ url_for('frontend.event_class_result_team', event_code=event.event_code, team_class=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
 			{% endfor %}
 			</ul>
 		</div>
 	</div>
-	<div class="col-xs-12 col-md-5">
+	{% endif %}
+	<div class="col-xs-12 col-md-6">
 		<div class="well">
-			<h2>Winter O (Public)</h2>
+			<h2>Public Classes</h2>
 			<ul class="list-unstyled">
-			{% for c in ult_classes %}
+			{% for c in public %}
 			<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event.event_code, indv_class=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
 			{% endfor %}
 			</ul>
 		</div>
 	</div>
 </div>
-
 {% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Events{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+		<h2>Found {{ data|length }} events:</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12">
+        <table class="table">
+            <tr>
+                <th>Event Name</th>
+                <th>Event Code</th>
+                <th>Versions</th>
+                <th></th>
+            </tr>
+        {% for item in data %}
+            <tr>
+                <td>{{ item[0].event_name }}</td>
+                <td>{{ item[0].event_code }}</td>
+                <td>{{ item[1]|length }}</td>
+                <td><form action={{ url_for('admin.del_event', id=item[0].id) }} method="post"><button type="submit" class="btn btn-default">Delete Event</button></form></td>
+            </tr>
+        {% endfor %}
+    </table>
+	</div>
+</div>
+
+<form action={{ url_for('admin.new_event') }} method="post">
+<div class="row">
+    <div class="col-md-7">
+        <h2>Create a New Event</h2>
+        <div class="form-group">
+            <label for="event-name" class="control-label">Event Name</label>
+            <input type="text" class="form-control" name="event-name" value="">
+        </div>
+        <div class="form-group">
+            <label for="event-date" class="control-label">Event Date</label>
+            <input type="date" class="form-control" name="event-date" value="" pattern="\d{4}-\d{1,2}-\d{1,2}" required>
+            <p class="help-block">YYYY-MM-DD</p>
+        </div>
+        <div class="form-group">
+            <label for="event-venue" class="control-label">Event Venue</label>
+            <input type="text" class="form-control" name="event-venue" value="">
+        </div>
+        <div class="form-group">
+            <label for="event-host" class="control-label">Event Description</label>
+            <input type="text" class="form-control" name="event-description" value="">
+        </div>
+        <p><button type="submit" class="btn btn-default btn-primary">Create New WIOL Event</button></p>
+    </div>
+</div>
+</form>
+
+{% endblock %}
