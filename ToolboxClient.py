@@ -11,7 +11,7 @@ import time
 import requests
 import json
 import socket
-from sireader import SIReaderControl
+
 
 def post_iof3_resultList(event, file):
     hosts = open("confighosts.txt")
@@ -102,6 +102,7 @@ def poll_for_results(eventcode, dir):
     return
 
 def relay_wibox():
+    from sireader import SIReaderControl
     WiBox1 = 'socket://192.168.103.201:10001'
     reader = SIReaderControl(port=WiBox1)
     #with open('confighosts.txt', 'r') as f:
@@ -187,7 +188,7 @@ if __name__ == '__main__':
         
     elif method == 'events':
         '''
-        post a tsv file containing the entries for the meet
+        post a tsv file containing the event information
         python ToolboxClient.py events eventinfo.tsv
         '''
         put_eventtable(sys.argv[2])
