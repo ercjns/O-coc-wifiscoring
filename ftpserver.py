@@ -6,6 +6,10 @@ from threading import Thread
 import os
 import requests
 
+import imp
+
+secrets = imp.load_source('instanceconfig', os.path.join('instance', 'instanceconfig.py'))
+
 class RelayHandler(FTPHandler):
     
     def on_file_received(self, file):
@@ -43,7 +47,7 @@ def get_hosts():
 
 def main():
     authorizer = DummyAuthorizer()
-    authorizer.add_user("coc", "cocPW", "./ftp", perm="elradfmw")
+    authorizer.add_user(secrets.ADMIN_USER, secrets.ADMIN_PASS, "./ftp", perm="elradfmw")
 
     handler = RelayHandler
     handler.authorizer = authorizer
