@@ -20,14 +20,14 @@ def results(event):
 
     elif request.method == 'POST':
         try:
-            infile = request.files[request.files.keys()[0]].save('latestResultsXML.xml')
+            request.files[request.files.keys()[0]].save('latestResultsXML.xml')
         except:
             return 'Please upload an IOF XML ResultsList', 400
 
         try:
             results, timestamp = ETL.getRunners('latestResultsXML.xml')
         except:
-            remove(infile)
+            remove('latestResultsXML.xml')
             return 'GetRunners failed. :(', 500
 
         newVersion = Version(event, timestamp)
@@ -50,21 +50,21 @@ def results(event):
                 db.session.add(new_result)
                 db.session.commit()
         except:
-            remove(infile)
+            remove('latestResultsXML.xml')
             return 'Problem building up the db refresh', 500
 
         try:
             _assignPositions(event, v)
             _assignScores(event, v)
         except:
-            remove(infile)
+            remove('latestResultsXML.xml')
             return 'Problem assigning individual positions and scores', 500
 
         try:
             _assignTeamScores(event, v)
             _assignTeamPositions(event, v)
         except:
-            remove(infile)
+            remove('latestResultsXML.xml')
             return 'Problem assigning team scores and positions', 500
 
         # Removing these blocks as they're from NOCI and don't yet work with versioning.
@@ -89,7 +89,7 @@ def results(event):
 
         # TODO: think about deleting old versions from the db
 
-        remove(infile)
+        remove('latestResultsXML.xml')
 
         return 'New Results: {}'.format(version.id), 200
 
@@ -608,22 +608,23 @@ def cclasses(event):
         return render_template('basiclist.html', items=q)
 
     elif request.method == 'PUT':
-        f = request.files[request.files.keys()[0]].save('~latestclassinfo.csv')
-        eventClasses = ETL.classCSV('~latestclassinfo.csv')
-
         # TODO: make this a PUT rather than a wipe and reload.
         EventClass.query.filter_by(event=event).delete()
 
-        for c in eventClasses:
-            new_class = EventClass(event, c)
-            db.session.add(new_class)
-        db.session.commit()
+        f = request.files[request.files.keys()[0]].save('~latestclassinfo.csv')
+        with open('~latestclassinfo.csv') as infile:
+            # eventClasses = ETL.classCSV('~latestclassinfo.csv')
+            eventClasses = ETL.classCSV(infile)
+            for c in eventClasses:
+                new_class = EventClass(event, c)
+                db.session.add(new_class)
+            db.session.commit()
         remove(f)
         return 'Refreshed EventClass table', 200
 
     elif request.method == 'DELETE':
         pass
-        
+
 @API.route('/events', methods=['GET', 'PUT', 'DELETE'])
 def events():
     """ Mapping of class code to full name

@@ -35,7 +35,7 @@ class RelayHandler(FTPHandler):
 
 def get_hosts():
     hostlist = []
-    with open("confighosts.txt", "r") as hosts:
+    with open("hosts.txt", "r") as hosts:
         host = hosts.readline().rstrip()
         hostlist.append(host)
     return hostlist

@@ -3,6 +3,7 @@ from datetime import datetime
 from functools import wraps
 #Markup, redirect, url_for, abort
 import ETL as ETL
+from os.path import join
 
 from .models import *
 from . import app
@@ -74,11 +75,19 @@ def new_event():
     db.session.add(newEvent)
     db.session.commit()
 
-    wiolClasses = ETL.classCSV('WIOLclassinfo.csv')
-    for c in wiolClasses:
-        new_class = EventClass(code, c)
-        db.session.add(new_class)
-    db.session.commit()
+    with open(join('coc_wifiscoring', 'static', 'WIOLclassinfo.csv')) as f:
+        wiolClasses = ETL.classCSV(f)
+        for c in wiolClasses:
+            new_class = EventClass(code, c)
+            db.session.add(new_class)
+        db.session.commit()
+    
+    
+    # wiolClasses = ETL.classCSV('./static/WIOLclassinfo.csv')
+    # for c in wiolClasses:
+    #     new_class = EventClass(code, c)
+    #     db.session.add(new_class)
+    # db.session.commit()
 
     return redirect(url_for('admin.events'))
 
