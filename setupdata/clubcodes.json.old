@@ -1,0 +1,557 @@
+[
+  {
+    "namespace": "OUSA",
+    "code": "COC",
+    "name": "Cascade OC"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "SAMM",
+    "name": "Sammamish OC"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "CSU",
+    "name": "Cambridge Sports Union"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "BAOC",
+    "name": "Bay Area OC"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "RMOC",
+    "name": "Rocky Mountain OC"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "CROC",
+    "name": "Columbia River OC"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "EWOC",
+    "name": "Eastern Washington OC"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "OK",
+    "name": "Orienteer Kansas"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "FRR",
+    "name": "Forest Runs"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "LROC",
+    "name": "Laramie Range OC"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "QOC",
+    "name": "Quantico OC"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "DVOA",
+    "name": "Delaware Valley OA"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "OCIN",
+    "name": "Orienteering Cincinnati"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "NEOC",
+    "name": "New England OC"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "CTOC",
+    "name": "City of Trees OC"
+  },
+  {
+    "namespace": "OUSA",
+    "code": "GAOC",
+    "name": "Georgia OC"
+  },
+  {
+    "namespace": "OCAN",
+    "code": "GVOC",
+    "name": "Greater Vancouver OC"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "ABM",
+    "name": "Archbishop Murphy"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "ARL",
+    "name": "Arlington"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "ART",
+    "name": "Artondale Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "BEN",
+    "name": "Ben Rush Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "BET",
+    "name": "Bethel"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "BMS",
+    "name": "Bethel Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "BBL",
+    "name": "Bishop Blanchet"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "BRE",
+    "name": "Bremerton"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "BRT",
+    "name": "Brier Terrace Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "BWW",
+    "name": "Brightwater Waldorf"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "BED",
+    "name": "Burlington-Edison"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "BUS",
+    "name": "The Bush School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "CMP",
+    "name": "Camas Prairie Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "CAS",
+    "name": "Cascadia Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "CDR",
+    "name": "Cedar River Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "CTR",
+    "name": "The Center School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "CSI",
+    "name": "Chief Sealth"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "CLK",
+    "name": "Chloe Clark Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "CMT",
+    "name": "Cougar Mountain Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "CUR",
+    "name": "Curtis"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "DEN",
+    "name": "Denny Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "DKS",
+    "name": "Emily Dickinson Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "EUW",
+    "name": "Early Entrance UW"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "ELK",
+    "name": "Eastlake"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "ESP",
+    "name": "Eastside Prepatory"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "ECK",
+    "name": "Eckstein Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "EMS",
+    "name": "Eisenhower Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "ELP",
+    "name": "Elk Plain School of Choice"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "EAS",
+    "name": "Environmental & Adventure School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "EVT",
+    "name": "Everett"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "FIN",
+    "name": "Finn Hill Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "GAR",
+    "name": "Garfield"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "GAT",
+    "name": "Gateway Middle school"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "GIG",
+    "name": "Gig Harbor"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "GPK",
+    "name": "Glacier Park"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "GLP",
+    "name": "Glacier Peak"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "HLT",
+    "name": "Highland Terrace Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "HMS",
+    "name": "Hamilton International MS"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "HZW",
+    "name": "Hazel Wolf K-8"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "HAZ",
+    "name": "Hazen"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "HOM",
+    "name": "Home School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "ING",
+    "name": "Inglemoor"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "ICS",
+    "name": "International Community School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "ISS",
+    "name": "Issaquah"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "JAC",
+    "name": "Jackson"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "JEF",
+    "name": "Thomas Jefferson"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "JUA",
+    "name": "Juanita"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "JTA",
+    "name": "Juanita Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "KAM",
+    "name": "Kamiak"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "KIR",
+    "name": "Kirkland Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "KOP",
+    "name": "Kopachuck Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "LWA",
+    "name": "Lake Washington"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "LKW",
+    "name": "Lake Wilderness Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "LAK",
+    "name": "Lakeside"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "LVW",
+    "name": "Lakeview Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "LIB",
+    "name": "Liberty"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "MAD",
+    "name": "Madrona Elementary (Edmonds)"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "MAR",
+    "name": "Mariner"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "MSV",
+    "name": "Marysville"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "MAY",
+    "name": "Maywood Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "MCM",
+    "name": "McMurray Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "MDP",
+    "name": "Meridian Park Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "NEW",
+    "name": "Newport"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "NKT",
+    "name": "North Kitsap"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "NCA",
+    "name": "Northshore Christian Academy"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "NWM",
+    "name": "Northwest  Montessori"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "OAK",
+    "name": "Oak Harbor"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "OVL",
+    "name": "Overlake"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "PCM",
+    "name": "Pacific Crest Montessori"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "RAV",
+    "name": "Raisbeck Aviation"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "RED",
+    "name": "Redmond"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "RCK",
+    "name": "Rock Creek Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "ROO",
+    "name": "Roosevelt"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "RHL",
+    "name": "Rose Hill Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "SBG",
+    "name": "Sandburg Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "SMI",
+    "name": "Science & Math Institute"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "SHA",
+    "name": "Shadow Lake Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "SKT",
+    "name": "South Kitsap"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "SPA",
+    "name": "Spanaway"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "STL",
+    "name": "St. Lukes"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "SMA",
+    "name": "St. Mary's Academy"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "STT",
+    "name": "St. Thomas"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "SWS",
+    "name": "Seattle Waldorf School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "TAH",
+    "name": "Tahoma"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "TJH",
+    "name": "Tahoma Junior High"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "TMS",
+    "name": "Tahoma Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "TES",
+    "name": "Tesla STEM school"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "TGM",
+    "name": "Thurgood Marshall Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "TCE",
+    "name": "Thornton Creek Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "TYE",
+    "name": "Tyee Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "VVW",
+    "name": "Valley View Middle"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "WVA",
+    "name": "Washington Virtual Academy"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "WIW",
+    "name": "Whidbey Island Waldorf"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "WMS",
+    "name": "Woodinville-Montessori"
+  }
+]

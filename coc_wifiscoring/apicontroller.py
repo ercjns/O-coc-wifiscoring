@@ -1,5 +1,6 @@
 from flask import Blueprint, request, abort, render_template
 from datetime import datetime
+from os import remove
 
 from .models import *
 
@@ -19,13 +20,14 @@ def results(event):
 
     elif request.method == 'POST':
         try:
-            request.files[request.files.keys()[0]].save('latestResultsXML.xml')
+            infile = request.files[request.files.keys()[0]].save('latestResultsXML.xml')
         except:
             return 'Please upload an IOF XML ResultsList', 400
 
         try:
             results, timestamp = ETL.getRunners('latestResultsXML.xml')
         except:
+            remove(infile)
             return 'GetRunners failed. :(', 500
 
         newVersion = Version(event, timestamp)
@@ -48,18 +50,21 @@ def results(event):
                 db.session.add(new_result)
                 db.session.commit()
         except:
+            remove(infile)
             return 'Problem building up the db refresh', 500
 
         try:
             _assignPositions(event, v)
             _assignScores(event, v)
         except:
+            remove(infile)
             return 'Problem assigning individual positions and scores', 500
 
         try:
             _assignTeamScores(event, v)
             _assignTeamPositions(event, v)
         except:
+            remove(infile)
             return 'Problem assigning team scores and positions', 500
 
         # Removing these blocks as they're from NOCI and don't yet work with versioning.
@@ -82,7 +87,9 @@ def results(event):
         db.session.add(version)
         db.session.commit()
 
-        # TODO: think about deleting old versions
+        # TODO: think about deleting old versions from the db
+
+        remove(infile)
 
         return 'New Results: {}'.format(version.id), 200
 
@@ -611,6 +618,7 @@ def cclasses(event):
             new_class = EventClass(event, c)
             db.session.add(new_class)
         db.session.commit()
+        remove(f)
         return 'Refreshed EventClass table', 200
 
     elif request.method == 'DELETE':
@@ -640,6 +648,7 @@ def events():
             new_event = Event(e['event_code'], e['event_name'], e['date'], e['venue'], e['description'])
             db.session.add(new_event)
         db.session.commit()
+        remove(f)
         return 'Refreshed Event table', 200
 
     elif request.method == 'DELETE':

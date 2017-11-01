@@ -1,8 +1,16 @@
 from flask import Flask
 from flask_socketio import SocketIO
 
-app = Flask(__name__)
+# app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
+
 app.config.from_object('config')
+try:
+    app.config.from_pyfile('instanceconfig.py')
+except IOError:
+    print('No Instane config')
+    pass
+
 socketio = SocketIO(app)
 
 from .models import db

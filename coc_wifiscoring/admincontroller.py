@@ -1,9 +1,11 @@
-from flask import Blueprint, request, abort, render_template, redirect, url_for
+from flask import Blueprint, request, abort, render_template, redirect, url_for, Response
 from datetime import datetime
+from functools import wraps
 #Markup, redirect, url_for, abort
 import ETL as ETL
 
 from .models import *
+from . import app
 
 
 admin = Blueprint("admin", __name__)
@@ -11,21 +13,31 @@ admin = Blueprint("admin", __name__)
 RenderConfig = {}
 RenderConfig['BrandLarge'] = 'COC-logo-diamond-red-large.png'
 
-#ToDo: SERVER admin view:
-# block with a password
-# allow to query, create, and edit database entries via gui:
-# clean out everything
-# create new orgs
-# mock incoming telemetry data
-# the possibilities are endless!
+## basic auth from http://flask.pocoo.org/snippets/8/
+def check_auth(username, password):
+    # return username == 'admin' and password == 'c0c'
+    return username == app.config['ADMIN_USER'] and password == app.config['ADMIN_PASS']
 
+def authenticate():
+    return Response('Login Required', 401, 
+                    {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
-        
+def auth_req(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
 @admin.route('/')
+@auth_req
 def hello():
     return 'Hello administration world!'
 
 @admin.route('/events', methods=['GET'])
+@auth_req
 def events():
     data = []
     events = Event.query.all()
@@ -36,6 +48,7 @@ def events():
                                                 config=RenderConfig)
 
 @admin.route('/events/new', methods=['POST'])
+@auth_req
 def new_event():
     name = request.form['event-name']
     date = request.form['event-date']
@@ -70,6 +83,7 @@ def new_event():
     return redirect(url_for('admin.events'))
 
 @admin.route('/events/rm/<id>', methods=['POST'])
+@auth_req
 def del_event(id):
     e = Event.query.get(id)
     code = e.event_code
