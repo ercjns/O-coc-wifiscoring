@@ -41,7 +41,7 @@
         <div class="form-group">
             <label for="event-date" class="control-label">Event Date</label>
             <input type="date" class="form-control" name="event-date" value="" pattern="\d{4}-\d{1,2}-\d{1,2}" required>
-            <p class="help-block">YYYY-MM-DD</p>
+            <!-- <p class="help-block">YYYY-MM-DD</p> -->
         </div>
         <div class="form-group">
             <label for="event-venue" class="control-label">Event Venue</label>
@@ -51,7 +51,20 @@
             <label for="event-host" class="control-label">Event Description</label>
             <input type="text" class="form-control" name="event-description" value="">
         </div>
-        <p><button type="submit" class="btn btn-default btn-primary">Create New WIOL Event</button></p>
+        <div class="form-group">
+            <label for="event-type" class="control-label">Event Type</label>
+            <div class="radio">
+                <label><input type="radio" name="event-type" value='wiol' required>WIOL</label>
+            </div>
+            <div class="radio">
+                <label><input type="radio" name="event-type" value='basic' required>Basic</label>
+            </div>
+            <div class="radio">
+                    <label><input type="radio" name="event-type" value='ult' required>Ultimate</label>
+                </div>
+        </div>
+
+        <p><button type="submit" class="btn btn-default btn-primary">Create New Event</button></p>
     </div>
 </div>
 </form>

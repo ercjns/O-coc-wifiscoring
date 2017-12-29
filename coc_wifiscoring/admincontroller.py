@@ -35,7 +35,8 @@ def auth_req(f):
 @admin.route('/')
 @auth_req
 def hello():
-    return 'Hello administration world!'
+    admin_events_url = url_for('admin.events')
+    return '<html><a href="'+admin_events_url+'">Admin Events</a></html>'
 
 @admin.route('/events', methods=['GET'])
 @auth_req
@@ -56,6 +57,7 @@ def new_event():
     datetxt = datetime.strptime(date, '%Y-%m-%d').strftime('%d %B %Y')
     venue = request.form['event-venue']
     desc = request.form['event-description']
+    event_type = request.form['event-type']
 
     events = Event.query.all()
     if len(events) == 0:
@@ -75,19 +77,30 @@ def new_event():
     db.session.add(newEvent)
     db.session.commit()
 
-    with open(join('coc_wifiscoring', 'static', 'WIOLclassinfo.csv')) as f:
-        wiolClasses = ETL.classCSV(f)
-        for c in wiolClasses:
-            new_class = EventClass(code, c)
-            db.session.add(new_class)
-        db.session.commit()
-    
-    
-    # wiolClasses = ETL.classCSV('./static/WIOLclassinfo.csv')
-    # for c in wiolClasses:
-    #     new_class = EventClass(code, c)
-    #     db.session.add(new_class)
-    # db.session.commit()
+    if event_type == 'wiol':
+        with open(join('coc_wifiscoring', 'static', 'WIOLclassinfo.csv')) as f:
+            wiolClasses = ETL.classCSV(f)
+            for c in wiolClasses:
+                new_class = EventClass(code, c)
+                db.session.add(new_class)
+            db.session.commit()
+    elif event_type == 'basic':
+        with open(join('coc_wifiscoring', 'static', 'Basicclassinfo.csv')) as f:
+            basicClasses = ETL.classCSV(f)
+            for c in basicClasses:
+                new_class = EventClass(code, c)
+                db.session.add(new_class)
+            db.session.commit()
+    elif event_type == 'ult':
+        with open(join('coc_wifiscoring', 'static', 'UltimateOclassinfo.csv')) as f:
+            ultClasses = ETL.classCSV(f)
+            for c in ultClasses:
+                new_class = EventClass(code, c)
+                db.session.add(new_class)
+            db.session.commit()
+    else:
+        #TODO: actually handle errors
+        print("Unknown event type: {}".format(event_type))
 
     return redirect(url_for('admin.events'))
 

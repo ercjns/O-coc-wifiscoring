@@ -1,0 +1,5 @@
+class_code,class_name,is_scored,score_method,is_multi_scored,multi_score_method,is_team_class,team_classes
+1,Beginner,FALSE,,FALSE,,FALSE,
+2,Intermediate,FALSE,,FALSE,,FALSE,
+3,Short Advanced,FALSE,,FALSE,,FALSE,
+4,Long Advanced,FALSE,,FALSE,,FALSE,
