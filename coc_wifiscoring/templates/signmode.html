@@ -77,13 +77,16 @@
 $(function() { 
     $( document ).ready( function() {
         $(document).scrollTop(0)
-        var bottom = $(document).height() - $(window).height();
-        var duration = bottom * 1000/80; // 1k/pixels per second, ~80 is good.
+		var bottom = $(document).height() - $(window).height();
+		var pps = 80 // pixels per second. ~80 is good.
+		var min_duration = 1000 * 30; // don't reload more than once per 30 seconds.
+        var duration = bottom * 1000/pps > 1000 * 30 ? bottom * 1000/pps : 1000 * 30;
+
         $("HTML, BODY").animate({ scrollTop: bottom }, 
                                 {duration: duration,
                                  easing: "linear",
                                  complete: function() {
-                                     location.reload(true);
+                                     location.reload();
                                  }
                                  });
     }); 

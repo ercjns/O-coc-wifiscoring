@@ -54,7 +54,10 @@ def event_class_select(event_code):
 def signmode(event_code):
     version = _getResultVersion(event_code)
     time = version.filetimestamp
-    time = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
+    if time == None:
+        time = datetime.strptime('2000-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+    else:
+        time = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
     event = Event.query.filter_by(event_code=event_code).first_or_404()
     event_classes = EventClass.query.filter_by(event=event_code, is_team_class=False).all()
 
