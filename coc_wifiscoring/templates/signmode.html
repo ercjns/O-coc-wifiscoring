@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.event_name }}{% endblock %}
+{% block addhead %}
+<script src="{{ url_for('static', filename='jquery-3.2.1.min.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+	<div class="col-xs-12">
+		<h1>{{ event.event_name }} - {{ event.venue }}</h1>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		<h3>Total starts today: {{ starts }}</h3>
+	</div>
+</div>
+
+
+
+{% for class in classes %}
+<div class="row">
+	<div class="col-xs-12">
+		<h2>{{ class.class_name }}<small> Latest update at {{ time|datetimeformat('%H:%M') }}</small></h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 col-md-8">
+		<table class="table table-condensed table-striped" id="resultTable">
+		<th>#</th>
+		<th>Name</th>
+		<th>Club</th>
+		<th>Result</th>
+		{% if class.is_scored %}
+		<th>Score</th>
+        {% endif %}
+		{% for r in results[class.class_code] %}
+		<tr>
+		{% if r.status == 'OK' %}
+			<td>{{ r.position }}</td>
+		{% else %}
+			<td></td>
+		{% endif %}
+		<td>{{ r.name }} ({{ r.club_code }})</td>
+		<td>{{ clubs[r.club_code] }} ({{ r.club_code }})</td>
+		{% if r.status == 'OK' %}
+			<td>{{ r.timetommmss() }}</td>
+		{% else %}
+			<td>{{ r.status }}</td>
+		{% endif %}
+		{% if class.is_scored %}
+		<td>{{ r.score }}</td>
+		{% endif %}
+		</tr>
+		{% endfor %}
+		</table>
+    </div>
+</div>
+{% endfor %}
+
+<div class="row">
+	<div class="col-xs-12">
+		<h3>Total starts today: {{ starts }}</h3>
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block bottomscripts %}
+<!-- https://howchoo.com/g/yjfjmty1zjb/how-to-animate-scroll-in-jquery -->
+<script>
+$(function() { 
+    $( document ).ready( function() {
+        $(document).scrollTop(0)
+        var bottom = $(document).height() - $(window).height();
+        var duration = bottom * 1000/80; // 1k/pixels per second, ~80 is good.
+        $("HTML, BODY").animate({ scrollTop: bottom }, 
+                                {duration: duration,
+                                 easing: "linear",
+                                 complete: function() {
+                                     location.reload(true);
+                                 }
+                                 });
+    }); 
+});
+</script>
+{% endblock %}

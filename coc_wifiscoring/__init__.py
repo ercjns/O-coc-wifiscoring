@@ -13,6 +13,10 @@ except IOError:
 
 socketio = SocketIO(app)
 
+@app.template_filter()
+def datetimeformat(value, format='%Y-%m-%dT%H:%M:%S'):
+    return value.strftime(format)
+
 from .models import db
 from .telemetrycontroller import telemetry
 from .admincontroller import admin
