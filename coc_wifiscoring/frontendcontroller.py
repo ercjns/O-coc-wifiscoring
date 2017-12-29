@@ -50,6 +50,35 @@ def event_class_select(event_code):
                                                     wiolT=wiolT,
                                                     public=public)
 
+@frontend.route('/event/<event_code>/signmode')
+def signmode(event_code):
+    version = _getResultVersion(event_code)
+    time = version.filetimestamp
+    time = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
+    event = Event.query.filter_by(event_code=event_code).first_or_404()
+    event_classes = EventClass.query.filter_by(event=event_code, is_team_class=False).all()
+
+    signresults = {}
+    num_starts = 0
+    for ec in event_classes:
+        indv_results = Result.query.filter_by(version=version.id, class_code=ec.class_code).all()
+        indv_results.sort(cmp=_sortResults)
+        num_starts += len(indv_results)
+        signresults[ec.class_code] = indv_results
+
+    clubs = Club.query.all()
+    club_lookup = {}
+    for club in clubs:
+        club_lookup[club.club_code] = club.club_name
+
+    return render_template('signmode.html', config=RenderConfig,
+                                            time=time,
+                                            event=event,
+                                            classes=event_classes,
+                                            starts=num_starts,
+                                            results=signresults, 
+                                            clubs=clubs)
+
 @frontend.route('/event/<event_code>/results/<indv_class>')
 def event_class_result_indv(event_code, indv_class):
     event = Event.query.filter_by(event_code=event_code).first_or_404()
