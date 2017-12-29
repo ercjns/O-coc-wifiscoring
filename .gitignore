@@ -1,7 +1,11 @@
 /venv
 /testdata
+/instance
 *.pyc
 *.db
 *~*
 *.xml
 *.xlsx
+*.log
+*.old
+*.pid
