@@ -74,8 +74,24 @@
 {% block bottomscripts %}
 <!-- https://howchoo.com/g/yjfjmty1zjb/how-to-animate-scroll-in-jquery -->
 <script>
+function forceFullScreen() {
+  var doc = window.document;
+  var docEl = doc.documentElement;
+
+  var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+  var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+  if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+    requestFullScreen.call(docEl);
+  }
+//   else {
+//     cancelFullScreen.call(doc);
+//   }
+}
+
 $(function() { 
     $( document ).ready( function() {
+		forceFullScreen();
         $(document).scrollTop(0)
 		var bottom = $(document).height() - $(window).height();
 		var pps = 80 // pixels per second. ~80 is good.
@@ -91,5 +107,8 @@ $(function() {
                                  });
     }); 
 });
+
+
+
 </script>
 {% endblock %}
