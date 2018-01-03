@@ -75,11 +75,13 @@
 <!-- https://howchoo.com/g/yjfjmty1zjb/how-to-animate-scroll-in-jquery -->
 <script>
 function forceFullScreen() {
+// Broswer security features prevent this from working as intended. 
+// In firefox, change "full-screen-api.allow-trusted-requests-only" to false.
   var doc = window.document;
   var docEl = doc.documentElement;
 
   var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-  var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+//   var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
 
   if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
     requestFullScreen.call(docEl);
