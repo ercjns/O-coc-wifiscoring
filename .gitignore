@@ -9,3 +9,4 @@
 *.log
 *.old
 *.pid
+/.vscode
