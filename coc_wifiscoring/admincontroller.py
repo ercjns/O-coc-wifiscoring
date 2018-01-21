@@ -56,7 +56,10 @@ def new_event():
     date = request.form['event-date']
     datetxt = datetime.strptime(date, '%Y-%m-%d').strftime('%d %B %Y')
     venue = request.form['event-venue']
-    desc = request.form['event-description']
+    try:
+        desc = request.form['event-description']
+    except:
+        desc = ''
     event_type = request.form['event-type']
 
     events = Event.query.all()

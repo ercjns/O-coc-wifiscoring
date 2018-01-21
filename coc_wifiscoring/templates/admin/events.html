@@ -36,32 +36,32 @@
         <h2>Create a New Event</h2>
         <div class="form-group">
             <label for="event-name" class="control-label">Event Name</label>
-            <input type="text" class="form-control" name="event-name" value="">
+            <input type="text" class="form-control" name="event-name" value="" required>
         </div>
         <div class="form-group">
             <label for="event-date" class="control-label">Event Date</label>
-            <input type="date" class="form-control" name="event-date" value="" pattern="\d{4}-\d{1,2}-\d{1,2}" required>
+            <input type="date" class="form-control" name="event-date" value="YYYY-MM-DD" pattern="\d{4}-\d{1,2}-\d{1,2}" title="YYYY-MM-DD" required>
             <!-- <p class="help-block">YYYY-MM-DD</p> -->
         </div>
         <div class="form-group">
             <label for="event-venue" class="control-label">Event Venue</label>
-            <input type="text" class="form-control" name="event-venue" value="">
+            <input type="text" class="form-control" name="event-venue" value="" required>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
             <label for="event-host" class="control-label">Event Description</label>
             <input type="text" class="form-control" name="event-description" value="">
-        </div>
+        </div> -->
         <div class="form-group">
             <label for="event-type" class="control-label">Event Type</label>
             <div class="radio">
                 <label><input type="radio" name="event-type" value='wiol' required>WIOL</label>
             </div>
             <div class="radio">
-                <label><input type="radio" name="event-type" value='basic' required>Basic</label>
+                <label><input type="radio" name="event-type" value='ult' required>Ultimate</label>
             </div>
             <div class="radio">
-                    <label><input type="radio" name="event-type" value='ult' required>Ultimate</label>
-                </div>
+                <label><input type="radio" name="event-type" value='basic' required>Basic</label>
+            </div>
         </div>
 
         <p><button type="submit" class="btn btn-default btn-primary">Create New Event</button></p>
