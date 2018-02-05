@@ -52,6 +52,21 @@ def event_class_select(event_code):
 
 @frontend.route('/event/<event_code>/signmode')
 def signmode(event_code):
+    exclude = request.args.get('x', '').upper().split(',')
+    include = request.args.get('i', '').upper().split(',')
+
+    if not (exclude == [''] or include == ['']):
+        # only use one of exclude or include
+        exclude = []
+        include = []
+    else:
+        if include == ['']: include = []
+        if exclude == ['']: exclude = []
+
+    print('include: ', include)
+    print('exclude: ', exclude)
+
+
     version = _getResultVersion(event_code)
     time = version.filetimestamp
     if time == None:
@@ -60,6 +75,11 @@ def signmode(event_code):
         time = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
     event = Event.query.filter_by(event_code=event_code).first_or_404()
     event_classes = EventClass.query.filter_by(event=event_code, is_team_class=False).all()
+
+    if exclude:
+        event_classes = [x for x in event_classes if x.class_code not in exclude]
+    if include:
+        event_classes = [x for x in event_classes if x.class_code in include]
 
     signresults = {}
     num_starts = 0
@@ -70,10 +90,20 @@ def signmode(event_code):
         signresults[ec.class_code] = indv_results
 
     signresults_teams = {}
-    event_team_classes = EventClass.query.filter_by(event=event_code, is_team_class=True).all()
-    for etc in event_team_classes:
-        team_results = TeamResult.query.filter_by(version=version.id, class_code=etc.class_code).order_by(TeamResult.position).all()
-        signresults_teams[etc.class_code] = team_results
+    event_team_classes = []
+    if 'TEAMS' not in exclude:
+        event_team_classes = EventClass.query.filter_by(event=event_code, is_team_class=True).all()
+        if exclude:
+            event_team_classes = [x for x in event_team_classes if x.class_code not in exclude]
+        if include:
+            if 'TEAMS' not in include:
+                event_team_classes = [x for x in event_team_classes if x.class_code in include]
+        for etc in event_team_classes:
+            if etc.class_code in exclude:
+                event_team_classes.remove(etc)
+                continue
+            team_results = TeamResult.query.filter_by(version=version.id, class_code=etc.class_code).order_by(TeamResult.position).all()
+            signresults_teams[etc.class_code] = team_results
 
     clubs = Club.query.all()
     club_lookup = {}
