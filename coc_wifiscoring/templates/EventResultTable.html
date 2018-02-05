@@ -17,9 +17,9 @@
 		<th>#</th>
 		<th>Name</th>
 		<th>Club</th>
-		<th>Result</th>
+		<th style="text-align:right;">Result</th>
 		{% if class_info.is_scored %}
-		<th>Score</th>
+		<th style="text-align:right;">Score</th>
 		{% endif %}
 		{% for r in results %}
 		<tr>
@@ -31,12 +31,12 @@
 		<td>{{ r.name }} ({{ r.club_code }})</td>
 		<td>{{ clubs[r.club_code] }} ({{ r.club_code }})</td>
 		{% if r.status == 'OK' %}
-			<td>{{ r.timetommmss() }}</td>
+			<td style="text-align:right;">{{ r.timetommmss() }}</td>
 		{% else %}
-			<td>{{ r.status }}</td>
+			<td style="text-align:right;">{{ r.status }}</td>
 		{% endif %}
 		{% if class_info.is_scored %}
-		<td>{{ r.score }}</td>
+		<td style="text-align:right;">{{ r.score|int }}</td>
 		{% endif %}
 		</tr>
 		{% endfor %}

@@ -13,20 +13,20 @@
 <div class="row">
 	<div class="col-xs-12 col-md-8">
 		<table class="table table-condensed" id="resultTable">
-		<th>#</th>
-		<th>Score</th>
-		<th>Team</th>
+		<th class="col-xs-1">#</th>
+		<th class="col-xs-1">Score</th>
+		<th class="col-xs-10">Team</th>
 		{% for t in teams %}
 		<tr class="teamresult">
 			<td>{{ t.position }}</td>
-			<td>{{ t.score }}</td>
+			<td>{{ t.score|int }}</td>
 			<td>{{ clubs[t.club_code] }} ({{ t.club_code }})</td>
 			{% for m in members %}
 			{% if m.club_code == t.club_code %}
 				<tr class="teammember">
 					<td></td>
-					<td>{{ m.score }}</td>
-					<td>{{ m.name }} ({{ m.club_code }})</td>
+					<td style="text-align:right;">{{ m.score|int }}</td>
+					<td>{{ m.name }} ({{ m.club_code }}) - {{m.timetommmss()}} </td>
 				</tr>
 			{% endif %}
 			{% endfor %}
