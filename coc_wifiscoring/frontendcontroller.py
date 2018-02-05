@@ -69,6 +69,12 @@ def signmode(event_code):
         num_starts += len(indv_results)
         signresults[ec.class_code] = indv_results
 
+    signresults_teams = {}
+    event_team_classes = EventClass.query.filter_by(event=event_code, is_team_class=True).all()
+    for etc in event_team_classes:
+        team_results = TeamResult.query.filter_by(version=version.id, class_code=etc.class_code).order_by(TeamResult.position).all()
+        signresults_teams[etc.class_code] = team_results
+
     clubs = Club.query.all()
     club_lookup = {}
     for club in clubs:
@@ -77,10 +83,12 @@ def signmode(event_code):
     return render_template('signmode.html', config=RenderConfig,
                                             time=time,
                                             event=event,
-                                            classes=event_classes,
                                             starts=num_starts,
-                                            results=signresults, 
-                                            clubs=clubs)
+                                            classes=event_classes,
+                                            results=signresults,
+                                            classes_teams=event_team_classes,
+                                            results_teams=signresults_teams,
+                                            clubs=club_lookup)
 
 @frontend.route('/event/<event_code>/results/<indv_class>')
 def event_class_result_indv(event_code, indv_class):

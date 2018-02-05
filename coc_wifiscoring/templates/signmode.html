@@ -19,25 +19,19 @@
 	</div>
 </div>
 
-
-
 {% for class in classes %}
 <div class="row">
-	<div class="col-xs-12">
-		<h2>{{ class.class_name }}<small> Latest update at {{ time|datetimeformat('%H:%M') }}</small></h2>
-	</div>
-</div>
 
-<div class="row">
-	<div class="col-xs-12 col-md-8">
+	<div class="col-xs-12 col-lg-5">
+		<h2>{{ class.class_name }}<small> Latest update at {{ time|datetimeformat('%H:%M') }}</small></h2>
 		<table class="table table-condensed table-striped" id="resultTable">
 		<th>#</th>
 		<th>Name</th>
 		<th>Club</th>
-		<th>Result</th>
+		<th style="text-align:right;">Result</th>
 		{% if class.is_scored %}
-		<th>Score</th>
-        {% endif %}
+		<th style="text-align:right;">Score</th>
+		{% endif %}
 		{% for r in results[class.class_code] %}
 		<tr>
 		{% if r.status == 'OK' %}
@@ -46,19 +40,41 @@
 			<td></td>
 		{% endif %}
 		<td>{{ r.name }} ({{ r.club_code }})</td>
-		<td>{{ clubs[r.club_code] }} ({{ r.club_code }})</td>
+		<td>{{ clubs[r.club_code] }}</td>
 		{% if r.status == 'OK' %}
-			<td>{{ r.timetommmss() }}</td>
+			<td style="text-align:right;">{{ r.timetommmss() }}</td>
 		{% else %}
-			<td>{{ r.status }}</td>
+			<td style="text-align:right;">{{ r.status }}</td>
 		{% endif %}
 		{% if class.is_scored %}
-		<td>{{ r.score }}</td>
+		<td style="text-align:right;">{{ r.score|int }}</td>
 		{% endif %}
 		</tr>
 		{% endfor %}
 		</table>
-    </div>
+	</div>
+
+	{% for etc in classes_teams %}
+	{% if class.class_code in etc.team_classes and class.class_code.startswith('W') %}
+	
+	<div class="col-xs-12 col-lg-5 col-lg-offset-1">
+		<h2>{{ etc.class_name }}<small> Latest update at {{ time|datetimeformat('%H:%M') }}</small></h2>
+		<table class="table table-condensed table-striped" id="resultTable">
+		<th class="col-xs-1">#</th>
+		<th class="col-xs-1">Score</th>
+		<th class="col-xs-10">Team</th>
+		{% for t in results_teams[etc.class_code] %}
+		<tr>
+			<td>{{ t.position }}</td>
+			<td style="text-align: right; padding-right:20px">{{ t.score|int }}</td>
+			<td>{{ clubs[t.club_code] }} ({{ t.club_code }})</td>
+		</tr>
+		{% endfor %}
+		</table>
+	</div>
+	{% endif %}
+	{% endfor %}
+
 </div>
 {% endfor %}
 
