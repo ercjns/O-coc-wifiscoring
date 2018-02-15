@@ -1,4 +1,5 @@
 from flask import Blueprint, request, abort, render_template, redirect, url_for
+from werkzeug.routing import RequestRedirect
 from .models import *
 import copy
 from datetime import datetime
@@ -32,7 +33,7 @@ def home():
 def event_class_select(event_code):
     version = _getResultVersion(event_code)
     time = version.filetimestamp
-    event = Event.query.filter_by(event_code=event_code).first_or_404()
+    event = _get_event_or_redirect(event_code)
     event_classes = EventClass.query.filter_by(event=event_code).all()
 
     wiol = [c for c in event_classes if c.class_code in WIOL_CLASSES]
@@ -73,7 +74,7 @@ def signmode(event_code):
         time = datetime.strptime('2000-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
     else:
         time = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
-    event = Event.query.filter_by(event_code=event_code).first_or_404()
+    event = _get_event_or_redirect(event_code)
     event_classes = EventClass.query.filter_by(event=event_code, is_team_class=False).all()
 
     if exclude:
@@ -122,7 +123,7 @@ def signmode(event_code):
 
 @frontend.route('/event/<event_code>/results/<indv_class>')
 def event_class_result_indv(event_code, indv_class):
-    event = Event.query.filter_by(event_code=event_code).first_or_404()
+    event = _get_event_or_redirect(event_code)
     class_info = EventClass.query.filter_by(event=event_code, class_code=indv_class).first_or_404()
 
     version = _getResultVersion(event_code)
@@ -162,6 +163,7 @@ def team_class_select():
     
 @frontend.route('/event/<event_code>/results/teams/<team_class>')
 def event_class_result_team(event_code, team_class):
+    event = _get_event_or_redirect(event_code)
     version = _getResultVersion(event_code)
     v = version.id
     teamdata = TeamResult.query.filter_by(version=v, class_code=team_class).order_by(TeamResult.position).all()
@@ -181,30 +183,37 @@ def event_class_result_team(event_code, team_class):
                                                    members=teamscorers)
 
 
-@frontend.route('/meetstats/')
-def meet_stats():
-    download_items = Result.query.all()
-    download_sicards = [a.sicard for a in download_items]
+# @frontend.route('/meetstats/')
+# def meet_stats():
+#     download_items = Result.query.all()
+#     download_sicards = [a.sicard for a in download_items]
     
-    check_items = RemotePunch.query.filter_by(station=17).group_by(RemotePunch.sicard).order_by(RemotePunch.time).all()
+#     check_items = RemotePunch.query.filter_by(station=17).group_by(RemotePunch.sicard).order_by(RemotePunch.time).all()
     
-    fin = len(download_sicards)
-    checked = 0
+#     fin = len(download_sicards)
+#     checked = 0
     
-    out_items = []
-    for card in check_items:
-        if card.sicard not in download_sicards:
-            checked += 1
-            out_items.append(card)
-            continue
+#     out_items = []
+#     for card in check_items:
+#         if card.sicard not in download_sicards:
+#             checked += 1
+#             out_items.append(card)
+#             continue
 
-    checked += fin
-    time = datetime.now()
-    return render_template('meetstats.html', config=RenderConfig, time=time, checked=checked, downloaded=len(download_sicards), out=checked-fin, items=out_items)
-    
+#     checked += fin
+#     time = datetime.now()
+#     return render_template('meetstats.html', config=RenderConfig, time=time, checked=checked, downloaded=len(download_sicards), out=checked-fin, items=out_items)
+
 
 def _getResultVersion(event):
     v = Version.query.filter_by(event=event, ready=True).order_by('-id').first()
     if v == None:
         return Version(event, None)
     return v
+
+def _get_event_or_redirect(event_code):
+    event = Event.query.filter_by(event_code=event_code).first()
+    if event is not None:
+        return event
+    else:
+        raise RequestRedirect(url_for('frontend.home'))
