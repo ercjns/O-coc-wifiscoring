@@ -40,9 +40,9 @@ def event_class_select(event_code):
     wiolT = [c for c in event_classes if c.class_code in WIOL_TEAM_CLASSES]
     public = [c for c in event_classes if c not in wiol + wiolT]
 
-    wiol.sort(key=lambda x: x.class_code)
-    wiolT.sort(key=lambda x: x.class_code)
-    public.sort(key=lambda x: x.class_code)
+    wiol.sort(key=lambda x: x.class_code, cmp=compare_class_codes)
+    wiolT.sort(key=lambda x: x.class_code, cmp=compare_class_codes)
+    public.sort(key=lambda x: x.class_code, cmp=compare_class_codes)
 
     return render_template('EventClassSelect.html', config=RenderConfig, 
                                                     time=time, 
@@ -63,10 +63,6 @@ def signmode(event_code):
     else:
         if include == ['']: include = []
         if exclude == ['']: exclude = []
-
-    print('include: ', include)
-    print('exclude: ', exclude)
-
 
     version = _getResultVersion(event_code)
     time = version.filetimestamp
@@ -217,3 +213,22 @@ def _get_event_or_redirect(event_code):
         return event
     else:
         raise RequestRedirect(url_for('frontend.home'))
+
+def compare_class_codes(a, b):
+    # 1 if a > b, -1 if a < b.
+    if (a[-1] == 'G' or b[-1] == 'G') and a[:-1] == b[:-1]:
+        if a[-1] == 'G' and b[-1] != 'G':
+            return 1
+        elif a[-1] != 'G' and b[-1] == 'G':
+            return -1
+        else:
+            return 0
+    else:
+        if a > b:
+            return 1
+        elif b > a:
+            return -1
+        elif a == b:
+            return 0
+        else:
+            raise ValueError("can't compare {} and {}".format(a,b))

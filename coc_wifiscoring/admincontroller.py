@@ -16,7 +16,6 @@ RenderConfig['BrandLarge'] = 'COC-logo-diamond-red-large.png'
 
 ## basic auth from http://flask.pocoo.org/snippets/8/
 def check_auth(username, password):
-    # return username == 'admin' and password == 'c0c'
     return username == app.config['ADMIN_USER'] and password == app.config['ADMIN_PASS']
 
 def authenticate():
@@ -82,6 +81,13 @@ def new_event():
 
     if event_type == 'wiol':
         with open(join('coc_wifiscoring', 'static', 'WIOLclassinfo.csv')) as f:
+            wiolClasses = ETL.classCSV(f)
+            for c in wiolClasses:
+                new_class = EventClass(code, c)
+                db.session.add(new_class)
+            db.session.commit()
+    elif event_type == 'wiolchamps':
+        with open(join('coc_wifiscoring', 'static', 'WIOLChampsclassinfo.csv')) as f:
             wiolClasses = ETL.classCSV(f)
             for c in wiolClasses:
                 new_class = EventClass(code, c)

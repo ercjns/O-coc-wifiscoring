@@ -1,0 +1,26 @@
+class_code,class_name,is_scored,score_method,is_multi_scored,multi_score_method,is_team_class,team_classes
+1F,Beginner Female (White),FALSE,,FALSE,,FALSE,
+1M,Beginner Male (White),FALSE,,FALSE,,FALSE,
+1G,Beginner Group,FALSE,,FALSE,,FALSE,
+3F,Intermediate Female (Orange),FALSE,,FALSE,,FALSE,
+3M,Intermediate Male (Orange),FALSE,,FALSE,,FALSE,
+3G,Intermediate Group,FALSE,,FALSE,,FALSE,
+7F,Short Advanced Female (Brown/Green),FALSE,,FALSE,,FALSE,
+7M,Short Advanced Male (Brown/Green),FALSE,,FALSE,,FALSE,
+7G,Short Advanced Group,FALSE,,FALSE,,FALSE,
+8F,Long Advanced Female (Red),TRUE,WIOL-indv,FALSE,,FALSE,
+8M,Long Advanced Male (Blue/Red),TRUE,WIOL-indv,FALSE,,FALSE,
+8G,Long Advanced Group,FALSE,,FALSE,,FALSE,
+W1F,Elementary Girls (White),TRUE,WIOL-indv,FALSE,,FALSE,
+W1M,Elementary Boys (White),TRUE,WIOL-indv,FALSE,,FALSE,
+W2F,Middle School Girls (Yellow),TRUE,WIOL-indv,FALSE,,FALSE,
+W2M,Middle School Boys (Yellow),TRUE,WIOL-indv,FALSE,,FALSE,
+W3F,JV Girls (Orange),TRUE,WIOL-indv,FALSE,,FALSE,
+W4M,JV Boys (Orange),TRUE,WIOL-indv,FALSE,,FALSE,
+W6F,Varsity Girls (Green),TRUE,WIOL-indv,FALSE,,FALSE,
+W6M,Varsity Boys (Red),TRUE,WIOL-indv,FALSE,,FALSE,
+W2T,Middle School Teams,TRUE,WIOL-team,FALSE,,TRUE,W2M-W2F
+W3FT,JV Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W3F
+W4MT,JV Boys Teams,TRUE,WIOL-team,FALSE,,TRUE,W4M
+W6FT,Varsity Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W6F
+W6MT,Varsity Boys Teams,TRUE,WIOL-team,FALSE,,TRUE,W6M
