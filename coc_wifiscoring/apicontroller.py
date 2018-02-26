@@ -1,6 +1,7 @@
 from flask import Blueprint, request, abort, render_template
 from datetime import datetime
 from os import remove
+import time
 
 from .models import *
 
@@ -19,13 +20,16 @@ def results(event):
         #abort(404)
 
     elif request.method == 'POST':
+        timeStart_postResults = time.time()
         try:
             request.files[request.files.keys()[0]].save('latestResultsXML.xml')
         except:
             return 'Please upload an IOF XML ResultsList', 400
 
         try:
+            timeStart_getRunners = time.time()
             results, timestamp = ETL.getRunners('latestResultsXML.xml')
+            timeEnd_getRunners = time.time()
         except:
             remove('latestResultsXML.xml')
             return 'GetRunners failed. :(', 500
@@ -33,10 +37,11 @@ def results(event):
         newVersion = Version(event, timestamp)
         db.session.add(newVersion)
         db.session.commit()
-        version = Version.query.filter_by(event=event).order_by('-id').first()
+        version = Version.query.filter_by(event=event).order_by(Version.id.desc()).first()
         v = version.id
 
         try:
+            timeStart_buildDB = time.time()
             for r in results:
                 result_dict = { 'sicard': int(r['estick'] if r['estick']>0 else -1),
                                 'name': str(r['name']),
@@ -48,21 +53,30 @@ def results(event):
                               }
                 new_result = Result(event, v, result_dict)
                 db.session.add(new_result)
-                db.session.commit()
+            db.session.commit()
+            timeEnd_buildDB = time.time()
         except:
             remove('latestResultsXML.xml')
             return 'Problem building up the db refresh', 500
 
         try:
+            timeStart_assignPos = time.time()
             _assignPositions(event, v)
+            timeEnd_assignPos = time.time()
+            timeStart_assignScore = time.time()
             _assignScores(event, v)
+            timeEnd_assignScore = time.time()
         except:
             remove('latestResultsXML.xml')
             return 'Problem assigning individual positions and scores', 500
 
         try:
+            timeStart_teamScore = time.time()
             _assignTeamScores(event, v)
+            timeEnd_teamScore = time.time()
+            timeStart_teamPos = time.time()
             _assignTeamPositions(event, v)
+            timeEnd_teamPos = time.time()
         except:
             remove('latestResultsXML.xml')
             return 'Problem assigning team scores and positions', 500
@@ -88,8 +102,17 @@ def results(event):
         db.session.commit()
 
         # TODO: think about deleting old versions from the db
-
         remove('latestResultsXML.xml')
+
+        timeEnd_postResults = time.time()
+
+        print('{:.4f}s for getRunners'.format(timeEnd_getRunners - timeStart_getRunners))
+        print('{:.4f}s for buildDB'.format(timeEnd_buildDB - timeStart_buildDB))
+        print('{:.4f}s for assignPos'.format(timeEnd_assignPos - timeStart_assignPos))
+        print('{:.4f}s for assignScore'.format(timeEnd_assignScore - timeStart_assignScore))
+        print('{:.4f}s for teamScore'.format(timeEnd_teamScore - timeStart_teamScore))
+        print('{:.4f}s for teamPos'.format(timeEnd_teamPos - timeStart_teamPos))
+        print('{:.4f}s to complete postResults'.format(timeEnd_postResults - timeStart_postResults))
 
         return 'New Results: {}'.format(version.id), 200
 
@@ -110,7 +133,7 @@ def _assignPositions(event, v):
                 class_results[i].position = nextposition
             nextposition += 1
         db.session.add_all(class_results)
-        db.session.commit()
+    db.session.commit()
     return
 
 def _assignScores(event, v):
@@ -122,21 +145,19 @@ def _assignScores(event, v):
             continue
             
         elif c.score_method == 'WIOL-indv':
-            class_finishers = Result.query.filter_by(version=v).filter_by(class_code=c.class_code).filter(Result.position > 0).all()
-            for r in class_finishers:
-                if r.position == 1: r.score = 100
+            class_results = Result.query.filter_by(version=v).filter_by(class_code=c.class_code).all()
+            for r in class_results:
+                if r.position < 0:
+                    r.score = 0
+                elif r.position == 0:
+                    raise ValueError
+                elif r.position == 1: r.score = 100
                 elif r.position == 2: r.score = 95
                 elif r.position == 3: r.score = 92
                 else:
                     r.score = 100 - 6 - int(r.position)
-            class_non_finishers = Result.query.filter_by(version=v).filter_by(class_code=c.class_code).filter(Result.position < 0).all()
-            if len(class_non_finishers) > 0:
-                for r in class_non_finishers:
-                    r.score = 0
-            db.session.add_all(class_finishers)
-            db.session.add_all(class_non_finishers)
-            db.session.commit()
-                
+            db.session.add_all(class_results)
+
         elif c.score_method == 'NOCI-indv':
             class_results = Result.query.filter_by(version=v).filter_by(class_code=c.class_code).all()
             awt = sum([r.time for r in class_results if (r.position > 0 and r.position <=3)]) / 3.0
@@ -169,7 +190,6 @@ def _assignScores(event, v):
                 else:
                     r.score = (60 * (3*3600) / better_awt) + 10
             db.session.add_all(class_results)
-            db.session.commit()
 
         elif c.score_method == 'ULT-indv':
             class_results = Result.query.filter_by(version=v).filter_by(class_code=c.class_code).filter(Result.position > 0).all()
@@ -181,8 +201,8 @@ def _assignScores(event, v):
                 else:
                     r.score = 0
             db.session.add_all(class_results)
-            db.session.commit()
 
+    db.session.commit()
     return
 
 def _assignTeamScores(event, v):
@@ -214,7 +234,6 @@ def _assignTeamScores(event, v):
                     db.session.add_all(members)
                 team = TeamResult(event, v, c.class_code, team, score, True)
                 db.session.add(team)
-                db.session.commit()
 
         elif c.score_method == 'NOCI-team':
             indv_results = []
@@ -240,8 +259,8 @@ def _assignTeamScores(event, v):
                 valid = True if contributors == 3 else False
                 team = TeamResult(event, v, c.class_code, team, score, valid)
                 db.session.add(team)
-                db.session.commit()
 
+    db.session.commit()
     return
 
 def _assignTeamPositions(event, v):
@@ -299,7 +318,6 @@ def _assignTeamPositions(event, v):
                             team_results[i].position = team_results[i-1].position
                 nextposition += 1
             db.session.add_all(team_results)
-            db.session.commit()
 
         elif c.score_method == 'NOCI-team':
             team_results = TeamResult.query.filter_by(version=v, class_code=c.class_code, is_valid=True).all()
@@ -314,7 +332,8 @@ def _assignTeamPositions(event, v):
                     team_results[i].position = nextposition
                 nextposition += 1
             db.session.add_all(team_results)
-            db.session.commit()
+
+    db.session.commit()
     return
 
 # def _assignMultiScores(event):
