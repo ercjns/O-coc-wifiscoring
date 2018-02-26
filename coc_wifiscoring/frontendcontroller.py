@@ -202,7 +202,7 @@ def event_class_result_team(event_code, team_class):
 
 
 def _getResultVersion(event):
-    v = Version.query.filter_by(event=event, ready=True).order_by('-id').first()
+    v = Version.query.filter_by(event=event, ready=True).order_by(Version.id.desc()).first()
     if v == None:
         return Version(event, None)
     return v
