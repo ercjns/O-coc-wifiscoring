@@ -8,7 +8,7 @@ app.config.from_object('config')
 try:
     app.config.from_pyfile('instanceconfig.py')
 except IOError:
-    print('No Instane config')
+    print('No Instance config')
     pass
 
 socketio = SocketIO(app)

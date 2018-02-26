@@ -10,3 +10,4 @@
 *.old
 *.pid
 /.vscode
+hosts.txt
