@@ -11,14 +11,12 @@ import imp
 secrets = imp.load_source('instanceconfig', os.path.join('instance', 'instanceconfig.py'))
 
 class RelayHandler(FTPHandler):
-    
+
     def on_file_received(self, file):
         def close_and_post(file):
             self.close() # disconnect FTP client. This unblocks SportSoftware
-            # this doesnt log out. "control connection timed out"
-            # after about 5 minutes
-            # will use extra ports/processes?
-            # is this a problem?
+            # this does NOT log out of the FTP server.
+            # "control connection timed out" at handler.timeout below
 
             hosts = get_hosts()
             event = os.path.split(os.path.dirname(file))[1]
@@ -51,6 +49,8 @@ def main():
 
     handler = RelayHandler
     handler.authorizer = authorizer
+
+    handler.timeout = 30 # seconds. Default: 300
 
     server = FTPServer(('', 21), handler)
     server.serve_forever()
