@@ -13,11 +13,11 @@ API = Blueprint("resultsAPI", __name__)
 @API.route('/event/<event>/results', methods=['GET', 'POST'])
 def results(event):
     if request.method == 'GET':
-        #try:
+        # try:
         q = Result.query.filter_by(event=event).all()
         return render_template('basiclist.html', items=q)
-        #except:
-        #abort(404)
+        # except:
+        #     abort(404)
 
     elif request.method == 'POST':
         timeStart_postResults = time.time()
@@ -106,13 +106,13 @@ def results(event):
 
         timeEnd_postResults = time.time()
 
-        print('{:.4f}s for getRunners'.format(timeEnd_getRunners - timeStart_getRunners))
-        print('{:.4f}s for buildDB'.format(timeEnd_buildDB - timeStart_buildDB))
-        print('{:.4f}s for assignPos'.format(timeEnd_assignPos - timeStart_assignPos))
-        print('{:.4f}s for assignScore'.format(timeEnd_assignScore - timeStart_assignScore))
-        print('{:.4f}s for teamScore'.format(timeEnd_teamScore - timeStart_teamScore))
-        print('{:.4f}s for teamPos'.format(timeEnd_teamPos - timeStart_teamPos))
-        print('{:.4f}s to complete postResults'.format(timeEnd_postResults - timeStart_postResults))
+        # print('{:.4f}s for getRunners'.format(timeEnd_getRunners - timeStart_getRunners))
+        # print('{:.4f}s for buildDB'.format(timeEnd_buildDB - timeStart_buildDB))
+        # print('{:.4f}s for assignPos'.format(timeEnd_assignPos - timeStart_assignPos))
+        # print('{:.4f}s for assignScore'.format(timeEnd_assignScore - timeStart_assignScore))
+        # print('{:.4f}s for teamScore'.format(timeEnd_teamScore - timeStart_teamScore))
+        # print('{:.4f}s for teamPos'.format(timeEnd_teamPos - timeStart_teamPos))
+        # print('{:.4f}s to complete postResults'.format(timeEnd_postResults - timeStart_postResults))
 
         return 'New Results: {}'.format(version.id), 200
 
