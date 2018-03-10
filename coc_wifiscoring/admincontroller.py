@@ -107,6 +107,13 @@ def new_event():
                 new_class = EventClass(code, c)
                 db.session.add(new_class)
             db.session.commit()
+    elif event_type == 'ult3':
+        with open(join('coc_wifiscoring', 'static', 'UltimateOclassinfo3.csv')) as f:
+            ultClasses = ETL.classCSV(f)
+            for c in ultClasses:
+                new_class = EventClass(code, c)
+                db.session.add(new_class)
+            db.session.commit()
     else:
         #TODO: actually handle errors
         print("Unknown event type: {}".format(event_type))

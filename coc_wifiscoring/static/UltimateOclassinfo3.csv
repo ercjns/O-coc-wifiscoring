@@ -1,0 +1,10 @@
+class_code,class_name,is_scored,score_method,is_multi_scored,multi_score_method,is_team_class,team_classes
+1,Beginner,FALSE,,FALSE,,FALSE,
+2,Intermediate,FALSE,,FALSE,,FALSE,
+3G,Advanced Groups,FALSE,,FALSE,,FALSE,
+UJF,Ultimate O Juniors Female,TRUE,ULT-indv,FALSE,,FALSE,
+UJM,Ultimate O Juniors Male,TRUE,ULT-indv,FALSE,,FALSE,
+UMF,Ultimate O Masters Female,TRUE,ULT-indv,FALSE,,FALSE,
+UMM,Ultimate O Masters Male,TRUE,ULT-indv,FALSE,,FALSE,
+UOF,Ultimate O Open Female,TRUE,ULT-indv,FALSE,,FALSE,
+UOM,Ultimate O Open Male,TRUE,ULT-indv,FALSE,,FALSE,
