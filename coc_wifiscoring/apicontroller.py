@@ -177,8 +177,12 @@ def _assignScores(event, v):
 
         elif c.score_method == 'ULT-indv':
             class_results = Result.query.filter_by(version=v).filter_by(class_code=c.class_code).filter(Result.position > 0).all()
-            winner = Result.query.filter_by(version=v).filter_by(class_code=c.class_code).filter_by(position=1).one()
-            benchmark = float(winner.time)
+            try:
+                winner = Result.query.filter_by(version=v).filter_by(class_code=c.class_code).filter_by(position=1).one()
+                benchmark = float(winner.time)
+            except:
+                # no winner found, assign no scores.
+                continue
             for r in class_results:
                 if r.time:
                     r.score = round( (benchmark / r.time) * 1000 )
