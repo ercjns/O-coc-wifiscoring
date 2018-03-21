@@ -13,11 +13,11 @@ API = Blueprint("resultsAPI", __name__)
 @API.route('/event/<event>/results', methods=['GET', 'POST'])
 def results(event):
     if request.method == 'GET':
-        #try:
+        # try:
         q = Result.query.filter_by(event=event).all()
         return render_template('basiclist.html', items=q)
-        #except:
-        #abort(404)
+        # except:
+        #     abort(404)
 
     elif request.method == 'POST':
         timeStart_postResults = time.time()
@@ -81,22 +81,6 @@ def results(event):
             remove('latestResultsXML.xml')
             return 'Problem assigning team scores and positions', 500
 
-        # Removing these blocks as they're from NOCI and don't yet work with versioning.
-        # This does also cover ULT and WIOL season scoring, but that functionality is
-        # being factored OUT of this utility. Driving towards only handling single events.
-
-        # try:
-        #     _assignMultiScores(event)
-        #     _assignMultiPositions(event)
-        # except:
-        #     return 'Problem assigning multi-day scores and positions', 500
-
-        # try:
-        #     _assignChampPositions()
-        # except:
-        #     return 'Problem assigning NOCI overall champ postitions', 500
-
-
         version.ready = True
         db.session.add(version)
         db.session.commit()
@@ -106,13 +90,13 @@ def results(event):
 
         timeEnd_postResults = time.time()
 
-        print('{:.4f}s for getRunners'.format(timeEnd_getRunners - timeStart_getRunners))
-        print('{:.4f}s for buildDB'.format(timeEnd_buildDB - timeStart_buildDB))
-        print('{:.4f}s for assignPos'.format(timeEnd_assignPos - timeStart_assignPos))
-        print('{:.4f}s for assignScore'.format(timeEnd_assignScore - timeStart_assignScore))
-        print('{:.4f}s for teamScore'.format(timeEnd_teamScore - timeStart_teamScore))
-        print('{:.4f}s for teamPos'.format(timeEnd_teamPos - timeStart_teamPos))
-        print('{:.4f}s to complete postResults'.format(timeEnd_postResults - timeStart_postResults))
+        # print('{:.4f}s for getRunners'.format(timeEnd_getRunners - timeStart_getRunners))
+        # print('{:.4f}s for buildDB'.format(timeEnd_buildDB - timeStart_buildDB))
+        # print('{:.4f}s for assignPos'.format(timeEnd_assignPos - timeStart_assignPos))
+        # print('{:.4f}s for assignScore'.format(timeEnd_assignScore - timeStart_assignScore))
+        # print('{:.4f}s for teamScore'.format(timeEnd_teamScore - timeStart_teamScore))
+        # print('{:.4f}s for teamPos'.format(timeEnd_teamPos - timeStart_teamPos))
+        # print('{:.4f}s to complete postResults'.format(timeEnd_postResults - timeStart_postResults))
 
         return 'New Results: {}'.format(version.id), 200
 
@@ -193,8 +177,12 @@ def _assignScores(event, v):
 
         elif c.score_method == 'ULT-indv':
             class_results = Result.query.filter_by(version=v).filter_by(class_code=c.class_code).filter(Result.position > 0).all()
-            winner = Result.query.filter_by(version=v).filter_by(class_code=c.class_code).filter_by(position=1).one()
-            benchmark = float(winner.time)
+            try:
+                winner = Result.query.filter_by(version=v).filter_by(class_code=c.class_code).filter_by(position=1).one()
+                benchmark = float(winner.time)
+            except:
+                # no winner found, assign no scores.
+                continue
             for r in class_results:
                 if r.time:
                     r.score = round( (benchmark / r.time) * 1000 )
@@ -335,235 +323,6 @@ def _assignTeamPositions(event, v):
 
     db.session.commit()
     return
-
-# def _assignMultiScores(event):
-#     #TODO: _assignMultiScores() uses ALL events in the database
-#     #      which is no longer correct with the addion of versions.
-#     #      this needs to be refactored.
-#     multi_classes = EventClass.query.filter_by(is_multi_scored=True).filter_by(event=event).all() #filter by event to only get ONE hit for each class.
-#     for c in multi_classes:
-#         # Delete existing MultiResults
-#         if c.is_team_class:
-#             MultiResultTeam.query.filter_by(class_code=c.class_code).delete()
-#         else:
-#             MultiResultIndv.query.filter_by(class_code=c.class_code).delete()
-
-#         if c.multi_score_method == 'time-total':
-#             indv_results = Result.query.filter_by(class_code=c.class_code).order_by(Result.bib).all()
-#             if len(indv_results) == 0:
-#                 continue
-#             individuals = _matchMultiResults(indv_results, [], [], lambda x,y: True if x.bib == y.bib else False)
-#             num_needed_scores = max([len(x) for x in individuals])
-#             for indv in individuals:
-#                 score = 0
-#                 valid = True
-#                 for i in range(len(indv)):
-#                     if i == 0:
-#                         ids = str(indv[i].id)
-#                     else:
-#                         ids += '-{}'.format(indv[i].id)                                                
-#                     if indv[i].status == 'OK':
-#                         score += indv[i].time
-#                     else:
-#                         valid = False
-#                 valid = True if (len(indv) == num_needed_scores) and valid else False
-#                 new_multi_result = MultiResultIndv(c.class_code, score, ids, valid)
-#                 db.session.add(new_multi_result)
-#             db.session.commit()
-
-#         elif c.multi_score_method == 'NOCI-multi':
-#             team_results = TeamResult.query.filter_by(class_code=c.class_code, is_valid=True).order_by(TeamResult.club_code).all()
-#             if len(team_results) == 0:
-#                 continue
-#             teams = _matchMultiResults(team_results, [], [], lambda x,y: True if x.club_code == y.club_code else False)
-#             num_needed_scores = max([len(x) for x in teams])
-#             for team in teams:
-#                 for i in range(len(team)):
-#                     if i == 0:
-#                         club = team[i].club_code
-#                         score = team[i].score
-#                         ids = str(team[i].id)
-#                     else:
-#                         score += team[i].score
-#                         ids += '-{}'.format(team[i].id)
-#                 valid = True if len(team) == num_needed_scores else False
-#                 new_multi_team = MultiResultTeam(c.class_code, club, score, ids, valid)
-#                 db.session.add(new_multi_team)
-#             db.session.commit()            
-
-#         elif c.multi_score_method == 'ULT-season':
-#             # TODO: might need better sort by name algorithm here.
-#             indv_results = Result.query.filter_by(class_code=c.class_code).order_by(Result.name).all()
-#             if len(indv_results) == 0:
-#                 continue
-#             individuals = _matchMultiResults(indv_results, [], [], lambda x,y: True if x.name == y.name else False)
-#             scores_to_count = 6
-#             for indv in individuals:
-#                 for x in indv:
-#                     print x, x.score
-#                 indv.sort(key=lambda x: -x.score if x.score else 0)
-#                 score = 0
-#                 ids = ''
-#                 for i in range(len(indv)):
-#                     if i < scores_to_count:
-#                         score += indv[i].score if indv[i].score else 0
-#                     ids += '-{}'.format(indv[i].id)
-#                 new_multi_result = MultiResultIndv(c.class_code, score, ids.lstrip('-'), True)
-#                 db.session.add(new_multi_result)
-#             db.session.commit()
-
-#         else:
-#             pass
-#     return
-
-# def _matchMultiResults(input, same, output, matchf):
-#     if len(input) == 0:
-#         output.append(same)
-#         return output
-#     else:
-#         i = input.pop()
-#         if (len(same) == 0) or matchf(i, same[0]):
-#             same.append(i)
-#             return _matchMultiResults(input, same, output, matchf)
-#         else:
-#             output.append(same)
-#             same = [i]
-#             return _matchMultiResults(input, same, output, matchf)
-
-# def _assignMultiPositions(event):
-#     multi_classes = EventClass.query.filter_by(is_multi_scored=True).filter_by(event=event).all()
-#     if len(multi_classes) == 0:
-#         return
-#     for c in multi_classes:
-#         if c.multi_score_method == 'time-total':
-#             multi_results = MultiResultIndv.query.filter_by(class_code=c.class_code, is_valid=True).all()
-#             multi_results.sort(key=lambda x: x.score) # Low is better
-#             nextposition = 1
-#             for i in range(len(multi_results)):
-#                 # if not multi_results[i].is_valid:
-#                     # multi_results[i].position = -1
-#                     # continue
-#                 if i == 0:
-#                     multi_results[i].position = nextposition
-#                 elif multi_results[i].score == multi_results[i-1].score:
-#                     multi_results[i].position = multi_results[i-1].position
-#                 else:
-#                     multi_results[i].position = nextposition
-#                 nextposition += 1
-#             db.session.add_all(multi_results)
-#             db.session.commit()
-
-#         elif c.multi_score_method == 'NOCI-multi':
-#             multi_results = MultiResultTeam.query.filter_by(class_code=c.class_code, is_valid=True).all()
-#             multi_results.sort(key=lambda x: x.score) # Low is better
-#             nextposition = 1
-#             for i in range(len(multi_results)):
-#                 if i == 0:
-#                     multi_results[i].position = nextposition
-#                 elif multi_results[i].score == multi_results[i-1].score:
-#                     multi_results[i].position = multi_results[i-1].position
-#                 else:
-#                     multi_results[i].position = nextposition
-#                 nextposition += 1
-
-#             for twoday_team in multi_results:
-#                 if c.class_code in ['NTV', 'NTJV']:
-#                     if c.class_code == 'NTV':
-#                         champscore = 300 - 30*(twoday_team.position - 1)
-#                     elif c.class_code == 'NTJV':
-#                         champscore = 200 - 20*(twoday_team.position - 1)
-#                     twoday_team.champ_score = champscore if champscore > 0 else 0
-#                 else:
-#                     twoday_team.champ_score = None
-#             db.session.add_all(multi_results)
-#             db.session.commit()
-
-
-#         elif c.multi_score_method == 'WIOL-season':
-#             multi_results = MultiResultIndv.query.filter_by(class_code=c.class_code).all()
-#             multi_results.sort(key=lambda x: -x.score) # High is better, sort high to the front with -x.
-#             nextposition = 1
-#             for i in range(len(multi_results)):
-#                 if i == 0:
-#                     multi_results[i].position = nextposition
-#                 elif multi_results[i].score == multi_results[i-1].score:
-#                     multi_results[i].position = multi_results[i-1].position
-#                 else:
-#                     multi_results[i].position = nextposition
-#                 nextposition += 1
-#                 # TODO: Implement WIOL season tie-breaking
-#             db.session.add_all(multi_results)
-#             db.session.commit()
-
-#         elif c.multi_score_method == 'ULT-season':
-#             multi_results = MultiResultIndv.query.filter_by(class_code=c.class_code).all()
-#             multi_results.sort(key=lambda x: -x.score) # High is better, sort high to the front with -x.
-#             nextposition = 1
-#             for i in range(len(multi_results)):
-#                 if i == 0:
-#                     multi_results[i].position = nextposition
-#                 elif multi_results[i].score == multi_results[i-1].score:
-#                     multi_results[i].position = multi_results[i-1].position
-#                 else:
-#                     multi_results[i].position = nextposition
-#                 nextposition += 1
-#                 # TODO: Implement Ultimate season tie-breaking
-#             db.session.add_all(multi_results)
-#             db.session.commit()
-
-#         else:
-#             pass
-#     return
-
-
-# def _assignChampPositions():
-#     champ_class = EventClass.query.filter_by(score_method='NOCIuber').first()
-#     if champ_class is None:
-#         return
-#     multi_teams = []
-#     for team_class in champ_class.team_classes.split('-'):
-#         team_class = team_class.strip()
-#         multi_teams += MultiResultTeam.query.filter_by(class_code=team_class, is_valid=True).all()
-#     multi_teams.sort(key=lambda x: x.club_code)
-#     champ_teams = _matchMultiResults(multi_teams, [], [], lambda x,y: True if x.club_code == y.club_code else False)
-#     for club in champ_teams:
-#         if len(club) < 1:
-#             continue
-#         v = False
-#         jv = False
-#         score = 0
-#         ids = ''
-#         club_code = club[0].club_code
-#         for i in range(len(club)):
-#             v = True if v or club[i].class_code == 'NTV' else False
-#             jv = True if jv or club[i].class_code == 'NTJV' else False
-            
-#             if i == 0:
-#                 ids += str(club[i].id)
-#             else:
-#                 ids += '-{}'.format(club[i].id)
-#             if club[i].class_code in ['NTV', 'NTJV']:
-#                 score += club[i].champ_score
-#         valid = True if v and jv else False
-#         new_champ_team = MultiResultTeam(champ_class.class_code, club_code, score, ids, valid)
-#         db.session.add(new_champ_team)
-#     db.session.commit()
-    
-#     champ_teams = MultiResultTeam.query.filter_by(class_code=champ_class.class_code, is_valid=True).all()
-#     champ_teams.sort(key=lambda x: -x.score) #higher better
-#     nextposition = 1
-#     for i in range(len(champ_teams)):
-#         if i == 0:
-#             champ_teams[i].position = nextposition
-#         elif champ_teams[i].score == champ_teams[i-1].score:
-#             champ_teams[i].position = champ_teams[i-1].position
-#         else:
-#             champ_teams[i].position = nextposition
-#         nextposition += 1
-    
-#     db.session.add_all(champ_teams)
-#     db.session.commit()
-#     return
 
 @API.route('/teams', methods=['GET'])
 def teams():
