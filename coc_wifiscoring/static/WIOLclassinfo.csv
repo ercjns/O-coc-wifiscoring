@@ -5,6 +5,8 @@ class_code,class_name,is_scored,score_method,is_multi_scored,multi_score_method,
 8F,Long Advanced Female,TRUE,WIOL-indv,FALSE,,FALSE,
 8M,Long Advanced Male,TRUE,WIOL-indv,FALSE,,FALSE,
 8G,Long Advanced Group,FALSE,,FALSE,,FALSE,
+9F,Intercollegiate Female,TRUE,WIOL-indv,FALSE,,FALSE,
+9M,Intercollegiate Male,TRUE,WIOL-indv,FALSE,,FALSE,
 W1F,Elementary Girls,TRUE,WIOL-indv,FALSE,,FALSE,
 W1M,Elementary Boys,TRUE,WIOL-indv,FALSE,,FALSE,
 W2F,Middle School Girls,TRUE,WIOL-indv,FALSE,,FALSE,
@@ -20,3 +22,5 @@ W4MT,JV Boys North Teams,TRUE,WIOL-team,FALSE,,TRUE,W4M
 W5MT,JV Boys South Teams,TRUE,WIOL-team,FALSE,,TRUE,W5M
 W6FT,Varsity Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W6F
 W6MT,Varsity Boys Teams,TRUE,WIOL-team,FALSE,,TRUE,W6M
+9FT,Intercollegiate Female Teams,TRUE,WIOL-team,FALSE,,TRUE,9F
+9MT,Intercollegiate Male Teams,TRUE,WIOL-team,FALSE,,TRUE,9M
