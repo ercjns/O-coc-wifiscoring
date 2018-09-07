@@ -15,7 +15,7 @@
 	{% if wiol|length > 0 %}
 	<div class="col-xs-12 col-md-6">
 		<div class="well">
-			<h2>WIOL (School League)</h2>
+			<h2>School League (WIOL)</h2>
 			<ul class="list-unstyled">
 			{% for c in wiol %}
 			<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event.event_code, indv_class=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
@@ -34,6 +34,10 @@
 			<ul class="list-unstyled">
 			{% for c in public %}
 			<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event.event_code, indv_class=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
+			{% endfor %}
+			<h4>Intercollegiate Teams</h4>
+			{% for c in icT %}
+			<li><a href="{{ url_for('frontend.event_class_result_team', event_code=event.event_code, team_class=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
 			{% endfor %}
 			</ul>
 		</div>
