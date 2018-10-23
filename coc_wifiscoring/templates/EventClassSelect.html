@@ -35,10 +35,6 @@
 			{% for c in public %}
 			<li><a href="{{ url_for('frontend.event_class_result_indv', event_code=event.event_code, indv_class=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
 			{% endfor %}
-			<h4>Intercollegiate Teams</h4>
-			{% for c in icT %}
-			<li><a href="{{ url_for('frontend.event_class_result_team', event_code=event.event_code, team_class=c.class_code) }}" class="btn btn-default btn-lg btn-link">{{ c.class_name }}</a></li>
-			{% endfor %}
 			</ul>
 		</div>
 	</div>

@@ -11,10 +11,10 @@ RenderConfig = {}
 RenderConfig['BrandLarge'] = 'COC-logo-diamond-red-large.png'
 # RenderConfig['BrandLarge'] = 'armadillo.png'
 
-WIOL_CLASSES = ['W1F', 'W1M', 'W2F', 'W2M', 'W3F', 'W4M', 'W5M', 'W6F', 'W6M']
+WIOL_CLASSES = ['W1F', 'W1M', 'W2F', 'W2M', 'W3F', 'W4M', 'W5M', 'W6F', 'W6M', '9F', '9M']
 WIOL_TEAM_CLASSES = ['W2T', 'W3FT', 'W4MT', 'W5MT', 'W6FT', 'W6MT']
-IC_CLASSES = ['9F', '9M']
-IC_TEAM_CLASSES = ['9FT', '9MT']
+IC_CLASSES = []
+IC_TEAM_CLASSES = []
 
 @frontend.route('/')
 def home():
@@ -221,6 +221,8 @@ def _get_event_or_redirect(event_code):
 
 def compare_class_codes(a, b):
     # 1 if a > b, -1 if a < b.
+    # True == later in alpha order
+    # order groups later than individual categories
     if (a[-1] == 'G' or b[-1] == 'G') and a[:-1] == b[:-1]:
         if a[-1] == 'G' and b[-1] != 'G':
             return 1
@@ -228,6 +230,12 @@ def compare_class_codes(a, b):
             return -1
         else:
             return 0
+    # order intercollegiate after wiol varsity
+    elif ((a[0] == '9' or b[0] == '9') and (a[0] == 'W' or b[0] == 'W')):
+        if a[0] == '9':
+            return 1
+        elif b[0] == '9':
+            return -1
     else:
         if a > b:
             return 1
