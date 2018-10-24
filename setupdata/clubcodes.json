@@ -101,6 +101,11 @@
   },
   {
     "namespace": "WIOL",
+    "code": "ALC",
+    "name": "Attic Learning Community"
+  },
+  {
+    "namespace": "WIOL",
     "code": "BEN",
     "name": "Ben Rush Elementary"
   },
@@ -176,6 +181,11 @@
   },
   {
     "namespace": "WIOL",
+    "code": "COL",
+    "name": "Columbia Elementary"
+  },
+  {
+    "namespace": "WIOL",
     "code": "CMT",
     "name": "Cougar Mountain Middle School"
   },
@@ -216,13 +226,18 @@
   },
   {
     "namespace": "WIOL",
+    "code": "EIN",
+    "name": "Einstein Middle School"
+  },
+  {
+    "namespace": "WIOL",
     "code": "EMS",
     "name": "Eisenhower Middle School"
   },
   {
     "namespace": "WIOL",
     "code": "ELP",
-    "name": "Elk Plain School of Choice"
+    "name": "Elk Plain K-8"
   },
   {
     "namespace": "WIOL",
@@ -262,7 +277,7 @@
   {
     "namespace": "WIOL",
     "code": "GPK",
-    "name": "Glacier Park"
+    "name": "Glacier Park Elementary"
   },
   {
     "namespace": "WIOL",
@@ -321,6 +336,11 @@
   },
   {
     "namespace": "WIOL",
+    "code": "JSI",
+    "name": "John Stanford International"
+  },
+  {
+    "namespace": "WIOL",
     "code": "JUA",
     "name": "Juanita"
   },
@@ -366,6 +386,11 @@
   },
   {
     "namespace": "WIOL",
+    "code": "LMS",
+    "name": "Lakeside Middle School"
+  },
+  {
+    "namespace": "WIOL",
     "code": "LVW",
     "name": "Lakeview Elementary"
   },
@@ -403,6 +428,11 @@
     "namespace": "WIOL",
     "code": "MDP",
     "name": "Meridian Park Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "MON",
+    "name": "Montlake Elementary"
   },
   {
     "namespace": "WIOL",
@@ -526,16 +556,6 @@
   },
   {
     "namespace": "WIOL",
-    "code": "TJH",
-    "name": "Tahoma Junior High"
-  },
-  {
-    "namespace": "WIOL",
-    "code": "TMS",
-    "name": "Tahoma Middle School"
-  },
-  {
-    "namespace": "WIOL",
     "code": "TES",
     "name": "Tesla STEM school"
   },
@@ -562,7 +582,17 @@
   {
     "namespace": "WIOL",
     "code": "VVW",
-    "name": "Valley View Middle"
+    "name": "Valley View Middle School"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "VIN",
+    "name": "Vinland Elementary"
+  },
+  {
+    "namespace": "WIOL",
+    "code": "WAM",
+    "name": "Washington Middle School"
   },
   {
     "namespace": "WIOL",
