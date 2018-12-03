@@ -197,9 +197,8 @@ def getRunners(file):
             CR_Course = getClassCourseEtree(CR, iof3tags['Name'])
 
             for PR in CR.iter(iof3tags['PR']):
-                try:
-                    PR_R = PR.find(iof3tags['Result'])
-                except:
+                PR_R = PR.find(iof3tags['Result'])
+                if PR_R == None:
                     continue
                 runner = {}
                 runner['estick'] = getResultStrEtree(PR_R, iof3tags['ControlCard'])
