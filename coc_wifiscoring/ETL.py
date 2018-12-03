@@ -129,20 +129,20 @@ def getClassCourseEtree(CR, nstag):
     except:
         return None
 
-def getNameEtree(PR, nstag_f, nstag_l):
+def getNameEtree(PR, nstags):
     try:
-        first = PR[0][0].find(nstag_f).text
+        first = PR.find(nstags['Person']).find(nstags['Name']).find(nstags['Given']).text
     except:
         first = None
     try:
-        last = PR[0][0].find(nstag_l).text
+        last = PR.find(nstags['Person']).find(nstags['Name']).find(nstags['Family']).text
     except:
         last = None
-    return '{} {}'.format(first, last).strip()
+    return u'{} {}'.format(first, last).strip()
 
-def getClubShortEtree(PR, nstag):
+def getClubShortEtree(PR, nstags):
     try:
-        clubcode = PR[1].find(nstag)
+        clubcode = PR.find(nstags['Org']).find(nstags['ShortName'])
         return clubcode.text
     except:
         return None
@@ -171,14 +171,18 @@ def getRunners(file):
         'ShortName':'{http://www.orienteering.org/datastandard/3.0}ShortName',
         'Name':'{http://www.orienteering.org/datastandard/3.0}Name',
         'PR':'{http://www.orienteering.org/datastandard/3.0}PersonResult',
+        'Person':'{http://www.orienteering.org/datastandard/3.0}Person',
         'Given':'{http://www.orienteering.org/datastandard/3.0}Given',
         'Family':'{http://www.orienteering.org/datastandard/3.0}Family',
+        'Org':'{http://www.orienteering.org/datastandard/3.0}Organisation',
+        'Result':'{http://www.orienteering.org/datastandard/3.0}Result',
         'ControlCard':'{http://www.orienteering.org/datastandard/3.0}ControlCard',
         'StartTime':'{http://www.orienteering.org/datastandard/3.0}StartTime',
         'FinishTime':'{http://www.orienteering.org/datastandard/3.0}FinishTime',
         'Time':'{http://www.orienteering.org/datastandard/3.0}Time',
         'BibNumber':'{http://www.orienteering.org/datastandard/3.0}BibNumber',
         'Status':'{http://www.orienteering.org/datastandard/3.0}Status',
+        
     }
 
     runners = []
@@ -193,13 +197,15 @@ def getRunners(file):
             CR_Course = getClassCourseEtree(CR, iof3tags['Name'])
 
             for PR in CR.iter(iof3tags['PR']):
-                PR_R = PR[2] # <Result> node contains most of the data
+                PR_R = PR.find(iof3tags['Result'])
+                if PR_R == None:
+                    continue
                 runner = {}
                 runner['estick'] = getResultStrEtree(PR_R, iof3tags['ControlCard'])
                 runner['start'] = getResultStrEtree(PR_R, iof3tags['StartTime'])
-                runner['club'] = getClubShortEtree(PR, iof3tags['ShortName'])
+                runner['club'] = getClubShortEtree(PR, iof3tags)
                 runner['bib'] = getResultStrEtree(PR_R, iof3tags['BibNumber'])
-                runner['name'] = getNameEtree(PR, iof3tags['Given'], iof3tags['Family'])
+                runner['name'] = getNameEtree(PR, iof3tags)
                 runner['class_code'] = CR_ShortName
                 runner['course'] = CR_Course
                 runner['finish'] = getResultStrEtree(PR_R, iof3tags['FinishTime'])

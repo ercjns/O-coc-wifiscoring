@@ -44,7 +44,7 @@ def results(event):
             timeStart_buildDB = time.time()
             for r in results:
                 result_dict = { 'sicard': int(r['estick'] if r['estick']>0 else -1),
-                                'name': str(r['name']),
+                                'name': r['name'], # don't "cast" to (ascii) str!
                                 'bib': int(r['bib'] if r['bib']>0 else -1),
                                 'class_code': str(r['class_code']),
                                 'club_code': str(r['club']),
