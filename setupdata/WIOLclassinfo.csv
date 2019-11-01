@@ -25,5 +25,5 @@ W4FT,JV Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W4F
 W5MT,JV Boys Teams,TRUE,WIOL-team,FALSE,,TRUE,W5M
 W6FT,Varsity Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W6F
 W6MT,Varsity Boys Teams,TRUE,WIOL-team,FALSE,,TRUE,W6M
-W8FT,College Girls Teams,TRUE,WIOL-indv,FALSE,,FALSE,W8F
-W8MT,College Boys Teams,TRUE,WIOL-indv,FALSE,,FALSE,W8M
+W8FT,College Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W8F
+W8MT,College Boys Teams,TRUE,WIOL-team,FALSE,,TRUE,W8M
