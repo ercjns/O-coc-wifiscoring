@@ -1,6 +1,7 @@
 class_code,class_name,is_scored,score_method,is_multi_scored,multi_score_method,is_team_class,team_classes
 1,Beginner,FALSE,,FALSE,,FALSE,
-3,Intermediate,FALSE,,FALSE,,FALSE,
+3,Advanced Beginner,FALSE,,FALSE,,FALSE,
+4,Intermediate,FALSE,,FALSE,,FALSE,
 7,Short Advanced,FALSE,,FALSE,,FALSE,
 8F,Long Advanced Female,TRUE,WIOL-indv,FALSE,,FALSE,
 8M,Long Advanced Male,TRUE,WIOL-indv,FALSE,,FALSE,
@@ -9,14 +10,20 @@ W1F,Elementary Girls,TRUE,WIOL-indv,FALSE,,FALSE,
 W1M,Elementary Boys,TRUE,WIOL-indv,FALSE,,FALSE,
 W2F,Middle School Girls,TRUE,WIOL-indv,FALSE,,FALSE,
 W2M,Middle School Boys,TRUE,WIOL-indv,FALSE,,FALSE,
-W3F,JV Girls,TRUE,WIOL-indv,FALSE,,FALSE,
-W4M,JV Boys North,TRUE,WIOL-indv,FALSE,,FALSE,
-W5M,JV Boys South,TRUE,WIOL-indv,FALSE,,FALSE,
+W3F,JV Rookie Girls,TRUE,WIOL-indv,FALSE,,FALSE,
+W3M,JV Rookie Boys,TRUE,WIOL-indv,FALSE,,FALSE,
+W4F,JV Girls,TRUE,WIOL-indv,FALSE,,FALSE,
+W5M,JV Boys,TRUE,WIOL-indv,FALSE,,FALSE,
 W6F,Varsity Girls,TRUE,WIOL-indv,FALSE,,FALSE,
 W6M,Varsity Boys,TRUE,WIOL-indv,FALSE,,FALSE,
+W8F,Intercollegiate Girls,TRUE,WIOL-indv,FALSE,,FALSE,
+W8M,Intercollegiate Boys,TRUE,WIOL-indv,FALSE,,FALSE,
 W2T,Middle School Teams,TRUE,WIOL-team,FALSE,,TRUE,W2M-W2F
-W3FT,JV Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W3F
-W4MT,JV Boys North Teams,TRUE,WIOL-team,FALSE,,TRUE,W4M
-W5MT,JV Boys South Teams,TRUE,WIOL-team,FALSE,,TRUE,W5M
+W3FT,JV Rookie Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W3F
+W3MT,JV Rookie Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W3M
+W4FT,JV Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W4F
+W5MT,JV Boys Teams,TRUE,WIOL-team,FALSE,,TRUE,W5M
 W6FT,Varsity Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W6F
 W6MT,Varsity Boys Teams,TRUE,WIOL-team,FALSE,,TRUE,W6M
+W8FT,College Girls Teams,TRUE,WIOL-team,FALSE,,TRUE,W8F
+W8MT,College Boys Teams,TRUE,WIOL-team,FALSE,,TRUE,W8M
