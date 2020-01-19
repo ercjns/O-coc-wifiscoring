@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='COCwifi.css') }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}{% endblock %}</title>
+        {% block addhead %}{% endblock %}
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3">
+                    <p>All results displayed are <strong>preliminary</strong>. Last update at {{time}}. Results update roughly every 5 minutes.</p>
+                </div>
+            </div>
+            <div class="row">
+                {% for c in classes %}
+                <div class="col-lg-12 slide">
+                    <!-- Individual Results --> 
+                    <div class="col-lg-4">
+                        <h2>{{ c.class_name }}</h2>
+                        <table class="table table-condensed table-striped" id="resultTable">
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Club</th>
+                            <th style="text-align:right;">Result</th>
+                            {% if c.is_scored %}
+                            <th style="text-align:right;">Score</th>
+                            {% endif %}
+                            {% for r in results_indv[c.class_code] %}
+                            {% if loop.index <= 30 %}
+                                <tr>
+                                {% if r.status == 'OK' %}
+                                    <td>{{ r.position }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                <td>{{ r.name }} ({{ r.club_code }})</td>
+                                <td>{{ clubs[r.club_code] }}</td>
+                                {% if r.status == 'OK' %}
+                                    <td style="text-align:right;">{{ r.timetommmss() }}</td>
+                                {% else %}
+                                    <td style="text-align:right;">{{ r.status }}</td>
+                                {% endif %}
+                                {% if c.is_scored %}
+                                <td style="text-align:right;">{{ r.score|int }}</td>
+                                {% endif %}
+                                </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </table>
+                    </div>
+
+                    {% if (results_indv[c.class_code] | length) > 30 %}
+                    <div class="col-lg-4">
+                        <h2>&NonBreakingSpace;</h2>
+                        <table class="table table-condensed table-striped" id="resultTable">
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Club</th>
+                            <th style="text-align:right;">Result</th>
+                            {% if c.is_scored %}
+                            <th style="text-align:right;">Score</th>
+                            {% endif %}
+                            {% for r in results_indv[c.class_code] %}
+                            {% if loop.index > 25 %}    
+                                <tr>
+                                {% if r.status == 'OK' %}
+                                    <td>{{ r.position }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                <td>{{ r.name }} ({{ r.club_code }})</td>
+                                <td>{{ clubs[r.club_code] }}</td>
+                                {% if r.status == 'OK' %}
+                                    <td style="text-align:right;">{{ r.timetommmss() }}</td>
+                                {% else %}
+                                    <td style="text-align:right;">{{ r.status }}</td>
+                                {% endif %}
+                                {% if c.is_scored %}
+                                <td style="text-align:right;">{{ r.score|int }}</td>
+                                {% endif %}
+                                </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </table>
+                    </div>
+                    {% endif %}
+
+                    <!-- Matching Team Results go on same slide -->
+                    {% for etc in classes_teams %}
+                    {% if c.class_code in etc.team_classes and c.class_code.startswith('W') %}
+                    {% if (results_indv[c.class_code] | length) > 30 %}
+                    <div class="col-lg-4">
+                    {% else %}
+                    <div class="col-lg-4 col-lg-offset-4">
+                    {% endif %}
+                        <h2>{{ etc.class_name }}</h2>
+                        <table class="table table-condensed table-striped" id="resultTable">
+                            <th class="col-xs-1">#</th>
+                            <th class="col-xs-1">Score</th>
+                            <th class="col-xs-10">Team</th>
+                            {% for t in results_teams[etc.class_code] %}
+                            <tr>
+                                <td>{{ t.position }}</td>
+                                <td style="text-align: right; padding-right:20px">{{ t.score|int }}</td>
+                                <td>{{ clubs[t.club_code] }} ({{ t.club_code }})</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+
+                </div>  
+                {% endfor %}
+                <!--
+
+                -->
+                <div class="col-lg-12 slide">
+                    <h2 class="text-center">Junior Nationals</h2>
+                    <p class="text-center">Mark your calendars, Cascade is hosting OUSA Junior Nationals April 17-19 on Whidbey Island!</p>
+                    <p class="text-center">Registraiton will open soon!</p>
+                </div>
+                <div class="col-lg-12 slide">
+                    <h2 class="text-center">Thanks to all of our Volunteers!</h2>
+                    <p class="text-center">Today's event, and all Cascade Orienteering events, only happen becuase of volunteers.</p>
+                </div>
+            </div>
+        </div>
+    </body>
+
+
+    <script>
+        var slides = document.getElementsByClassName('slide');
+        var numSlides = slides.length;
+        var slideDurationSeconds = 15;
+        var refreshSeconds = 300;
+        var n = 0
+
+        function showAsSlides() {
+            // grab all the items that will have display toggled
+
+            // hide them all
+            for (var i = 0; i<slides.length; i++) {
+                slides[i].style.display = 'none';
+            }
+
+            // set up an interval and advance the slides
+            var interval = window.setInterval(advance, slideDurationSeconds * 1000 );
+            advance()
+        }
+
+        function advance() {
+            if (n % numSlides == 0 && n*slideDurationSeconds > refreshSeconds) {
+                // expired, reloading.
+                location.reload()
+            }
+
+            //switch which slide is displayed.
+            console.log("switching to next. N=", n);
+
+            // hide them all
+            for (var i = 0; i<slides.length; i++) {
+                slides[i].style.display = 'none';
+            }
+
+            // display the next slide
+            var slideToShow = n % numSlides;
+            console.log("Displaying slide:" + slideToShow)
+            slides[slideToShow].style.display = 'block';
+
+            // advance n
+            n++;
+        }
+
+        showAsSlides()
+    </script>
+</html>
