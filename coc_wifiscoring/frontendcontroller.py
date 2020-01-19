@@ -56,6 +56,76 @@ def event_class_select(event_code):
                                                     icT=icT,
                                                     public=public)
 
+@frontend.route('/event/<event_code>/bigscreen')
+def bigscreen(event_code):
+    exclude = request.args.get('x', '').upper().split(',')
+    include = request.args.get('i', '').upper().split(',')
+
+    if not (exclude == [''] or include == ['']):
+        # only use one of exclude or include
+        exclude = []
+        include = []
+    else:
+        if include == ['']: include = []
+        if exclude == ['']: exclude = []
+
+    version = _getResultVersion(event_code)
+    time = version.filetimestamp
+    if time == None:
+        time = datetime.strptime('2000-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+    else:
+        time = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
+
+    event = _get_event_or_redirect(event_code)
+    event_classes = EventClass.query.filter_by(event=event_code, is_team_class=False).all()
+
+    if exclude:
+        event_classes = [x for x in event_classes if x.class_code not in exclude]
+    if include:
+        event_classes = [x for x in event_classes if x.class_code in include]
+
+    tvresults = {}
+    num_starts = 0
+    for ec in event_classes:
+        indv_results = Result.query.filter_by(version=version.id, class_code=ec.class_code).all()
+        indv_results.sort(cmp=_sortResults)
+        num_starts += len(indv_results)
+        tvresults[ec.class_code] = indv_results
+
+    tvresults_teams = {}
+    event_team_classes = []
+    if 'TEAMS' not in exclude:
+        event_team_classes = EventClass.query.filter_by(event=event_code, is_team_class=True).all()
+        if exclude:
+            event_team_classes = [x for x in event_team_classes if x.class_code not in exclude]
+        if include:
+            if 'TEAMS' not in include:
+                event_team_classes = [x for x in event_team_classes if x.class_code in include]
+        for etc in event_team_classes:
+            if etc.class_code in exclude:
+                event_team_classes.remove(etc)
+                continue
+            team_results = TeamResult.query.filter_by(version=version.id, class_code=etc.class_code).order_by(TeamResult.position).all()
+            tvresults_teams[etc.class_code] = team_results
+
+    clubs = Club.query.all()
+    club_lookup = {}
+    for club in clubs:
+        club_lookup[club.club_code] = club.club_name
+
+    return render_template('bigscreen.html',
+                            config=RenderConfig,
+                            time=time,
+                            event=event,
+                            classes=event_classes,
+                            classes_teams=event_team_classes,
+                            clubs=clubs,
+                            results_indv=tvresults,
+                            results_teams=tvresults_teams,
+
+    )
+
+
 @frontend.route('/event/<event_code>/signmode')
 def signmode(event_code):
     exclude = request.args.get('x', '').upper().split(',')
