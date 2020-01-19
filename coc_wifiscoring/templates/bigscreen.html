@@ -132,6 +132,8 @@
     <script>
         var slides = document.getElementsByClassName('slide');
         var numSlides = slides.length;
+        var slideDurationSeconds = 1;
+        var refreshSeconds = 30;
         var n = 0
 
         function showAsSlides() {
@@ -143,11 +145,16 @@
             }
 
             // set up an interval and advance the slides
-            var interval = window.setInterval(advance, 1 * 1000 );
+            var interval = window.setInterval(advance, slideDurationSeconds * 1000 );
             advance()
         }
 
         function advance() {
+            if (n % numSlides == 0 && n*slideDurationSeconds > refreshSeconds) {
+                // expired, reloading.
+                location.reload()
+            }
+
             //switch which slide is displayed.
             console.log("switching to next. N=", n);
 
