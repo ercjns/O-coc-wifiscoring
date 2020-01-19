@@ -14,7 +14,7 @@ idna==2.6
 itsdangerous==0.24
 lxml==4.1.0
 pyftpdlib==1.5.2
-python-engineio==1.7.0
+python-engineio==3.8.2.post1
 python-socketio==1.8.1
 requests==2.18.4
 six==1.11.0
