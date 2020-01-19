@@ -30,7 +30,7 @@
                             <th style="text-align:right;">Score</th>
                             {% endif %}
                             {% for r in results_indv[c.class_code] %}
-                            {% if loop.index <= 25 %}
+                            {% if loop.index <= 30 %}
                                 <tr>
                                 {% if r.status == 'OK' %}
                                     <td>{{ r.position }}</td>
@@ -53,9 +53,9 @@
                         </table>
                     </div>
 
-                    {% if (results_indv[c.class_code] | length) > 25 %}
+                    {% if (results_indv[c.class_code] | length) > 30 %}
                     <div class="col-lg-4">
-                        <h2></h2>
+                        <h2>&NonBreakingSpace;</h2>
                         <table class="table table-condensed table-striped" id="resultTable">
                             <th>#</th>
                             <th>Name</th>
@@ -92,7 +92,11 @@
                     <!-- Matching Team Results go on same slide -->
                     {% for etc in classes_teams %}
                     {% if c.class_code in etc.team_classes and c.class_code.startswith('W') %}
+                    {% if (results_indv[c.class_code] | length) > 30 %}
+                    <div class="col-lg-4">
+                    {% else %}
                     <div class="col-lg-4 col-lg-offset-4">
+                    {% endif %}
                         <h2>{{ etc.class_name }}</h2>
                         <table class="table table-condensed table-striped" id="resultTable">
                             <th class="col-xs-1">#</th>
@@ -139,7 +143,7 @@
             }
 
             // set up an interval and advance the slides
-            var interval = window.setInterval(advance, 10 * 1000 );
+            var interval = window.setInterval(advance, 1 * 1000 );
             advance()
         }
 
