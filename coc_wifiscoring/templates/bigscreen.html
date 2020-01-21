@@ -65,7 +65,7 @@
                             <th style="text-align:right;">Score</th>
                             {% endif %}
                             {% for r in results_indv[c.class_code] %}
-                            {% if loop.index > 25 %}    
+                            {% if loop.index > 30 %}    
                                 <tr>
                                 {% if r.status == 'OK' %}
                                     <td>{{ r.position }}</td>
@@ -131,7 +131,7 @@
     <script>
         var slides = document.getElementsByClassName('slidecol');
         var numSlides = slides.length;
-        var slideDurationSeconds = 7;
+        var slideDurationSeconds = 15;
         var refreshSeconds = 300;
         var n = 0
 
@@ -139,15 +139,86 @@
             // grab all the items that will have display toggled
 
             // hide them all
-            for (var i = 0; i<slides.length; i++) {
-                slides[i].style.display = 'none';
-            }
+            // for (var i = 0; i<slides.length; i++) {
+            //     slides[i].style.display = 'none';
+            // }
+            hideAll()
 
             // set up an interval and advance the slides
-            var interval = window.setInterval(advance3, slideDurationSeconds * 1000 );
-            advance3()
+            var interval = window.setInterval(animate3, slideDurationSeconds * 1000 );
+            show3(0)
         }
-        
+
+        function hideAll() {
+            // hide them all
+            for (var i = 0; i<slides.length; i++) {
+                slides[i].style.width = 0;
+                slides[i].style.height = 0;
+                slides[i].style.overflow = "hidden";
+                slides[i].style.opacity = 0;
+            }
+        }
+
+        function show3(indx) {
+            for (i = indx; i < indx + 3; i++) {
+                slides[i].style.width = null;
+                slides[i].style.height = null;
+                slides[i].style.overflow = null;
+                slides[i].style.opacity = 1;
+                if (! slides[i].classList.contains("visible")) {
+                    slides[i].className += " visible"
+                }
+                if (slides[i].classList.contains("no-pad")) {
+                    slides[i].classList.remove("no-pad");
+                }
+            }
+            for (var i = 0; i<slides.length; i++) {
+                if (! slides[i].classList.contains("visible")) {
+                    slides[i].style.width = 0;
+                    slides[i].style.height = 0;
+                    slides[i].style.overflow = "hidden";
+                    slides[i].style.opacity = 0;
+                if (! slides[i].classList.contains("no-pad")) {
+                    slides[i].className += " no-pad"
+                }
+                }
+            }
+        }
+
+        function animate3() {
+            if (n % numSlides == 0 && n*slideDurationSeconds > refreshSeconds) {
+                // at end and expired, reloading.
+                location.reload()
+            }
+
+            var showing = document.getElementsByClassName('visible');
+            //TODO: if showing.length > 3, error!!
+
+            if (showing.length > 0) {
+                showing[0].addEventListener('animationend', function() {
+                    this.classList.remove("toremove");
+                    this.classList.remove("visible");
+                    if (!this.classList.contains("no-pad")) {
+                        this.className += " no-pad"
+                    }
+                    this.style.width = 0;
+                    this.style.height = 0;
+                    this.style.overflow = "hidden";
+                    this.style.opacity = 0;
+                    console.log("cleaned up");
+                })
+                
+                showing[0].className += " toremove"
+            }
+
+            n++;
+
+            var slideToShow = n % numSlides;
+            console.log("Displaying slide:" + slideToShow)
+            show3(slideToShow);
+        }
+
+
         function advance3() {
             if (n % numSlides == 0 && n*slideDurationSeconds > refreshSeconds) {
                 // at end and expired, reloading.

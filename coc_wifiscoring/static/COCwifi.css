@@ -51,3 +51,27 @@ footer p {
 	height: auto;
 }
 
+@keyframes slideout {
+	from {
+		opacity: 1;
+		width: null;
+		height: null;
+		overflow: null;
+	}
+	to {
+		opacity: 0;
+		width: 0;
+		height: 0;
+		overflow: hidden;
+	}
+}
+
+.toremove {
+	animation: slideout 1s ease-in 0s;
+	animation-fill-mode: forwards;
+}
+
+.no-pad {
+	padding: 0;
+}
+
