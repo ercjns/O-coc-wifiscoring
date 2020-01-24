@@ -131,143 +131,129 @@
     <script>
         var slides = document.getElementsByClassName('slidecol');
         var numSlides = slides.length;
-        var slideDurationSeconds = 15;
-        var refreshSeconds = 300;
+        var slideDurationSeconds = {{ dwell }};
+        var refreshSeconds = 30;
         var n = 0
 
         function showAsSlides() {
-            // grab all the items that will have display toggled
-
-            // hide them all
-            // for (var i = 0; i<slides.length; i++) {
-            //     slides[i].style.display = 'none';
-            // }
-            hideAll()
+            // start clear
+            hideAll();
 
             // set up an interval and advance the slides
             var interval = window.setInterval(animate3, slideDurationSeconds * 1000 );
-            show3(0)
+
+            for (var i = 0; i<slides.length; i++) {
+                slides[i].addEventListener('animationend', hideOnSlideOut)
+            }
+
+            show(slides[0])
+            show(slides[1])
+            show(slides[2])
+        }
+
+        function hide(item) {
+            item.style.width = 0;
+            item.style.height = 0;
+            item.style.overflow = "hidden";
+            item.style.opacity = 0;
+            if (item.classList.contains("toremove")) {
+                item.classList.remove("toremove");
+            }
+            if (item.classList.contains("visible")) {
+                item.classList.remove("visible");
+            }
+            if (! item.classList.contains("no-pad")) {
+                    item.className += " no-pad"
+            }
+        }
+
+        function hideOnSlideOut() {
+            removed = document.getElementsByClassName("toremove");
+            for (var i=0; i<removed.length; i++) {
+                hide(removed[i]);
+            }
+            fadeIn();
+        }
+
+        function show(item) {
+            item.style.width = null;
+            item.style.height = null;
+            item.style.overflow = null;
+            item.style.opacity = 1;
+            if (! item.classList.contains("visible")) {
+                item.className += " visible"
+            }
+            if (item.classList.contains("toshow")) {
+                item.classList.remove("toshow");
+            }
+            if (item.classList.contains("no-pad")) {
+                item.classList.remove("no-pad");
+            }
+        }
+
+        function fadeIn() {
+            toshow = document.getElementsByClassName("toshow");
+            for (var i=0; i<toshow.length; i++) {
+                show(toshow[i]);
+            }
         }
 
         function hideAll() {
-            // hide them all
             for (var i = 0; i<slides.length; i++) {
-                slides[i].style.width = 0;
-                slides[i].style.height = 0;
-                slides[i].style.overflow = "hidden";
-                slides[i].style.opacity = 0;
+                hide(slides[i]);
             }
         }
 
         function show3(indx) {
-            for (i = indx; i < indx + 3; i++) {
-                slides[i].style.width = null;
-                slides[i].style.height = null;
-                slides[i].style.overflow = null;
-                slides[i].style.opacity = 1;
-                if (! slides[i].classList.contains("visible")) {
-                    slides[i].className += " visible"
-                }
-                if (slides[i].classList.contains("no-pad")) {
-                    slides[i].classList.remove("no-pad");
-                }
+            // show this index plus one more, plus stage one.
+            for (i = indx; i < indx + 2; i++) {
+                show(slides[i])
             }
+            if (! slides[indx+2].classList.contains("toshow")) {
+                slides[indx+2].classList += " toshow";
+            }
+
+            // hide everything that doesn't have the visible class on it.
             for (var i = 0; i<slides.length; i++) {
                 if (! slides[i].classList.contains("visible")) {
-                    slides[i].style.width = 0;
-                    slides[i].style.height = 0;
-                    slides[i].style.overflow = "hidden";
-                    slides[i].style.opacity = 0;
-                if (! slides[i].classList.contains("no-pad")) {
-                    slides[i].className += " no-pad"
-                }
+                   hide(slides[i]);
                 }
             }
         }
 
         function animate3() {
-            if (n % numSlides == 0 && n*slideDurationSeconds > refreshSeconds) {
-                // at end and expired, reloading.
-                location.reload()
-            }
+            // if (n % numSlides == 0 && n*slideDurationSeconds > refreshSeconds) {
+            //     // at end and expired, reloading.
+            //     console.log("expired, refreshing data")
+            //     location.reload()
+            // }
 
             var showing = document.getElementsByClassName('visible');
             //TODO: if showing.length > 3, error!!
 
             if (showing.length > 0) {
-                showing[0].addEventListener('animationend', function() {
-                    this.classList.remove("toremove");
-                    this.classList.remove("visible");
-                    if (!this.classList.contains("no-pad")) {
-                        this.className += " no-pad"
-                    }
-                    this.style.width = 0;
-                    this.style.height = 0;
-                    this.style.overflow = "hidden";
-                    this.style.opacity = 0;
-                    console.log("cleaned up");
-                })
-                
+                showing[0]
                 showing[0].className += " toremove"
             }
 
             n++;
 
             var slideToShow = n % numSlides;
-            console.log("Displaying slide:" + slideToShow)
-            show3(slideToShow);
-        }
-
-
-        function advance3() {
-            if (n % numSlides == 0 && n*slideDurationSeconds > refreshSeconds) {
-                // at end and expired, reloading.
-                location.reload()
-            }
-            // hide them all
-            for (var i = 0; i<slides.length; i++) {
-                slides[i].style.display = 'none';
-            }
-
-            // display the next three thirds!
-            var slideToShow = n % numSlides;
-            console.log("Displaying slide:" + slideToShow)
-            for (j = slideToShow; j < slideToShow + 3; j++) {
-                try {
-                    slides[j].style.display = 'block';
+            if (slideToShow == 0) {
+                if (n*slideDurationSeconds > refreshSeconds) {
+                    console.log("expired, refreshing data")
+                    location.reload()
+                } else {
+                    console.log("Displaying slide:" + slideToShow)
+                    hideAll()
+                    show(slides[0])
+                    show(slides[1])
+                    show(slides[2])
                 }
-                catch(err) {
-                    console.log("Out of range" + j)
-                }
+            } else {
+                console.log("Displaying slide:" + slideToShow)
+                show3(slideToShow);
             }
-
-            // advance n
-            n++;
-            
-            
-
-        }
-        function advance() {
-            if (n % numSlides == 0 && n*slideDurationSeconds > refreshSeconds) {
-                // expired, reloading.
-                location.reload()
-            }
-
-            //switch which slide is displayed.
-            console.log("switching to next. N=", n);
-
-            // hide them all
-            for (var i = 0; i<slides.length; i++) {
-                slides[i].style.display = 'none';
-            }
-
-            // display the next slide
-            var slideToShow = n % numSlides;
-            console.log("Displaying slide:" + slideToShow)
-            slides[slideToShow].style.display = 'block';
-
-            // advance n
-            n++;
         }
 
         showAsSlides()

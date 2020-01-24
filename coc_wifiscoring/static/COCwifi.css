@@ -67,7 +67,7 @@ footer p {
 }
 
 .toremove {
-	animation: slideout 1s ease-in 0s;
+	animation: slideout .5s linear 0s;
 	animation-fill-mode: forwards;
 }
 
