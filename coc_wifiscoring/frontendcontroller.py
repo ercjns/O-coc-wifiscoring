@@ -60,6 +60,11 @@ def event_class_select(event_code):
 def bigscreen(event_code):
     exclude = request.args.get('x', '').upper().split(',')
     include = request.args.get('i', '').upper().split(',')
+    dwell = request.args.get('dwell', 10)
+    try:
+        dwell = float(dwell)
+    except:
+        dwell = 10
 
     if not (exclude == [''] or include == ['']):
         # only use one of exclude or include
@@ -122,6 +127,7 @@ def bigscreen(event_code):
                             clubs=clubs,
                             results_indv=tvresults,
                             results_teams=tvresults_teams,
+                            dwell=dwell
 
     )
 

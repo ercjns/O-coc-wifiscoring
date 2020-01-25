@@ -16,10 +16,10 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-lg-12">
                 {% for c in classes %}
-                <div class="col-lg-12 slide">
                     <!-- Individual Results --> 
-                    <div class="col-lg-4">
+                    <div class="col-lg-4 slidecol">
                         <h2>{{ c.class_name }}</h2>
                         <table class="table table-condensed table-striped" id="resultTable">
                             <th>#</th>
@@ -54,8 +54,8 @@
                     </div>
 
                     {% if (results_indv[c.class_code] | length) > 30 %}
-                    <div class="col-lg-4">
-                        <h2>&NonBreakingSpace;</h2>
+                    <div class="col-lg-4 slidecol">
+                        <h2>{{ c.class_name }} <small>Continued</small></h2>
                         <table class="table table-condensed table-striped" id="resultTable">
                             <th>#</th>
                             <th>Name</th>
@@ -65,7 +65,7 @@
                             <th style="text-align:right;">Score</th>
                             {% endif %}
                             {% for r in results_indv[c.class_code] %}
-                            {% if loop.index > 25 %}    
+                            {% if loop.index > 30 %}    
                                 <tr>
                                 {% if r.status == 'OK' %}
                                     <td>{{ r.position }}</td>
@@ -89,14 +89,10 @@
                     </div>
                     {% endif %}
 
-                    <!-- Matching Team Results go on same slide -->
+                    <!-- Matching Team Results go adjacent -->
                     {% for etc in classes_teams %}
                     {% if c.class_code in etc.team_classes and c.class_code.startswith('W') %}
-                    {% if (results_indv[c.class_code] | length) > 30 %}
-                    <div class="col-lg-4">
-                    {% else %}
-                    <div class="col-lg-4 col-lg-offset-4">
-                    {% endif %}
+                    <div class="col-lg-4 slidecol">
                         <h2>{{ etc.class_name }}</h2>
                         <table class="table table-condensed table-striped" id="resultTable">
                             <th class="col-xs-1">#</th>
@@ -114,19 +110,18 @@
                     {% endif %}
                     {% endfor %}
 
-                </div>  
+                
                 {% endfor %}
-                <!--
+                    <div class="col-lg-4 slidecol">
+                        <h2 class="text-center">Junior Nationals</h2>
+                        <p class="text-center">Mark your calendars, Cascade is hosting OUSA Junior Nationals April 17-19 on Whidbey Island!</p>
+                        <p class="text-center">Registraiton will open soon!</p>
+                    </div>
+                    <div class="col-lg-4 slidecol">
+                        <h2 class="text-center">Thanks to all of our Volunteers!</h2>
+                        <p class="text-center">Today's event, and all Cascade Orienteering events, only happen becuase of volunteers.</p>
+                    </div>
 
-                -->
-                <div class="col-lg-12 slide">
-                    <h2 class="text-center">Junior Nationals</h2>
-                    <p class="text-center">Mark your calendars, Cascade is hosting OUSA Junior Nationals April 17-19 on Whidbey Island!</p>
-                    <p class="text-center">Registraiton will open soon!</p>
-                </div>
-                <div class="col-lg-12 slide">
-                    <h2 class="text-center">Thanks to all of our Volunteers!</h2>
-                    <p class="text-center">Today's event, and all Cascade Orienteering events, only happen becuase of volunteers.</p>
                 </div>
             </div>
         </div>
@@ -134,46 +129,131 @@
 
 
     <script>
-        var slides = document.getElementsByClassName('slide');
+        var slides = document.getElementsByClassName('slidecol');
         var numSlides = slides.length;
-        var slideDurationSeconds = 15;
-        var refreshSeconds = 300;
+        var slideDurationSeconds = {{ dwell }};
+        var refreshSeconds = 30;
         var n = 0
 
         function showAsSlides() {
-            // grab all the items that will have display toggled
-
-            // hide them all
-            for (var i = 0; i<slides.length; i++) {
-                slides[i].style.display = 'none';
-            }
+            // start clear
+            hideAll();
 
             // set up an interval and advance the slides
-            var interval = window.setInterval(advance, slideDurationSeconds * 1000 );
-            advance()
+            var interval = window.setInterval(animate3, slideDurationSeconds * 1000 );
+
+            for (var i = 0; i<slides.length; i++) {
+                slides[i].addEventListener('animationend', hideOnSlideOut)
+            }
+
+            show(slides[0])
+            show(slides[1])
+            show(slides[2])
         }
 
-        function advance() {
-            if (n % numSlides == 0 && n*slideDurationSeconds > refreshSeconds) {
-                // expired, reloading.
-                location.reload()
+        function hide(item) {
+            item.style.width = 0;
+            item.style.height = 0;
+            item.style.overflow = "hidden";
+            item.style.opacity = 0;
+            if (item.classList.contains("toremove")) {
+                item.classList.remove("toremove");
             }
+            if (item.classList.contains("visible")) {
+                item.classList.remove("visible");
+            }
+            if (! item.classList.contains("no-pad")) {
+                    item.className += " no-pad"
+            }
+        }
 
-            //switch which slide is displayed.
-            console.log("switching to next. N=", n);
+        function hideOnSlideOut() {
+            removed = document.getElementsByClassName("toremove");
+            for (var i=0; i<removed.length; i++) {
+                hide(removed[i]);
+            }
+            fadeIn();
+        }
 
-            // hide them all
+        function show(item) {
+            item.style.width = null;
+            item.style.height = null;
+            item.style.overflow = null;
+            item.style.opacity = 1;
+            if (! item.classList.contains("visible")) {
+                item.className += " visible"
+            }
+            if (item.classList.contains("toshow")) {
+                item.classList.remove("toshow");
+            }
+            if (item.classList.contains("no-pad")) {
+                item.classList.remove("no-pad");
+            }
+        }
+
+        function fadeIn() {
+            toshow = document.getElementsByClassName("toshow");
+            for (var i=0; i<toshow.length; i++) {
+                show(toshow[i]);
+            }
+        }
+
+        function hideAll() {
             for (var i = 0; i<slides.length; i++) {
-                slides[i].style.display = 'none';
+                hide(slides[i]);
+            }
+        }
+
+        function show3(indx) {
+            // show this index plus one more, plus stage one.
+            for (i = indx; i < indx + 2; i++) {
+                show(slides[i])
+            }
+            if (! slides[indx+2].classList.contains("toshow")) {
+                slides[indx+2].classList += " toshow";
             }
 
-            // display the next slide
-            var slideToShow = n % numSlides;
-            console.log("Displaying slide:" + slideToShow)
-            slides[slideToShow].style.display = 'block';
+            // hide everything that doesn't have the visible class on it.
+            for (var i = 0; i<slides.length; i++) {
+                if (! slides[i].classList.contains("visible")) {
+                   hide(slides[i]);
+                }
+            }
+        }
 
-            // advance n
+        function animate3() {
+            // if (n % numSlides == 0 && n*slideDurationSeconds > refreshSeconds) {
+            //     // at end and expired, reloading.
+            //     console.log("expired, refreshing data")
+            //     location.reload()
+            // }
+
+            var showing = document.getElementsByClassName('visible');
+            //TODO: if showing.length > 3, error!!
+
+            if (showing.length > 0) {
+                showing[0]
+                showing[0].className += " toremove"
+            }
+
             n++;
+
+            var slideToShow = n % numSlides;
+            if (slideToShow == 0) {
+                if (n*slideDurationSeconds > refreshSeconds) {
+                    console.log("expired, refreshing data")
+                    location.reload()
+                } else {
+                    console.log("Displaying slide:" + slideToShow)
+                    hideAll()
+                    show(slides[0])
+                    show(slides[1])
+                    show(slides[2])
+                }
+            } else {
+                console.log("Displaying slide:" + slideToShow)
+                show3(slideToShow);
+            }
         }
 
         showAsSlides()
