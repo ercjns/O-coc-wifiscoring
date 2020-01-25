@@ -124,7 +124,7 @@ def bigscreen(event_code):
                             event=event,
                             classes=event_classes,
                             classes_teams=event_team_classes,
-                            clubs=clubs,
+                            clubs=club_lookup,
                             results_indv=tvresults,
                             results_teams=tvresults_teams,
                             dwell=dwell

@@ -132,7 +132,7 @@
         var slides = document.getElementsByClassName('slidecol');
         var numSlides = slides.length;
         var slideDurationSeconds = {{ dwell }};
-        var refreshSeconds = 30;
+        var refreshSeconds = 300;
         var n = 0
 
         function showAsSlides() {
@@ -235,6 +235,11 @@
                 showing[0]
                 showing[0].className += " toremove"
             }
+
+            // if the tab is not active, animations don't run and so the event doesn't trigger.
+            // possible idea, not sure this totally works
+            // add a toremove class to everything that's not the last three in "showing"
+            // in show3, hide, and remove the "toremove" class from everything but the last four "visible"
 
             n++;
 
