@@ -1,7 +1,7 @@
 Flask==0.12.2
 Flask-SQLAlchemy==2.3.2
 Flask-SocketIO==2.9.2
-Jinja2==2.9.6
+Jinja2==2.11.3
 MarkupSafe==1.0
 SQLAlchemy==1.1.14
 Werkzeug==0.12.2
