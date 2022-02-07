@@ -11,8 +11,8 @@ RenderConfig = {}
 RenderConfig['BrandLarge'] = 'COC-logo-diamond-red-large.png'
 # RenderConfig['BrandLarge'] = 'armadillo.png'
 
-WIOL_CLASSES = ['W1F', 'W1M', 'W2F', 'W2M', 'W3F', 'W3M', 'W4F', 'W5M', 'W6F', 'W6M', 'W8F', 'W8M']
-WIOL_TEAM_CLASSES = ['W2T', 'W3FT', 'W3MT', 'W4FT', 'W5MT', 'W6FT', 'W6MT', 'W8FT', 'W8MT']
+WIOL_CLASSES = ['W1F', 'W1M', 'W2F', 'W2M', 'W3F', 'W3M', 'W4F', 'W5M', 'W5FIC', 'W5MIC', 'W6F', 'W6M', 'W8F', 'W8M']
+WIOL_TEAM_CLASSES = ['W2T', 'W3T', 'W4FT', 'W5MT', 'W6FT', 'W6MT', 'W8FT', 'W8MT']
 IC_CLASSES = []
 IC_TEAM_CLASSES = []
 
