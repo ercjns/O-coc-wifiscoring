@@ -12,7 +12,7 @@ RenderConfig['BrandLarge'] = 'COC-logo-diamond-red-large.png'
 # RenderConfig['BrandLarge'] = 'armadillo.png'
 
 WIOL_CLASSES = ['W1F', 'W1M', 'W2F', 'W2M', 'W3F', 'W3M', 'W4F', 'W5M', 'W5FIC', 'W5MIC', 'W6F', 'W6M', 'W8F', 'W8M']
-WIOL_TEAM_CLASSES = ['W2T', 'W3T', 'W4FT', 'W5MT', 'W6FT', 'W6MT', 'W8FT', 'W8MT']
+WIOL_TEAM_CLASSES = ['W2T', 'W3FT', 'W3MT', 'W4FT', 'W5MT', 'W6FT', 'W6MT', 'W8FT', 'W8MT']
 IC_CLASSES = []
 IC_TEAM_CLASSES = []
 
@@ -243,13 +243,26 @@ def event_class_result_team(event_code, team_class):
     event = _get_event_or_redirect(event_code)
     version = _getResultVersion(event_code)
     v = version.id
+    classinfo = EventClass.query.filter_by(event=event_code, class_code=team_class).one()
+    
     teamdata = TeamResult.query.filter_by(version=v, class_code=team_class).order_by(TeamResult.position).all()
+    
+    teamscorers = Result.query.filter_by(version=v).filter((Result.class_code.startswith(team_class[:-1]))).filter_by(is_team_scorer=True)
+    if classinfo.score_method == 'WIOL-team':
+        # higher score is better
+        teamscorers = teamscorers.order_by(Result.club_code, -Result.score).all()
+    else:
+        # lower score is better
+        teamscorers = teamscorers.order_by(Result.club_code, Result.score).all()
+
+    for t in teamdata:
+        t.membercount = len([m for m in teamscorers if m.club_code == t.club_code])
+    teamdata.sort(cmp=_sortTeamResults)
+
     teamnames = {}
     c = Club.query.all()
     for club in c:
         teamnames[club.club_code] = club.club_name
-    classinfo = EventClass.query.filter_by(event=event_code, class_code=team_class).one()
-    teamscorers = Result.query.filter_by(version=v).filter((Result.class_code.startswith(team_class[:-1]))).filter_by(is_team_scorer=True).order_by(Result.club_code, -Result.score).all()
 
     time = version.filetimestamp
     return render_template('TeamResultTable.html', config=RenderConfig,
@@ -259,6 +272,23 @@ def event_class_result_team(event_code, team_class):
                                                    clubs=teamnames,
                                                    members=teamscorers)
 
+def _sortTeamResults(A, B):
+    if A.position>0 and B.position>0:
+        return A.position - B.position
+    elif A.is_valid and not B.is_valid:
+        return -1
+    elif not A.is_valid and B.is_valid:
+        return 1
+    # sort "invalid" results logically
+    else:
+        # more members is better
+        if A.membercount != B.membercount:
+            return B.membercount - A.membercount 
+        # lower score is better
+        if A.score and B.score:
+            return int(A.score - B.score)
+        else:
+            return 0
 
 # @frontend.route('/meetstats/')
 # def meet_stats():

@@ -1,0 +1,31 @@
+class_code,class_name,is_scored,score_method,is_multi_scored,multi_score_method,is_team_class,team_classes
+1,Beginner,FALSE,,FALSE,,FALSE,
+3,Advanced Beginner,FALSE,,FALSE,,FALSE,
+4,Intermediate,FALSE,,FALSE,,FALSE,
+7F,Short Advanced Female,TRUE,IS-indv,TRUE,IS-muti-indv,FALSE,
+7M,Short Advanced Male,TRUE,IS-indv,TRUE,IS-muti-indv,FALSE,
+7G,Short Advanced Group,FALSE,,FALSE,,FALSE,
+8F,Long Advanced Female,TRUE,IS-indv,TRUE,IS-muti-indv,FALSE,
+8M,Long Advanced Male,TRUE,IS-indv,TRUE,IS-muti-indv,FALSE,
+8G,Long Advanced Group,FALSE,,FALSE,,FALSE,
+W1F,Elementary Female,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W1M,Elementary Male,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W2F,Middle School Female,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W2M,Middle School Male,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W3F,HS JV Rookie Female,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W3M,HS JV Rookie Male,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W4F,HS JV Female,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W5M,HS JV Male,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W6F,HS Varsity Female,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W6M,HS Varsity Male,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W5FIC,IC JV Female,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W5MIC,IC JV Male,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W8F,IC Varsity Female,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W8M,IC Varstiy Male,TRUE,IS-indv,TRUE,IS-multi-indv,FALSE,
+W2T,Middle School Teams,TRUE,IS-team,TRUE,IS-multi-team,TRUE,W2M-W2F
+W3FT,HS JV Rookie Female Teams,TRUE,IS-team,TRUE,IS-multi-team,TRUE,W3F
+W3MT,HS JV Rookie Male Teams,TRUE,IS-team,TRUE,IS-multi-team,TRUE,W3M
+W4FT,HS JV Female Teams,TRUE,IS-team,TRUE,IS-multi-team,TRUE,W4F
+W5MT,HS JV Male Teams,TRUE,IS-team,TRUE,IS-multi-team,TRUE,W5M
+W6FT,HS Varsity Female Teams,TRUE,IS-team,TRUE,IS-multi-team,TRUE,W6F
+W6MT,HS Varsity Male Teams,TRUE,IS-team,TRUE,IS-multi-team,TRUE,W6M

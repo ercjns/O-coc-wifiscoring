@@ -142,9 +142,10 @@ def _assignScores(event, v):
                     r.score = 100 - 6 - int(r.position)
             db.session.add_all(class_results)
 
-        elif c.score_method == 'NOCI-indv':
+        elif c.score_method == 'NOCI-indv' or c.score_method == 'IS-indv':
             class_results = Result.query.filter_by(version=v).filter_by(class_code=c.class_code).all()
-            awt = sum([r.time for r in class_results if (r.position > 0 and r.position <=3)]) / 3.0
+            awt_contributors = sum([1.0 for r in class_results if (r.position > 0 and r.position <= 3)])
+            awt = sum([r.time for r in class_results if (r.position > 0 and r.position <=3)]) / awt_contributors
 
             if c.class_code == 'N2M':
                 paired_class_code = 'N3F'
@@ -158,12 +159,53 @@ def _assignScores(event, v):
                 paired_class_code = 'N1M'
             elif c.class_code == 'N1M':
                 paired_class_code = 'N1F'
+
+            elif c.class_code == 'W1F':
+                paired_class_code = 'W1M'
+            elif c.class_code == 'W1M':
+                paired_class_code = 'W1F'
+            elif c.class_code == 'W2F':
+                paired_class_code = 'W2M'
+            elif c.class_code == 'W2M':
+                paired_class_code = 'W2F'
+            elif c.class_code == 'W3F':
+                paired_class_code = 'W3M'
+            elif c.class_code == 'W3M':
+                paired_class_code = 'W3F'
+            elif c.class_code == 'W4F':
+                paired_class_code = 'W5M'
+            elif c.class_code == 'W5M':
+                paired_class_code = 'W4F'
+            elif c.class_code == 'W6F':
+                paired_class_code = 'W6M'
+            elif c.class_code == 'W6M':
+                paired_class_code = 'W6F'
+            elif c.class_code == 'W5FIC':
+                paired_class_code = 'W5MIC'
+            elif c.class_code == 'W5MIC':
+                paired_class_code = 'W5FIC'
+            elif c.class_code == 'W8F':
+                paired_class_code = 'W8M'
+            elif c.class_code == 'W8M':
+                paired_class_code = 'W8F'
+
+            elif c.class_code == '7F':
+                paired_class_code = '7M'
+            elif c.class_code == '7M':
+                paired_class_code = '7F'
+            elif c.class_code == '8F':
+                paired_class_code = '8M'
+            elif c.class_code == '8M':
+                paired_class_code = '8F'
+
             else:
                 paired_class_code = 'none'
 
             try:
                 paired_results = Result.query.filter_by(version=v).filter_by(class_code=paired_class_code).all()
-                paired_awt = sum([r.time for r in paired_results if (r.position > 0 and r.position <=3)]) / 3.0
+                paired_awt_contributors = sum([1.0 for r in class_results if (r.position > 0 and r.position <= 3)])
+                paired_awt = sum([r.time for r in paired_results if (r.position > 0 and r.position <=3)]) / paired_awt_contributors
+                
                 better_awt = awt if awt < paired_awt else paired_awt
             except:
                 better_awt = 60 * 3 * 3600
@@ -171,6 +213,8 @@ def _assignScores(event, v):
             for r in class_results:
                 if r.status in ['OK']:
                     r.score = 60 * r.time / awt
+                elif r.status in ['NotCompeting']:
+                    r.score = None
                 else:
                     r.score = (60 * (3*3600) / better_awt) + 10
             db.session.add_all(class_results)
@@ -223,7 +267,7 @@ def _assignTeamScores(event, v):
                 team = TeamResult(event, v, c.class_code, team, score, True)
                 db.session.add(team)
 
-        elif c.score_method == 'NOCI-team':
+        elif c.score_method == 'NOCI-team' or c.score_method == 'IS-team':
             indv_results = []
             for indv_class in c.team_classes.split('-'):
                 indv_class = indv_class.strip()
@@ -232,7 +276,7 @@ def _assignTeamScores(event, v):
             for team in teams:
                 score = 0
                 contributors = 0
-                members = [r for r in indv_results if (r.club_code == team)]
+                members = [r for r in indv_results if (r.club_code == team and r.score is not None)]
                 members.sort(key=lambda x: x.score)
                 while ((len(members) > 0) and (contributors < 3)):
                     scorer = members.pop(0)
@@ -307,7 +351,7 @@ def _assignTeamPositions(event, v):
                 nextposition += 1
             db.session.add_all(team_results)
 
-        elif c.score_method == 'NOCI-team':
+        elif c.score_method == 'NOCI-team' or c.score_method == 'IS-team':
             team_results = TeamResult.query.filter_by(version=v, class_code=c.class_code, is_valid=True).all()
             team_results.sort(key=lambda x: x.score)
             nextposition = 1

@@ -18,14 +18,14 @@
 		<th class="col-xs-10">Team</th>
 		{% for t in teams %}
 		<tr class="teamresult">
-			<td>{{ t.position }}</td>
-			<td>{{ t.score|int }}</td>
+			<td>{{ t.position if t.position else 'X' }}</td>
+			<td>{{ "%.3f"|format(t.score) }}</td>
 			<td>{{ clubs[t.club_code] }} ({{ t.club_code }})</td>
 			{% for m in members %}
 			{% if m.club_code == t.club_code %}
 				<tr class="teammember">
 					<td></td>
-					<td style="text-align:right;">{{ m.score|int }}</td>
+					<td style="text-align:right;">{{ "%.3f"|format(m.score) }}</td>
 					<td>{{ m.name }} ({{ m.club_code }}) - {{m.timetommmss()}} </td>
 				</tr>
 			{% endif %}

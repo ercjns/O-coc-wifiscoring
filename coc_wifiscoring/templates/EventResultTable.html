@@ -36,7 +36,7 @@
 			<td style="text-align:right;">{{ r.status }}</td>
 		{% endif %}
 		{% if class_info.is_scored %}
-		<td style="text-align:right;">{{ r.score|int }}</td>
+		<td style="text-align:right;">{{ "%.3f"|format(r.score) if r.score else '-'}}</td>
 		{% endif %}
 		</tr>
 		{% endfor %}

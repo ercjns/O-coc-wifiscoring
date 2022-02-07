@@ -93,6 +93,13 @@ def new_event():
                 new_class = EventClass(code, c)
                 db.session.add(new_class)
             db.session.commit()
+    elif event_type == 'wiolchamps21':
+        with open(join('coc_wifiscoring', 'static', 'WIOLChamps21classinfo.csv')) as f:
+            wiolClasses = ETL.classCSV(f)
+            for c in wiolClasses:
+                new_class = EventClass(code, c)
+                db.session.add(new_class)
+            db.session.commit()
     elif event_type == 'basic':
         with open(join('coc_wifiscoring', 'static', 'Basicclassinfo.csv')) as f:
             basicClasses = ETL.classCSV(f)
