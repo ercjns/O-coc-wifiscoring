@@ -2,7 +2,7 @@ Flask==0.12.2
 Flask-SQLAlchemy==2.3.2
 Flask-SocketIO==2.9.2
 Jinja2==2.9.6
-MarkupSafe==1.0
+MarkupSafe>=1.0
 SQLAlchemy==1.1.14
 Werkzeug==0.12.2
 argparse==1.2.1
@@ -10,6 +10,7 @@ beautifulsoup4==4.6.0
 certifi==2017.7.27.1
 chardet==3.0.4
 click==6.7
+defusedxml==0.5.0
 idna==2.6
 itsdangerous==0.24
 lxml==4.1.0
@@ -19,4 +20,3 @@ python-socketio==1.8.1
 requests==2.18.4
 six==1.11.0
 urllib3==1.22
-wsgiref==0.1.2
