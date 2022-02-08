@@ -47,7 +47,7 @@
 			<td style="text-align:right;">{{ r.status }}</td>
 		{% endif %}
 		{% if class.is_scored %}
-		<td style="text-align:right;">{{ r.score|int }}</td>
+		<td style="text-align:right;">{{ "%.3f"|format(r.score) if r.score else '-' }}</td>
 		{% endif %}
 		</tr>
 		{% endfor %}
@@ -66,7 +66,7 @@
 		{% for t in results_teams[etc.class_code] %}
 		<tr>
 			<td>{{ t.position }}</td>
-			<td style="text-align: right; padding-right:20px">{{ t.score|int }}</td>
+			<td style="text-align: right; padding-right:20px">{{ "%.3f"|format(t.score) if t.score else '-' }}</td>
 			<td>{{ clubs[t.club_code] }} ({{ t.club_code }})</td>
 		</tr>
 		{% endfor %}
@@ -92,7 +92,7 @@
 		{% for t in results_teams[etc.class_code] %}
 		<tr>
 			<td>{{ t.position }}</td>
-			<td style="text-align: right; padding-right:20px">{{ t.score|int }}</td>
+			<td style="text-align: right; padding-right:20px">{{ "%.3f"|format(t.score) if t.score else '-' }}</td>
 			<td>{{ clubs[t.club_code] }} ({{ t.club_code }})</td>
 		</tr>
 		{% endfor %}
