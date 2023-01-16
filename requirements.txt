@@ -4,7 +4,7 @@ Flask-SocketIO==2.9.2
 Jinja2==2.9.6
 MarkupSafe==1.0
 SQLAlchemy==1.1.14
-Werkzeug==0.12.2
+Werkzeug==0.15.3
 argparse==1.2.1
 beautifulsoup4==4.6.0
 certifi==2017.7.27.1
