@@ -24,9 +24,22 @@ Everything should be possible to be running on the same computer as the download
 - How does an admin configure how to score any given class that shows up in an XML file?
 - What is actually serving the html to end users? How is it configured for a given event?
 
+## Setup
+- Install python 3.11 on Windows: https://www.python.org/ftp/python/3.11.7/python-3.11.7-amd64.exe
+- make sure you're using the new pip for this version of python (trick for me was to use `py` and not `python`)
+- py -m pip install virtualenv
+- New virtualenv in the conductor folder
+- cd conductor
+- py -m virtualenv venv-conductor
+- venv-conductor\scripts\activate
+Great, now I have a clean python 3.11 environment to work on.
+not sure I trust the requirements file so going to try building it up from scratch.
+looks like it was pretty clean, extras were just wheel and setuptools. cool.
 
-- SportSoftware / OE2010
-- ??
-- LostTime (scoring)
-- ??
-- Available.
+installed requests library so I can do things with that too.
+
+## two different pieces:
+- web server: just start it, that's all for now. It serves a public folder on 8080. The Router will forward reqests to this location.
+- conductor: watches a folder for a specific file(s), processes them, moves them to where they can be served.
+- use a startup script to start both as separate processes.
+- startup script should also start LostTime local as that's required.
